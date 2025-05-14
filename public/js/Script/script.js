@@ -87,6 +87,35 @@ function formatDate() {
     return `${day}/${month}/${year}`;
 }
 
+// Função para converter arquivo (como imagem) para Base64
+async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
+async function processMultipleFiles(files) {
+    const results = [];
+    for (const file of files) {
+        if (file.type.startsWith('image/')) {
+            try {
+                const base64 = await fileToBase64(file);
+                results.push({
+                    image: base64,
+                    width: 200,
+                    height: 150,
+                    margin: [0, 5, 0, 10]
+                });
+            } catch (error) {
+                console.error(`Erro ao processar arquivo ${file.name}:`, error);
+            }
+        }
+    }
+    return results;
+}
 // Função para converter imagem para Base64
 async function getBase64Image(url) {
     try {
@@ -374,7 +403,7 @@ async function generateAllDeclarationsPDF() {
                     { text: 'SOMENTE ', bold: true },
                     `junto a esse órgão e em nenhum outro ente da administração pública, bem como não recebe recursos financeiros de outra entidade ou órgão `,
                     { text: '(incluindo a Lei de Incentivo ao Esporte, a Lei Agnelo-Piva e/ou patrocínio de empresas estatais)', bold: true },
-                    ` para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta N° ${proposta}/2024, cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.\n\n`
+                    ` para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta N° ${proposta}, cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.\n\n`
                 ],
                 alignment: 'justify',
                 fontSize: 12,
@@ -475,7 +504,7 @@ async function generateAllDeclarationsPDF() {
                 text: [
                     `Eu, ${dirigente}, CPF nº ${cpf}, na condição de representante legal do(a) ${entidade}, CNPJ nº ${cnpj}, `,
                     { text: 'ATESTO ', bold: true },
-                    `a planilha de custos, bem como as cotações obtidas, conforme o art. 25, § 1º do Decreto n.º 8.726, de 27 de abril de 2016, inseridas no Sistema Eletrônico Transferegov, Proposta n.º ${proposta}/2024.\n\n`,
+                    `a planilha de custos, bem como as cotações obtidas, conforme o art. 25, § 1º do Decreto n.º 8.726, de 27 de abril de 2016, inseridas no Sistema Eletrônico Transferegov, Proposta n.º ${proposta}.\n\n`,
                     { text: 'DECLARO ', bold: true },
                     `que os custos apresentados estão de acordo com os praticados no mercado.\n\n`,
                     'Por ser expressão da verdade, firmo a presente declaração.'
@@ -564,7 +593,7 @@ async function generateAllDeclarationsPDF() {
                     '2. Estar ciente de que as condutas vedadas dispensam comprovação de dolo ou culpa, sendo cláusulas de responsabilidade objetiva;\n',
                     '3. Que a presente Entidade não possui dentro do quadro de dirigentes candidatos ao pleito eleitoral de 2024;\n',
                     `4. Que não será permitido no âmbito do Termo de Fomento nº ${proposta} a distribuição de brindes ou outros bens que possam proporcionar vantagem ao eleitor durante o período de campanha eleitoral;\n`,
-                    `5. Que não será permitido o uso promocional em favor de candidatos, partidos políticos ou coligações, na distribuição de bens e serviços de caráter social custeados pelo Termo de Fomento nº ${entidade}/2024;\n`,
+                    `5. Que não será permitido o uso promocional em favor de candidatos, partidos políticos ou coligações, na distribuição de bens e serviços de caráter social custeados pelo Termo de Fomento nº ${proposta};\n`,
                     '6. Que não será permitida qualquer promoção pessoal ou condutas que afetem a igualdade de oportunidades entre candidatos nos pleitos eleitorais;\n',
                     '7. Que não será realizada publicidade institucional de atos, programas, obras, serviços e campanhas dos órgãos públicos federais;\n',
                     '8. Estar ciente do inteiro teor da Cartilha de Condutas Vedadas aos Agentes Públicos Federais em Eleições, disponível no site do governo.\n\n',
@@ -660,22 +689,234 @@ async function generateAllDeclarationsPDF() {
 }
 
 // Função para gerar o Atestado de Capacidade Técnica
+    // Função para gerar o Atestado de Capacidade Técnica
 async function generateAtestadoPDF() {
-    const dirigente = document.getElementById('dirigente').value;
-    const cpf = document.getElementById('cpf').value;
-    const cnpj = document.getElementById('cnpj').value;
-    const entidade = document.getElementById('entidade').value;
-    const endereco = document.getElementById('endereco').value;
-    const proposta = document.getElementById('proposta').value;
-    const municipio = document.getElementById('municipio').value;
-    const objeto = document.getElementById('objeto').value;
-    const uf = document.getElementById('uf').value;
-    const cargoDirigente = document.getElementById('cargoDirigente').value;
-    const date = formatDate();
+    // Obter dados do formulário
+    const formData = {
+        dirigente: document.getElementById('dirigente').value,
+        cpf: document.getElementById('cpf').value,
+        cnpj: document.getElementById('cnpj').value,
+        entidade: document.getElementById('entidade').value,
+        endereco: document.getElementById('endereco').value,
+        proposta: document.getElementById('proposta').value,
+        municipio: document.getElementById('municipio').value,
+        objeto: document.getElementById('objeto').value,
+        uf: document.getElementById('uf').value,
+        cargoDirigente: document.getElementById('cargoDirigente').value,
+        nomeProjeto: document.getElementById('nomeProjeto').value,
+        entidadesParceiras: document.getElementById('entidadesParceiras').value,
+        dataInicio: document.getElementById('dataInicio').value,
+        dataTermino: document.getElementById('dataTermino').value,
+        numeroBeneficiados: document.getElementById('numeroBeneficiados').value,
+        atividadesDesenvolvidas: document.getElementById('atividadesDesenvolvidas').value,
+        estruturasFisicas: document.getElementById('estruturasFisicas').value,
+        qualificacaoPessoal: document.getElementById('qualificacaoPessoal').value
+    };
 
+    // Obter arquivos diretamente da tabela de visualização
+    const getFilesFromTable = (tableId) => {
+        const table = document.getElementById(tableId);
+        if (!table || table.classList.contains('hidden')) return [];
+        
+        const rows = table.querySelectorAll('tbody tr');
+        const files = [];
+        
+        rows.forEach(row => {
+            const img = row.querySelector('img');
+            const fileName = row.querySelector('td:nth-child(2)').textContent;
+            
+            if (img) {
+                files.push({
+                    name: fileName,
+                    src: img.src
+                });
+            }
+        });
+        
+        return files;
+    };
+
+    // Obter arquivos das tabelas
+    const fotos = getFilesFromTable('fotoTable');
+    const materiais = getFilesFromTable('materiaisTable');
+    const midias = getFilesFromTable('midiaTable');
+
+    // Processar arquivos (convertendo para Base64)
+    const processFiles = async (files) => {
+        const results = [];
+        
+        for (const file of files) {
+            try {
+                // Se já é uma URL de dados (data:), usar diretamente
+                if (file.src.startsWith('data:')) {
+                    results.push({
+                        name: file.name,
+                        base64: file.src,
+                        preview: {
+                            image: file.src,
+                            width: 200,
+                            height: 150,
+                            margin: [0, 5, 0, 10]
+                        }
+                    });
+                } else {
+                    // Se for uma blob URL, converter para Base64
+                    const response = await fetch(file.src);
+                    const blob = await response.blob();
+                    const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    
+                    results.push({
+                        name: file.name,
+                        base64: base64,
+                        preview: {
+                            image: base64,
+                            width: 200,
+                            height: 150,
+                            margin: [0, 5, 0, 10]
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error(`Erro ao processar arquivo ${file.name}:`, error);
+            }
+        }
+        
+        return results;
+    };
+
+    // Processar todos os arquivos
+    const [fotosProcessadas, materiaisProcessados, midiasProcessadas] = await Promise.all([
+        processFiles(fotos),
+        processFiles(materiais),
+        processFiles(midias)
+    ]);
+
+    // Processar instrumentos (apenas nomes)
+    const instrumentosList = Array.from(document.getElementById('instrumentos').files)
+        .map(file => file.name).join(', ') || 'Nenhum arquivo enviado';
+
+    // Carregar marca d'água
     const watermarkImage = await getBase64Image('../images/Declarações _page-0001.jpg');
 
-    var docDefinition = {
+    // Função para criar seção de arquivos no PDF
+    const createFileSection = (title, files, sectionLetter) => {
+        const sectionContent = [];
+        
+        sectionContent.push({
+            text: `${sectionLetter}) ${title}:`,
+            bold: true,
+            fontSize: 12,
+            margin: [0, 5, 0, 5]
+        });
+
+        if (files.length > 0) {
+            files.forEach((file, index) => {
+                sectionContent.push({
+                    text: `${title.slice(0, -1)} ${index + 1} - ${file.name}`,
+                    fontSize: 10,
+                    margin: [0, 2, 0, 2]
+                });
+                sectionContent.push(file.preview);
+            });
+        } else {
+            sectionContent.push({
+                text: `Nenhum arquivo enviado`,
+                fontSize: 12,
+                margin: [0, 0, 0, 10]
+            });
+        }
+
+        return sectionContent;
+    };
+
+    // Construir conteúdo do PDF
+    const content = [
+        // Cabeçalho
+        {
+            text: 'ATESTADO DE CAPACIDADE TÉCNICA',
+            style: 'header',
+            alignment: 'center',
+            margin: [0, 120, 0, 2]
+        },
+        // Corpo do documento
+        {
+            text: [
+                `Eu, ${formData.dirigente}, CPF Nº ${formData.cpf}, ATESTO para fins de formalização de Termo de Fomento no âmbito do Ministério do Esporte - MESP que o(a) ${formData.entidade}, inscrito(a) no CNPJ sob o nº ${formData.cnpj}, situado(a) no(a) ${formData.endereco}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${formData.proposta}/2024 em atendimento ao art. 33 inciso V da Lei 13.019 de 2014 e art. 90 inciso XI da Lei nº 14.791 de 29 de dezembro de 2023 (LDO 2024), considerando as experiências adquiridas na execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, bem como qualificação profissional do seu quadro pessoal e comprovação que dispõe de estruturas físicas conforme anexo.\n\n`,
+                'O(s) projeto(s)/ação(es) descrito(s) foi(ram) executado(s) com qualidade, não existindo até a presente data fatos que desabonem a conduta e a responsabilidade da entidade com as obrigações assumidas, confirmando assim a capacidade técnica e operacional para a execução do que foi proposto.\n\n\n'
+            ],
+            alignment: 'justify',
+            fontSize: 12,
+            margin: [0, 40, 0, 20]
+        },
+        // Rodapé
+        {
+            text: `${formData.municipio}/${formData.uf}, na data da assinatura digital.`,
+            alignment: 'left',
+            fontSize: 12,
+            margin: [0, 0, 0, 20]
+        },
+        {
+            text: '\n\n____________________________________\n',
+            alignment: 'center',
+            fontSize: 12,
+            margin: [0, 10, 0, 0]
+        },
+        {
+            text: `${formData.cargoDirigente}\n\n`,
+            alignment: 'center',
+            fontSize: 12,
+            margin: [0, 0, 0, 20]
+        },
+        { text: '', pageBreak: 'after' },
+        // Anexo - Histórico
+        {
+            text: 'ANEXO - HISTÓRICO',
+            style: 'header',
+            alignment: 'center',
+            margin: [0, 20, 0, 20]
+        },
+        {
+            text: [
+                { text: 'I. Apresentação:\n\n', bold: true },
+                { text: 'Nome do Projeto/Ação: ', bold: true }, `${formData.nomeProjeto}\n\n`,
+                { text: 'Entidades Parceiras: ', bold: true }, `${formData.entidadesParceiras}\n\n`,
+                { text: 'Data de Início e Término da Execução: ', bold: true }, `${formData.dataInicio} a ${formData.dataTermino}\n`,
+                '(Comprovantes de experiência prévia na realização do objeto da parceria ou de objeto de natureza semelhante de no mínimo um ano de capacidade técnica e operacional.)\n\n',
+                { text: 'Número de Beneficiados: ', bold: true }, `${formData.numeroBeneficiados}\n\n`,
+                { text: 'Ações/Atividades Desenvolvidas: ', bold: true }, `${formData.atividadesDesenvolvidas}\n`,
+                '(Descrição das atividades desenvolvidas, recursos humanos envolvidos, objetivo geral e resultados alcançados)\n\n',
+                { text: 'Estruturas Físicas Utilizadas: ', bold: true }, `${formData.estruturasFisicas}\n\n`,
+                { text: 'Qualificação Profissional do Quadro Pessoal: ', bold: true }, `${formData.qualificacaoPessoal}\n\n`,
+                { text: 'Documentos Comprobatórios Encaminhados em Anexo:\n', bold: true },
+            ],
+            alignment: 'justify',
+            fontSize: 12,
+            margin: [0, 0, 0, 20]
+        },
+        // Seções de arquivos
+        ...createFileSection('Fotos', fotosProcessadas, 'a'),
+        ...createFileSection('Materiais de Divulgação', materiaisProcessados, 'b'),
+        ...createFileSection('Matérias na Mídia', midiasProcessadas, 'c'),
+        // Instrumentos
+        { 
+            text: 'd) Instrumentos Específicos:', 
+            bold: true, 
+            fontSize: 12, 
+            margin: [0, 5, 0, 5] 
+        },
+        { 
+            text: instrumentosList, 
+            fontSize: 12, 
+            margin: [0, 0, 0, 20] 
+        }
+    ];
+
+    // Criar definição do PDF
+    const docDefinition = {
         pageSize: 'A4',
         pageMargins: [40, 60, 40, 60],
         background: watermarkImage ? [{
@@ -685,64 +926,7 @@ async function generateAtestadoPDF() {
             absolutePosition: { x: 0, y: 0 },
             opacity: 0.9
         }] : undefined,
-        content: [
-            {
-                text: 'ATESTADO DE CAPACIDADE TÉCNICA',
-                style: 'header',
-                alignment: 'center',
-                margin: [0, 120, 0, 2]
-            },
-            {
-                text: [
-                    `Eu, ${dirigente}, CPF Nº ${cpf}, ATESTO para fins de formalização de Termo de Fomento no âmbito do Ministério do Esporte - MESP que o(a) ${entidade}, inscrito(a) no CNPJ sob o nº ${cnpj}, situado(a) no(a) ${endereco}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${proposta}/2024 em atendimento ao art. 33 inciso V da Lei 13.019 de 2014 e art. 90 inciso XI da Lei nº 14.791 de 29 de dezembro de 2023 (LDO 2024), considerando as experiências adquiridas na execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, bem como qualificação profissional do seu quadro pessoal e comprovação que dispõe de estruturas físicas conforme anexo.\n\n`,
-                    'O(s) projeto(s)/ação(es) descrito(s) foi(ram) executado(s) com qualidade, não existindo até a presente data fatos que desabonem a conduta e a responsabilidade da entidade com as obrigações assumidas, confirmando assim a capacidade técnica e operacional para a execução do que foi proposto.\n\n\n'
-                ],
-                alignment: 'justify',
-                fontSize: 12,
-                margin: [0, 40, 0, 20]
-            },
-            {
-                text: `${municipio}/${uf}, na data da assinatura digital.`,
-                alignment: 'left',
-                fontSize: 12,
-                margin: [0, 0, 0, 20]
-            },
-            {
-                text: '\n\n____________________________________\n',
-                alignment: 'center',
-                fontSize: 12,
-                margin: [0, 10, 0, 0]
-            },
-            {
-                text: `${cargoDirigente}\n\n`,
-                alignment: 'center',
-                fontSize: 12,
-                margin: [0, 0, 0, 20]
-            },
-            { text: '', pageBreak: 'after' },
-            {
-                text: [
-                    'ANEXO\n\n',
-                    'HISTÓRICO\n\n',
-                    'I. Apresentação:\n\n',
-                    `Nome do projeto/ação: \n\n`,
-                    'Entidades Parceiras:\n\n',
-                    'Data de início e término da execução: (Apresentar comprovantes de experiência prévia na realização do objeto da parceria ou de objeto de natureza semelhante de no mínimo um ano de capacidade técnica e operacional.)\n\n',
-                    'Número de Beneficiados:\n\n',
-                    'Ações/Atividades desenvolvidas: (Descrever as atividades desenvolvidas, recursos humanos envolvidos, objetivo geral e resultados alcançados)\n\n',
-                    'Estruturas Físicas onde foram desenvolvidas as atividades:\n\n',
-                    'Qualificação profissional do seu quadro pessoal:\n\n',
-                    'Documentos Comprobatórios a serem encaminhados em anexo:\n\n',
-                    'a) fotos\n\n',
-                    'b) materiais de divulgação (folders, cartazes, etc)\n\n',
-                    'c) matérias vinculadas na mídia (jornal, revistas, etc)\n\n',
-                    'd) cópia de instrumento específico (contratos, convênios, termos de parceria, etc)\n\n'
-                ],
-                alignment: 'justify',
-                fontSize: 12,
-                margin: [0, 130, 0, 20]
-            },
-        ],
+        content: content,
         styles: {
             header: {
                 fontSize: 16,
@@ -766,9 +950,9 @@ async function generateAtestadoPDF() {
         }
     };
 
-    pdfMake.createPdf(docDefinition).download(`Atestado_Capacidade_Tecnica_${dirigente}.pdf`);
+    // Gerar e baixar o PDF
+    pdfMake.createPdf(docDefinition).download(`Atestado_Capacidade_Tecnica_${formData.dirigente}.pdf`);
 }
-
 // Função para gerar o Termo de Compromisso Coordenador
 async function generateTermoCompromissoCoordenadorPDF() {
     const coordenador = document.getElementById('nomeCoordenador').value;
