@@ -17,9 +17,9 @@ module.exports = (pool) => {
   // Middleware para verificar o prefixo em produção
   router.use((req, res, next) => {
     console.log(`[DEBUG] URL requisitada: ${req.originalUrl}, isProduction: ${isProduction}`);
-    if (isProduction && !req.originalUrl.startsWith(`${BASE_PATH}/`) && req.originalUrl !== '/') {
-      console.log(`[DEBUG] Redirecionando para / porque a URL não começa com ${BASE_PATH}/`);
-      return res.redirect('/');
+    if (isProduction && req.originalUrl !== BASE_PATH && !req.originalUrl.startsWith(`${BASE_PATH}/`)) {
+      console.log(`[DEBUG] Redirecionando para ${BASE_PATH}/ porque a URL não começa com ${BASE_PATH}/`);
+      return res.redirect(`${BASE_PATH}/`);
     }
     next();
   });
@@ -158,7 +158,8 @@ module.exports = (pool) => {
     console.log(`[DEBUG] Rota não encontrada: ${req.originalUrl}`);
     res.status(404).render('error', {
       message: 'Página não encontrada',
-      errorCode: 404
+      errorCode: 404,
+      basePath: BASE_PATH
     });
   });
 
