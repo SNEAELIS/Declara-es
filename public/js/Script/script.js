@@ -129,6 +129,23 @@ async function getBase64Image(url) {
     }
 }
 
+async function getBase64ImageFromUrl(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to load image: ${response.status}`);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error loading watermark image:', error);
+        return null; // Return null if image fails to load
+    }
+}
+
 async function generateAllDeclarationsPDF() {
     const dirigente = document.getElementById('dirigente').value;
     const cpf = document.getElementById('cpf').value;
@@ -144,7 +161,7 @@ async function generateAllDeclarationsPDF() {
     const cargoDirigente = document.getElementById('cargoDirigente').value;
     const date = formatDate();
 
-    const watermarkImage = await getBase64Image('../images/Declarações _page-0001.jpg');
+     const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
 
     var docDefinition = {
         pageSize: 'A4',
@@ -639,7 +656,7 @@ async function generateAtestadoPDF() {
     const instrumentosList = Array.from(document.getElementById('instrumentos').files)
         .map(file => file.name).join(', ') || 'Nenhum arquivo enviado';
 
-    const watermarkImage = await getBase64Image('../images/Declarações _page-0001.jpg');
+    const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
 
     const createFileSection = (title, files, sectionLetter) => {
         const sectionContent = [];

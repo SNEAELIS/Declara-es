@@ -305,7 +305,7 @@
     <!-- Cabeçalho -->
     <header>
         <div class="header-left">
-            <img src="/images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
+            <img src="<%= basePath %>/public/images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
             <h1>Ministério do Esporte</h1>
         </div>
     </header>
@@ -733,26 +733,35 @@
             }
         }
 
-function mascaraCNPJ(input) {
-    const erro = document.getElementById('erro-cnpj');
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    input.value = value; // Atualiza o valor do input sem formatação
-    if (value.length >= 14) {
-        erro.style.display = 'none';
-        fetchCNPJData(value);
-    } else {
-        erro.style.display = 'block';
-        erro.textContent = 'Digite pelo menos 14 números.';
-        document.getElementById('entidade').value = '';
-        document.getElementById('endereco').value = '';
-        document.getElementById('uf').value = '';
-        document.getElementById('municipio').value = '';
-        document.getElementById('cep').value = '';
-        document.getElementById('erro-uf').style.display = 'block';
-        document.getElementById('erro-municipio').style.display = 'block';
-        document.getElementById('erro-cep').style.display = 'block';
-    }
-}
+        function mascaraCNPJ(input) {
+            const erro = document.getElementById('erro-cnpj');
+            let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+
+            if (value.length >= 14) {
+                erro.style.display = 'none';
+                fetchCNPJData(value);
+            } else {
+                erro.style.display = 'block';
+                erro.textContent = 'Digite pelo menos 14 números.';
+                document.getElementById('entidade').value = '';
+                document.getElementById('endereco').value = '';
+                document.getElementById('uf').value = '';
+                document.getElementById('municipio').value = '';
+                document.getElementById('cep').value = '';
+                document.getElementById('erro-uf').style.display = 'block';
+                document.getElementById('erro-municipio').style.display = 'block';
+                document.getElementById('erro-cep').style.display = 'block';
+            }
+
+            // Aplica a máscara após a validação e chamada da API
+            let valorFormatado = '';
+            if (value.length > 0) valorFormatado = value.substring(0, 2);
+            if (value.length > 2) valorFormatado += '.' + value.substring(2, 5);
+            if (value.length > 5) valorFormatado += '.' + value.substring(5, 8);
+            if (value.length > 8) valorFormatado += '/' + value.substring(8, 12);
+            if (value.length > 12) valorFormatado += '-' + value.substring(12, 14);
+            input.value = valorFormatado;
+        }
 
         async function fetchCNPJData(cnpj) {
             const erro = document.getElementById('erro-cnpj');
@@ -842,9 +851,17 @@ function mascaraCNPJ(input) {
                     return;
                 }
 
-                if (!input.value ||
+                // Ajuste para validação do CNPJ: verifica o comprimento dos dígitos puros
+                if (id === 'cnpj') {
+                    if (input.value.replace(/\D/g, '').length !== 14) {
+                        erro.style.display = 'block';
+                        erro.textContent = 'O CNPJ deve conter 14 números.';
+                        valido = false;
+                    } else {
+                        erro.style.display = 'none';
+                    }
+                } else if (!input.value ||
                     (id === 'cpf' && input.value.length !== 14) ||
-                    (id === 'cnpj' && input.value.length !== 18) ||
                     (id === 'cep' && input.value.length !== 9) ||
                     (id === 'proposta' && !/^\d{5}\/\d{4}$/.test(input.value)) ||
                     (id === 'diaLei' && (input.value < 1 || input.value > 31)) ||
@@ -867,3 +884,4 @@ function mascaraCNPJ(input) {
     </script>
 </body>
 </html>
+

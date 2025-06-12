@@ -15,10 +15,19 @@ module.exports = (pool) => {
   const BASE_PATH = isProduction ? '/forms/declaracoes' : '';
 
   // Middleware para verificar o prefixo em produção
+  // router.use((req, res, next) => {
+  //   console.log(`[DEBUG] URL requisitada: ${req.originalUrl}, isProduction: ${isProduction}`);
+  //   if (isProduction && req.originalUrl !== BASE_PATH && !req.originalUrl.startsWith(`${BASE_PATH}/`)) {
+  //     console.log(`[DEBUG] Redirecionando para ${BASE_PATH}/ porque a URL não começa com ${BASE_PATH}/`);
+  //     return res.redirect(`${BASE_PATH}/`);
+  //   }
+  //   next();
+  // });
   router.use((req, res, next) => {
-    console.log(`[DEBUG] URL requisitada: ${req.originalUrl}, isProduction: ${isProduction}`);
-    if (isProduction && req.originalUrl !== BASE_PATH && !req.originalUrl.startsWith(`${BASE_PATH}/`)) {
-      console.log(`[DEBUG] Redirecionando para ${BASE_PATH}/ porque a URL não começa com ${BASE_PATH}/`);
+    console.log(`[DEBUG] URL original: ${req.originalUrl}, Base Path: ${BASE_PATH}`);
+    // Se a URL já está correta ou é uma API/static, não redirecione
+    if (isProduction && req.originalUrl === '/' && BASE_PATH) {
+      console.log(`[DEBUG] Redirecionando raiz para ${BASE_PATH}/`);
       return res.redirect(`${BASE_PATH}/`);
     }
     next();

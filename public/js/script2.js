@@ -44,6 +44,23 @@ async function getBase64Image(url) {
         return null;
     }
 }
+async function getBase64ImageFromUrl(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to load image: ${response.status}`);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error loading watermark image:', error);
+        return null; // Return null if image fails to load
+    }
+}
+
 
 // Captura os dados do formulário
 function capturarDadosFormulario() {
@@ -163,8 +180,8 @@ async function gerarPDF() {
         }
 
         // Carrega a imagem de fundo
-        const backgroundImage = await getBase64Image('../images/Declarações _page-0001.jpg');
-        if (!backgroundImage) {
+        const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+        if (!watermarkImage) {
             alert('Erro ao carregar a imagem de fundo.');
             return;
         }
@@ -246,7 +263,7 @@ async function gerarPDF() {
                 }
             },
             background: (currentPage, pageSize) => ({
-                image: backgroundImage,
+                image: watermarkImage,
                 width: pageSize.width,
                 height: pageSize.height,
                 absolutePosition: { x: 0, y: 0 },

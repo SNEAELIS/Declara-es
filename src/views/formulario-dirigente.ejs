@@ -256,7 +256,7 @@ footer {
     <!-- Cabeçalho -->
     <header>
         <div class="header-left">
-            <img src="images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
+            <img src="<%= basePath %>/public/images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
         </div>
 
     </header>
@@ -381,6 +381,6 @@ footer {
             pdfMake.createPdf(docDefinition).download('atestado.pdf');
         }
     </script>
-    <script src="/js/script3.js"></script>
+    <script src="<%= basePath %>/public/js/script3.js"></script>
 </body>
 </html>

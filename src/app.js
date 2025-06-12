@@ -65,6 +65,25 @@ app.get("/api/cnpj/:cnpj", async (req, res) => {
   app.set('views', path.join(__dirname, 'views'));
   app.use(express.static(path.join(__dirname, '../public')));
 
+  // Depois: by Cleiton
+  // app.use('/forms/declaracoes', express.static(path.join(__dirname, '../public')));
+  // ------------------
+const publicPath = path.join(__dirname, 'public');
+
+// Substitua esta linha:
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Por isto:
+app.use('/public', express.static(publicPath, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+// Adicione esta rota para evitar erro do favicon
+app.get('/favicon.ico', (req, res) => res.status(204).end());
   // Rotas
   const useRoutes = require('./routes/useRoutes');
   app.use('/', useRoutes({ data, saveData })); // Passe os dados e função de salvar
