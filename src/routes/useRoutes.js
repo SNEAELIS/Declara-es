@@ -10,7 +10,7 @@ module.exports = ({ data, saveData }) => {
     { path: 'formulario-documentacoes', template: 'Formulario_Documentacoes', title: 'Documentações' },
     { path: 'formulario-convenio', template: 'Formulario_convenio', title: 'Convênio' },
     { path: 'ficha-frequencia', template: 'Ficha_Frequencia', title: 'Ficha de Frequência' },
-    { path: 'formulario-dirigente', template: 'formulario-dirigente', title: 'Dirigente' },
+        { path: 'formulario-dirigente', template: 'formulario-dirigente', title: 'DECLARAÇÕES ART 26, 27 DO DECRETO Nº 8.726' },
     { path: 'ficha-rtma', template: 'Ficha_RTMA', title: 'RTMA' },
     { path: 'formulario-principal', template: 'Formulario', title: 'Formulário Principal' },
     { path: 'precificacao-form', template: 'precificacaoForm', title: 'Formulário de Precificação' },
@@ -50,6 +50,22 @@ module.exports = ({ data, saveData }) => {
     res.redirect(`${BASE_PATH}/${form.path}`);
   });
 
+  router.get('/formulario-dirigente', (req, res) => {
+    console.log('Tentando renderizar formulario-dirigente.gis');
+    res.render('formulario-dirigente', {
+        title: 'DECLARAÇÕES ART 26, 27 DO DECRETO Nº 8.726',
+        error: req.query.error,
+        success: req.query.success,
+        basePath: BASE_PATH
+    }, (err, html) => {
+        if (err) {
+            console.error('Erro ao renderizar:', err);
+            return res.redirect(`${BASE_PATH}/?error=Template não encontrado`);
+        }
+        res.send(html);
+    });
+});
+
   // Rotas dos Formulários
   FORMULARIOS.forEach(form => {
     router.get(`/${form.path}`, (req, res) => {
@@ -66,6 +82,17 @@ module.exports = ({ data, saveData }) => {
         }
         res.send(html);
       });
+    });
+
+    // Adiciona rota POST para cada formulário se necessário
+    router.post(`/${form.path}`, (req, res) => {
+      // Aqui você pode adicionar lógica para processar o formulário
+      saveData(form.path, req.body)
+        .then(() => res.redirect(`${BASE_PATH}/?success=Formulário enviado com sucesso`))
+        .catch(err => {
+          console.error(`Erro ao salvar ${form.path}:`, err);
+          res.redirect(`${BASE_PATH}/${form.path}?error=Erro ao salvar formulário`);
+        });
     });
   });
 
