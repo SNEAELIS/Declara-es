@@ -219,6 +219,15 @@
                 left: 10px;
                 font-size: 0.9rem;
             }
+            
+        .header-left {
+            padding: 10px;
+        }
+
+        .logo-header {
+            max-height: 80px;
+            width: auto;
+        }
         }
     </style>
 </head>
@@ -226,7 +235,7 @@
     <!-- Cabeçalho -->
     <header>
         <div class="header-left">
-            <img src="<%= basePath %>/public/images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
+            <img src="https://i.ibb.co/4ZcNXLt1/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
             <h1>Ministério do Esporte</h1>
         </div>
     </header>
@@ -314,7 +323,7 @@
                 return;
             }
 
-            window.location.href = `<%= basePath %>/precificacao?valor=${valorNumerico}`;
+            window.location.href = `/precificacao?valor=${valorNumerico}`;
         }
 
         function consultarProtocolo() {
@@ -324,7 +333,7 @@
                 return;
             }
 
-            fetch(`<%= basePath %>/consulta-protocolo?protocolo=${encodeURIComponent(numeroProtocolo)}`)
+            fetch(`/consulta-protocolo?protocolo=${encodeURIComponent(numeroProtocolo)}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Protocolo não encontrado.');
                     return response.json();

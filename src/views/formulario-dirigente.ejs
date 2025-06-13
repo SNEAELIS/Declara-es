@@ -250,15 +250,23 @@ footer {
         padding: 8px; /* Slightly reduce padding for smaller screens */
     }
 }
+
+        .header-left {
+            padding: 10px;
+        }
+
+        .logo-header {
+            max-height: 80px;
+            width: auto;
+        }
     </style>
 </head>
 <body>
     <!-- Cabeçalho -->
     <header>
         <div class="header-left">
-            <img src="<%= basePath %>/public/images/ASSINATURAS_ESPORTE__FUNDO PRETO 2 HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
+            <img src="https://i.ibb.co/4ZcNXLt/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
         </div>
-
     </header>
 
     <!-- Container Principal -->
@@ -381,6 +389,6 @@ footer {
             pdfMake.createPdf(docDefinition).download('atestado.pdf');
         }
     </script>
-    <script src="<%= basePath %>/public/js/script3.js"></script>
+    <script src="/public/js/script3.js"></script>
 </body>
 </html>

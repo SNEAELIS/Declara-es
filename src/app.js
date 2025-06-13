@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 const dataFile = path.join(__dirname, '../data.json');
 
+// Funções de gerenciamento de dados
 async function loadData() {
   try {
     const data = await fs.readFile(dataFile, 'utf-8');
@@ -25,16 +26,22 @@ async function saveData(data) {
   await fs.writeFile(dataFile, JSON.stringify(data, null, 2));
 }
 
+// Configuração da aplicação
 async function configurarApp() {
   const app = express();
   let data = await loadData();
+
+  // Configuração da view engine (EJS)
+  app.set('view engine', 'ejs');
+  app.set('views', path.join(__dirname, 'views'));
 
   // Middlewares essenciais
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
+  app.use(express.static(path.join(__dirname, '../public')));
 
-  // Configuração de sessão segura para produção
+  // Configuração de sessão segura
   app.use(session({
     secret: process.env.SESSION_SECRET || 'segredo-desenvolvimento',
     resave: false,
@@ -43,50 +50,21 @@ async function configurarApp() {
       secure: isProduction,
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000 // 24 horas
     }
   }));
 
-  // BACK-END (exemplo com Express.js)
-app.get("/api/cnpj/:cnpj", async (req, res) => {
-  const { cnpj } = req.params;
-  try {
-    const response = await fetch(`https://www.receitaws.com.br/v1/cnpj/${cnpj}`);
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar CNPJ." });
-  }
-});
-
-
-  // Configurações de views e arquivos estáticos
-  app.set('view engine', 'ejs');
-  app.set('views', path.join(__dirname, 'views'));
-  app.use(express.static(path.join(__dirname, '../public')));
-
-  // Depois: by Cleiton
-  // app.use('/forms/declaracoes', express.static(path.join(__dirname, '../public')));
-  // ------------------
-const publicPath = path.join(__dirname, 'public');
-
-// Substitua esta linha:
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Por isto:
-app.use('/public', express.static(publicPath, {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
+  // API de consulta de CNPJ
+  app.get("/api/cnpj/:cnpj", async (req, res) => {
+    const { cnpj } = req.params;
+    try {
+      const response = await fetch(`https://www.receitaws.com.br/v1/cnpj/${cnpj}`);
+      const data = await response.json();
+      res.json(data);
+    } catch (err) {
+      res.redirect('/forms/declaracoes'); // Redireciona para a rota base
     }
-  }
-}));
-
-// Adicione esta rota para evitar erro do favicon
-app.get('/favicon.ico', (req, res) => res.status(204).end());
-  // Rotas
-  const useRoutes = require('./routes/useRoutes');
-  app.use('/', useRoutes({ data, saveData })); // Passe os dados e função de salvar
+  });
 
   // Middleware de log de requisições
   app.use((req, res, next) => {
@@ -94,47 +72,43 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
     next();
   });
 
-  // Handlers de erro
-  app.use((req, res) => {
-    res.status(404).render('error', {
-      message: 'Página não encontrada',
-      errorCode: 404
-    });
+  // Rota raiz redireciona para forms/declaracoes
+  app.get('/', (req, res) => {
+    res.redirect('/forms/declaracoes');
   });
 
+  // Rotas principais
+  const useRoutes = require('./routes/useRoutes');
+  app.use('/forms/declaracoes', useRoutes({ data, saveData }));
+
+  // Handler para rotas não encontradas
+  app.use((req, res) => {
+    res.redirect('/forms/declaracoes');
+  });
+
+  // Handler de erros
   app.use((err, req, res, next) => {
     console.error('💥 Erro:', err.stack);
-    res.status(500).render('error', {
-      message: 'Erro interno no servidor',
-      errorCode: 500,
-      stack: isProduction ? null : err.stack
-    });
+    res.redirect('/forms/declaracoes');
   });
 
   return app;
 }
 
+// Iniciação do servidor
 async function iniciarServidor() {
   try {
     const app = await configurarApp();
-
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
-      if (process.env.RENDER) {
-        console.log(`🔗 Acesse: ${process.env.RENDER_EXTERNAL_URL}`);
-      } else {
-        console.log(`🔗 Acesse: http://localhost:${PORT}`);
-      }
+      console.log(`🔗 Acesse: http://localhost:${PORT}`);
     });
-
   } catch (err) {
-    console.error('❌ Falha catastrófica ao iniciar o servidor:');
-    console.error(err);
+    console.error('❌ Falha ao iniciar o servidor:', err);
     process.exit(1);
   }
 }
 
-// Inicia a aplicação
 iniciarServidor();
 
 process.on('unhandledRejection', (err) => {

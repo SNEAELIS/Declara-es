@@ -17,6 +17,8 @@ const transporter = nodemailer.createTransport({
     pass: 'awss jpcy sbta cjsu',
   },
 });
+res.render('verificar', { email, basePath: '/forms/declaracoes' });
+
 
 const gerarCodigoVerificacao = () => Math.floor(10000 + Math.random() * 90000).toString();
 
