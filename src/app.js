@@ -40,6 +40,7 @@ async function configurarApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(express.static(path.join(__dirname, '../public')));
+app.use('/forms/declaracoes/public', express.static(path.join(__dirname, '../public')));
 
   // Configuração de sessão segura
   app.use(session({

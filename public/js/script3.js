@@ -1,4 +1,3 @@
-// Função para converter imagem em base64
 async function getBase64Image(src) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -16,14 +15,12 @@ async function getBase64Image(src) {
     });
 }
 
-// Função para gerar campos dinâmicos para os dirigentes
 function gerarCampos() {
     const numDirigentes = document.getElementById('numDirigentes').value;
     const container = document.getElementById('camposDirigentes');
     const enderecoEntidade = document.getElementById('enderecoEntidade').value;
-    container.innerHTML = ''; // Limpa os campos anteriores
+    container.innerHTML = '';
 
-    // Gera os campos para cada dirigente
     for (let i = 0; i < numDirigentes; i++) {
         container.innerHTML += `
             <h3>Dirigente ${i + 1}</h3>
@@ -60,14 +57,13 @@ function gerarCampos() {
     }
 }
 
-// Função para gerar o PDF
 async function gerarPDF() {
     let watermarkImage;
     try {
-        watermarkImage = await getBase64Image('../images/Declarações _page-0001.jpg');
+        watermarkImage = await getBase64Image('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
     } catch (error) {
         console.error('Erro ao carregar a imagem da marca d\'água:', error);
-        watermarkImage = null; // Prossegue sem marca d'água
+        watermarkImage = null;
     }
 
     const nomeEntidade = document.getElementById('nomeEntidade').value;
@@ -77,7 +73,6 @@ async function gerarPDF() {
     const enderecoEntidade = document.getElementById('enderecoEntidade').value;
     const camposDirigentes = [];
 
-    // Coleta os dados inseridos nos campos para cada dirigente
     for (let i = 0; i < numDirigentes; i++) {
         camposDirigentes.push([
             document.getElementById('nome' + i).value + ' - ' + document.getElementById('cargo' + i).value,
@@ -86,7 +81,6 @@ async function gerarPDF() {
         ]);
     }
 
-    // Texto para "Contas Rejeitadas"
     let textoContasRejeitadas = contasRejeitadas
         ? 'V - tiveram as contas rejeitadas, mas demonstraram, nos termos do art. 39, IV, alíneas "a", "b" e "c", da Lei nº 13.019, de 2014, que:\n' +
           'V.1 – a irregularidade que motivou a rejeição das contas foi sanada e que os débitos eventualmente imputados foram quitados;\n' +
@@ -94,17 +88,14 @@ async function gerarPDF() {
           'V.3 – a decisão sobre a apreciação das contas está pendente de decisão sobre recurso com efeito suspensivo;'
         : 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.';
 
-    // Texto para "Improbidade Administrativa"
     let textoImprobidadeAdministrativa = improbidadeAdministrativa
         ? 'c) foram considerados responsáveis por ato de improbidade ou foram considerados responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.'
         : '';
 
-    // Configuração do PDF
     const docDefinition = {
         pageSize: 'A4',
-        pageMargins: [20, 80, 20, 40], // Aumenta a margem superior para 80
+        pageMargins: [20, 80, 20, 40],
         background: function (currentPage) {
-            // Aplica a marca d'água apenas na primeira página
             return watermarkImage && currentPage === 1 ? [
                 {
                     image: watermarkImage,
@@ -164,5 +155,4 @@ async function gerarPDF() {
     pdfMake.createPdf(docDefinition).download('declaracao-dirigentes.pdf');
 }
 
-// Eventos
 document.getElementById('botaoGerarPDF').addEventListener('click', gerarPDF);
