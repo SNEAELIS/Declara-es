@@ -15,48 +15,6 @@ async function getBase64Image(src) {
     });
 }
 
-function gerarCampos() {
-    const numDirigentes = document.getElementById('numDirigentes').value;
-    const container = document.getElementById('camposDirigentes');
-    const enderecoEntidade = document.getElementById('enderecoEntidade').value;
-    container.innerHTML = '';
-
-    for (let i = 0; i < numDirigentes; i++) {
-        container.innerHTML += `
-            <h3>Dirigente ${i + 1}</h3>
-            <div class="form-row">
-                <label for="nome${i}">Nome Completo:</label>
-                <input type="text" id="nome${i}" name="nome${i}">
-                
-                <label for="cargo${i}">Cargo:</label>
-                <input type="text" id="cargo${i}" name="cargo${i}">
-            </div>
-            <div class="form-row">
-                <label for="rg${i}">RG:</label>
-                <input type="text" id="rg${i}" name="rg${i}">
-
-                <label for="orgao${i}">Órgão Expedidor:</label>
-                <input type="text" id="orgao${i}" name="orgao${i}">
-            </div>
-            <div class="form-row">
-                <label for="cpf${i}">CPF:</label>
-                <input type="text" id="cpf${i}" name="cpf${i}">
-
-                <label for="endereco${i}">Endereço:</label>
-                <input type="text" id="endereco${i}" name="endereco${i}">
-            </div>
-            <div class="form-row">
-                <label for="telefone${i}">Telefone:</label>
-                <input type="text" id="telefone${i}" name="telefone${i}">
-
-                <label for="email${i}">E-mail:</label>
-                <input type="email" id="email${i}" name="email${i}">
-            </div>
-            <hr>
-        `;
-    }
-}
-
 async function gerarPDF() {
     let watermarkImage;
     try {
@@ -70,14 +28,27 @@ async function gerarPDF() {
     const contasRejeitadas = document.getElementById('contasRejeitadas').checked;
     const improbidadeAdministrativa = document.getElementById('improbidadeAdministrativa').checked;
     const numDirigentes = document.getElementById('numDirigentes').value;
-    const enderecoEntidade = document.getElementById('enderecoEntidade').value;
     const camposDirigentes = [];
 
-    for (let i = 0; i < numDirigentes; i++) {
+    for (let i = 1; i <= numDirigentes; i++) {
+        const nome = document.getElementById('dirigenteNome' + i).value;
+        const cargo = document.getElementById('dirigenteCargo' + i) ? document.getElementById('dirigenteCargo' + i).value : ''; // Adicionado cargo, se existir
+        const rg = document.getElementById('dirigenteRG' + i).value;
+        const cpf = document.getElementById('dirigenteCPF' + i).value;
+        const email = document.getElementById('dirigenteEmail' + i).value;
+        const cep = document.getElementById('dirigenteCEP' + i).value;
+        const rua = document.getElementById('dirigenteRua' + i).value;
+        const bairro = document.getElementById('dirigenteBairro' + i).value;
+        const cidade = document.getElementById('dirigenteCidade' + i).value;
+        const estado = document.getElementById('dirigenteEstado' + i).value;
+        const complemento = document.getElementById('dirigenteComplemento' + i).value;
+
+        const enderecoCompleto = `${rua}, ${complemento ? complemento + ', ' : ''}${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+
         camposDirigentes.push([
-            document.getElementById('nome' + i).value + ' - ' + document.getElementById('cargo' + i).value,
-            document.getElementById('rg' + i).value + ' - ' + document.getElementById('orgao' + i).value + ', CPF: ' + document.getElementById('cpf' + i).value,
-            document.getElementById('endereco' + i).value + ', ' + document.getElementById('telefone' + i).value + ', ' + document.getElementById('email' + i).value
+            `${nome} - ${cargo}`,
+            `${rg}, CPF: ${cpf}`,
+            `${enderecoCompleto}, E-mail: ${email}`
         ]);
     }
 
@@ -142,7 +113,7 @@ async function gerarPDF() {
             { text: 'a) tiveram suas contas relativas a parcerias julgadas irregulares ou rejeitadas por Tribunal ou Conselho de Contas de qualquer esfera da Federação, em decisão irrecorrível, nos últimos 8 (oito) anos;', margin: [10, 5], alignment: 'justify' },
             { text: 'b) foram julgados responsáveis por falta grave e inabilitados para o exercício de cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [10, 5], alignment: 'justify' },
             { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify', color: 'red' },
-            { text: `\n${enderecoEntidade}, na data da assinatura.\n\n`, alignment: 'center', margin: [0, 40] },
+            { text: `\n${document.getElementById('enderecoEntidade').value}, na data da assinatura.\n\n`, alignment: 'center', margin: [0, 40] },
             { text: '...........................................................................................', alignment: 'center', margin: [0, 40] },
             { text: '(Nome e Cargo do Representante Legal da OSC)', alignment: 'center', margin: [0, 10] }
         ],
@@ -156,3 +127,4 @@ async function gerarPDF() {
 }
 
 document.getElementById('botaoGerarPDF').addEventListener('click', gerarPDF);
+

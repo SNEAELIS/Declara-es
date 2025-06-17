@@ -265,6 +265,266 @@
         .tab.active {
             display: block;
         }
+        /* Reset Básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Cabeçalho */
+        header {
+            background-color: #003087;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            height: 60px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background-color: #fff;
+            color: #003087;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .header-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Container Principal */
+        .container {
+            background: #fff;
+            margin: 80px auto 30px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px Modelica(0, 0, 0, 0.05);
+            max-width: 900px;
+        }
+
+        .container-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .container-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #003087;
+            margin-bottom: 10px;
+        }
+
+        /* Formulário */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-row .half-width {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-row .third-width {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-row .full-width {
+            width: 100%;
+        }
+
+        /* Labels and Inputs */
+        label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #003087;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        /* Botões */
+        button {
+            background-color: #003087;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00205b;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Mensagem de Carregamento */
+        #loadingMessage {
+            text-align: center;
+            font-weight: bold;
+            color: #003087;
+            margin-top: 10px;
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #003087;
+            color: #fff;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+
+        /* Abas */
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .tab-buttons button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #003087;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            color: #003087;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .tab-buttons button:hover:not(:disabled) {
+            background-color: #f0f0f0;
+        }
+
+        .tab-buttons button.active {
+            background-color: #003087;
+            color: white;
+        }
+
+        .tab-buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
 
         /* Mensagens de Erro */
         .error-message {
@@ -298,15 +558,15 @@
                 flex-direction: column;
                 gap: 5px;
             }
-            
-        .header-left {
-            padding: 10px;
-        }
 
-        .logo-header {
-            max-height: 80px;
-            width: auto;
-        }
+            .header-left {
+                padding: 10px;
+            }
+
+            .logo-header {
+                max-height: 80px;
+                width: auto;
+            }
         }
     </style>
 </head>
@@ -322,7 +582,7 @@
     <!-- Container Principal -->
     <div class="container">
         <div class="container-header">
-            <h2>Declaração de Entidade Publica</h2>
+            <h2>Declaração de Entidade Pública</h2>
             <span class="status">Emissão</span>
         </div>
 
@@ -331,7 +591,6 @@
             <button onclick="mostrarAba('aba2')" disabled>2</button>
             <button onclick="mostrarAba('aba3')" disabled>3</button>
             <button onclick="mostrarAba('aba4')" disabled>4</button>
-            <button onclick="mostrarAba('aba5')" disabled>5</button>
         </div>
 
         <!-- Formulário de Preenchimento -->
@@ -347,34 +606,20 @@
                             <span id="erro-dirigente" class="error-message">Digite apenas letras e espaços.</span>
                         </div>
                         <div class="half-width">
-                            <label for="cpf">Matricula:</label>
-                            <input type="text" id="cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="Matricula" required>
-                            <span id="erro-cpf" class="error-message">Digite apenas números no formato CPF.</span>
+                            <label for="matricula">Matrícula:</label>
+                            <input type="text" id="matricula" required>
+                            <span id="erro-matricula" class="error-message">Campo obrigatório.</span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="half-width">
-                            <label for="rg">RG:</label>
-                            <input type="text" id="rg" oninput="validarNumeros(this)" required>
-                            <span id="erro-rg" class="error-message">Digite apenas números.</span>
-                        </div>
-                        <div class="half-width">
-                            <label for="orgaoEmissor">Órgão Emissor:</label>
-                            <input type="text" id="orgaoEmissor" oninput="validarLetras(this)" required>
-                            <span id="erro-orgaoEmissor" class="error-message">Digite apenas letras e espaços.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
                             <label for="cargoDirigente">Cargo do Dirigente:</label>
                             <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" oninput="validarCargo(this)" required>
                             <span id="erro-cargo" class="error-message">Digite apenas letras, espaços ou hífens.</span>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
+                        <div class="half-width">
                             <label for="proposta">Proposta (XXXXX/ANO):</label>
-                            <input type="text" id="proposta" oninput="validarProposta(this)" placeholder="Ex: 00002/2025" required>
+                            <input type="text" id="proposta" oninput="validarProposta(this)" maxlength="9" placeholder="Ex: 00012/2025" required>
                             <span id="erro-proposta" class="error-message">Digite no formato XXXXX/ANO (5 dígitos/ano).</span>
                         </div>
                     </div>
@@ -408,37 +653,8 @@
                     <div class="form-row">
                         <div class="third-width">
                             <label for="uf">UF:</label>
-                            <select id="uf" required>
-                                <option value="" disabled selected>Selecione a UF</option>
-                                <option value="AC">Acre</option>
-                                <option value="AL">Alagoas</option>
-                                <option value="AP">Amapá</option>
-                                <option value="AM">Amazonas</option>
-                                <option value="BA">Bahia</option>
-                                <option value="CE">Ceará</option>
-                                <option value="DF">Distrito Federal</option>
-                                <option value="ES">Espírito Santo</option>
-                                <option value="GO">Goiás</option>
-                                <option value="MA">Maranhão</option>
-                                <option value="MT">Mato Grosso</option>
-                                <option value="MS">Mato Grosso do Sul</option>
-                                <option value="MG">Minas Gerais</option>
-                                <option value="PA">Pará</option>
-                                <option value="PB">Paraíba</option>
-                                <option value="PR">Paraná</option>
-                                <option value="PE">Pernambuco</option>
-                                <option value="PI">Piauí</option>
-                                <option value="RJ">Rio de Janeiro</option>
-                                <option value="RN">Rio Grande do Norte</option>
-                                <option value="RS">Rio Grande do Sul</option>
-                                <option value="RO">Rondônia</option>
-                                <option value="RR">Roraima</option>
-                                <option value="SC">Santa Catarina</option>
-                                <option value="SP">São Paulo</option>
-                                <option value="SE">Sergipe</option>
-                                <option value="TO">Tocantins</option>
-                            </select>
-                            <span id="erro-uf" class="error-message">Selecione uma UF válida.</span>
+                            <input type="text" id="uf" readonly required>
+                            <span id="erro-uf" class="error-message">UF não preenchida.</span>
                         </div>
                         <div class="third-width">
                             <label for="municipio">Município:</label>
@@ -449,20 +665,6 @@
                             <label for="cep">CEP:</label>
                             <input type="text" id="cep" readonly required>
                             <span id="erro-cep" class="error-message">CEP não preenchido.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="nomeEspacoFisico">Nome do Espaço Físico:</label>
-                            <input type="text" id="nomeEspacoFisico" required>
-                            <span id="erro-nomeEspacoFisico" class="error-message">Digite o nome do espaço físico.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="enderecoEspacoFisico">Endereço do Espaço Físico:</label>
-                            <input type="text" id="enderecoEspacoFisico" required>
-                            <span id="erro-enderecoEspacoFisico" class="error-message">Digite o endereço do espaço físico.</span>
                         </div>
                     </div>
                 </section>
@@ -552,15 +754,15 @@
                     <div class="form-row">
                         <div class="full-width">
                             <label for="valorContrapartida">Valor da Contrapartida (R$):</label>
-                            <input type="text" id="valorContrapartida" oninput="validarNumeros(this)" required>
-                            <span id="erro-valorContrapartida" class="error-message">Digite apenas números.</span>
+                            <input type="text" id="valorContrapartida" oninput="mascaraMoeda(this); atualizarValorExtenso();" required>
+                            <span id="erro-valorContrapartida" class="error-message">Digite um valor válido.</span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="full-width">
                             <label for="valorContrapartidaExtenso">Valor da Contrapartida por Extenso:</label>
-                            <input type="text" id="valorContrapartidaExtenso" oninput="validarLetras(this)" required>
-                            <span id="erro-valorContrapartidaExtenso" class="error-message">Digite apenas letras e espaços.</span>
+                            <input type="text" id="valorContrapartidaExtenso" readonly required>
+                            <span id="erro-valorContrapartidaExtenso" class="error-message">Campo preenchido incorretamente.</span>
                         </div>
                     </div>
                 </section>
@@ -570,73 +772,8 @@
                 </div>
             </div>
 
-            <!-- Aba 4: Informações Adicionais -->
+            <!-- Aba 4: Imagens e Opção de PDF -->
             <div id="aba4" class="tab">
-                <section class="section">
-                    <h3>Informações Adicionais</h3>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="objeto">Objeto do Convênio:</label>
-                            <textarea id="objeto" required></textarea>
-                            <span id="erro-objeto" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="nomeProjeto">Nome do Projeto:</label>
-                            <input type="text" id="nomeProjeto" required>
-                            <span id="erro-nomeProjeto" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="entidadesParceiras">Entidades Parceiras:</label>
-                            <input type="text" id="entidadesParceiras" required>
-                            <span id="erro-entidadesParceiras" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="periodoVigencia">Período de Vigência:</label>
-                            <input type="text" id="periodoVigencia" required>
-                            <span id="erro-periodoVigencia" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="numeroBeneficiados">Número de Beneficiados:</label>
-                            <input type="number" id="numeroBeneficiados" required>
-                            <span id="erro-numeroBeneficiados" class="error-message">Digite um número válido.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="acoesDesenvolvidas">Ações Desenvolvidas:</label>
-                            <textarea id="acoesDesenvolvidas" required></textarea>
-                            <span id="erro-acoesDesenvolvidas" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="chefeExecutivo">Chefe do Executivo:</label>
-                            <input type="text" id="chefeExecutivo" oninput="validarLetras(this)" required>
-                            <span id="erro-chefeExecutivo" class="error-message">Digite apenas letras e espaços.</span>
-                        </div>
-                        <div class="half-width">
-                            <label for="secretarioFinancas">Secretário de Finanças:</label>
-                            <input type="text" id="secretarioFinancas" oninput="validarLetras(this)" required>
-                            <span id="erro-secretarioFinancas" class="error-message">Digite apenas letras e espaços.</span>
-                        </div>
-                    </div>
-                </section>
-                <div class="button-container">
-                    <button type="button" onclick="mostrarAba('aba3')">Voltar</button>
-                    <button type="button" onclick="validarAba('aba4', 'aba5')">Próxima</button>
-                </div>
-            </div>
-
-            <!-- Aba 5: Imagens e Opção de PDF -->
-            <div id="aba5" class="tab">
                 <section class="section">
                     <h3>Escolha uma Opção para Gerar o PDF</h3>
                     <div class="form-row">
@@ -653,7 +790,7 @@
                     </div>
                 </section>
                 <div class="button-container">
-                    <button type="button" onclick="mostrarAba('aba4')">Voltar</button>
+                    <button type="button" onclick="mostrarAba('aba3')">Voltar</button>
                     <button type="button" id="gerarPDF">Gerar PDF</button>
                 </div>
             </div>
@@ -706,15 +843,15 @@
         function validarProposta(input) {
             const erro = document.getElementById('erro-proposta');
             if (erro) {
-                let value = input.value.replace(/[^0-9/]/g, '');
-                if (value.length === 5 && !value.includes('/')) {
-                    value += '/';
+                let value = input.value.replace(/[^0-9]/g, '');
+                if (value.length > 9) {
+                    value = value.slice(0, 9);
                 }
-                const parts = value.split('/');
-                if (parts.length === 2) {
-                    const numero = parts[0].padStart(5, '0');
-                    const ano = parts[1];
-                    if (numero.length === 5 && ano.length === 4 && !isNaN(numero + ano)) {
+
+                if (value.length >= 5) {
+                    const numero = value.slice(0, 5).padStart(5, '0');
+                    const ano = value.slice(5, 9) || new Date().getFullYear().toString();
+                    if (/^\d{5}$/.test(numero) && /^\d{4}$/.test(ano)) {
                         input.value = `${numero}/${ano}`;
                         erro.style.display = 'none';
                     } else {
@@ -722,29 +859,15 @@
                         erro.style.display = 'block';
                     }
                 } else {
-                    input.value = value;
-                    erro.style.display = 'block';
+                    input.value = value.padStart(value.length, '0');
+                    erro.style.display = value.length > 0 && value.length < 5 ? 'block' : 'none';
                 }
-            }
-        }
-
-        function mascaraCPF(input) {
-            const erro = document.getElementById('erro-cpf');
-            if (erro) {
-                let valor = input.value.replace(/\D/g, '');
-                erro.style.display = /[^0-9]/.test(input.value.replace(/[\.\-]/g, '')) ? 'block' : 'none';
-                let valorFormatado = '';
-                if (valor.length > 0) valorFormatado = valor.substring(0, 3);
-                if (valor.length > 3) valorFormatado += '.' + valor.substring(3, 6);
-                if (valor.length > 6) valorFormatado += '.' + valor.substring(6, 9);
-                if (valor.length > 9) valorFormatado += '-' + valor.substring(9, 11);
-                input.value = valorFormatado;
             }
         }
 
         function mascaraCNPJ(input) {
             const erro = document.getElementById('erro-cnpj');
-            let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            let value = input.value.replace(/\D/g, '');
 
             if (value.length >= 14) {
                 erro.style.display = 'none';
@@ -762,7 +885,6 @@
                 document.getElementById('erro-cep').style.display = 'block';
             }
 
-            // Aplica a máscara após a validação e chamada da API
             let valorFormatado = '';
             if (value.length > 0) valorFormatado = value.substring(0, 2);
             if (value.length > 2) valorFormatado += '.' + value.substring(2, 5);
@@ -783,12 +905,12 @@
                 document.getElementById('entidade').value = data.razao_social || '';
                 const endereco = `${data.logradouro || ''}, ${data.numero || ''}, ${data.bairro || ''}`;
                 document.getElementById('endereco').value = endereco.trim().replace(/^,|,$/g, '') || '';
-                const ufSelect = document.getElementById('uf');
+                const ufInput = document.getElementById('uf');
                 if (data.uf) {
-                    ufSelect.value = data.uf.toUpperCase();
+                    ufInput.value = data.uf.toUpperCase();
                     document.getElementById('erro-uf').style.display = 'none';
                 } else {
-                    ufSelect.value = '';
+                    ufInput.value = '';
                     document.getElementById('erro-uf').style.display = 'block';
                 }
                 const municipioInput = document.getElementById('municipio');
@@ -831,21 +953,122 @@
             }
         }
 
+        function mascaraMoeda(input) {
+            const erro = document.getElementById('erro-valorContrapartida');
+            let valor = input.value.replace(/\D/g, '');
+            if (valor) {
+                valor = (parseInt(valor) / 100).toFixed(2).replace('.', ',');
+                valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+                input.value = `R$ ${valor}`;
+                erro.style.display = 'none';
+            } else {
+                input.value = 'R$ 0,00';
+                erro.style.display = 'block';
+            }
+        }
+
+        function atualizarValorExtenso() {
+            const inputValor = document.getElementById('valorContrapartida').value;
+            const erro = document.getElementById('erro-valorContrapartidaExtenso');
+            const extensoInput = document.getElementById('valorContrapartidaExtenso');
+            
+            let valor = inputValor.replace(/[^0-9]/g, '');
+            if (!valor) {
+                extensoInput.value = '';
+                erro.style.display = 'block';
+                return;
+            }
+            
+            valor = parseInt(valor) / 100;
+            extensoInput.value = numeroPorExtenso(valor);
+            erro.style.display = 'none';
+        }
+
+        function numeroPorExtenso(num) {
+            const unidades = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+            const milhares = ['mil', 'milhões', 'bilhões'];
+
+            if (num === 0) return 'zero reais';
+
+            let partes = [];
+            let parteInteira = Math.floor(num);
+            let parteDecimal = Math.round((num - parteInteira) * 100);
+
+            function converterGrupo(n, nivel) {
+                if (n === 0) return '';
+                let str = '';
+                if (n >= 100) {
+                    str += centenas[Math.floor(n / 100)] + ' ';
+                    n %= 100;
+                }
+                if (n >= 20) {
+                    str += dezenas[Math.floor(n / 10)] + ' ';
+                    n %= 10;
+                    if (n > 0) str += 'e ' + unidades[n] + ' ';
+                } else if (n >= 10) {
+                    if (n === 10) str += 'dez ';
+                    else if (n === 11) str += 'onze ';
+                    else if (n === 12) str += 'doze ';
+                    else if (n === 13) str += 'treze ';
+                    else if (n === 14) str += 'quatorze ';
+                    else if (n === 15) str += 'quinze ';
+                    else if (n === 16) str += 'dezesseis ';
+                    else if (n === 17) str += 'dezessete ';
+                    else if (n === 18) str += 'dezoito ';
+                    else if (n === 19) str += 'dezenove ';
+                } else if (n > 0) {
+                    str += unidades[n] + ' ';
+                }
+                return str.trim() + (nivel > 0 ? ' ' + milhares[nivel-1] : '');
+            }
+
+            let nivel = 0;
+            while (parteInteira > 0) {
+                let grupo = parteInteira % 1000;
+                if (grupo > 0) {
+                    let textoGrupo = converterGrupo(grupo, nivel);
+                    if (textoGrupo) partes.unshift(textoGrupo);
+                }
+                parteInteira = Math.floor(parteInteira / 1000);
+                nivel++;
+            }
+
+            let resultado = partes.join(' e ').trim();
+            resultado += parteInteira === 1 ? ' real' : ' reais';
+            
+            if (parteDecimal > 0) {
+                resultado += ' e ';
+                if (parteDecimal < 10) {
+                    resultado += unidades[parteDecimal] + ' centavo';
+                } else if (parteDecimal >= 10 && parteDecimal < 20) {
+                    const teens = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+                    resultado += teens[parteDecimal - 10] + ' centavos';
+                } else {
+                    let dezena = Math.floor(parteDecimal / 10);
+                    let unidade = parteDecimal % 10;
+                    resultado += dezenas[dezena];
+                    if (unidade > 0) resultado += ' e ' + unidades[unidade];
+                    resultado += ' centavos';
+                }
+            }
+
+            return resultado;
+        }
+
         // Validação de Abas
         function validarAba(currentTab, nextTab) {
             let campos;
             switch (currentTab) {
                 case 'aba1':
-                    campos = ['dirigente', 'cpf', 'rg', 'orgaoEmissor', 'cargoDirigente', 'proposta'];
+                    campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta'];
                     break;
                 case 'aba2':
-                    campos = ['entidade', 'cnpj', 'endereco', 'uf', 'municipio', 'cep', 'nomeEspacoFisico', 'enderecoEspacoFisico'];
+                    campos = ['entidade', 'cnpj', 'endereco', 'uf', 'municipio', 'cep'];
                     break;
                 case 'aba3':
                     campos = ['leiOrcamentaria', 'diaLei', 'mesLei', 'anoLei', 'orgao', 'unidade', 'funcao', 'subfuncao', 'programa', 'atividade', 'naturezaDespesa', 'valorContrapartida', 'valorContrapartidaExtenso'];
-                    break;
-                case 'aba4':
-                    campos = ['objeto', 'nomeProjeto', 'entidadesParceiras', 'periodoVigencia', 'numeroBeneficiados', 'acoesDesenvolvidas', 'chefeExecutivo', 'secretarioFinancas'];
                     break;
                 default:
                     return;
@@ -860,7 +1083,6 @@
                     return;
                 }
 
-                // Ajuste para validação do CNPJ: verifica o comprimento dos dígitos puros
                 if (id === 'cnpj') {
                     if (input.value.replace(/\D/g, '').length !== 14) {
                         erro.style.display = 'block';
@@ -869,10 +1091,22 @@
                     } else {
                         erro.style.display = 'none';
                     }
+                } else if (id === 'proposta') {
+                    if (!/^\d{5}\/\d{4}$/.test(input.value)) {
+                        erro.style.display = 'block';
+                        valido = false;
+                    } else {
+                        erro.style.display = 'none';
+                    }
+                } else if (id === 'valorContrapartida') {
+                    if (!input.value || input.value === 'R$ 0,00') {
+                        erro.style.display = 'block';
+                        valido = false;
+                    } else {
+                        erro.style.display = 'none';
+                    }
                 } else if (!input.value ||
-                    (id === 'cpf' && input.value.length !== 14) ||
                     (id === 'cep' && input.value.length !== 9) ||
-                    (id === 'proposta' && !/^\d{5}\/\d{4}$/.test(input.value)) ||
                     (id === 'diaLei' && (input.value < 1 || input.value > 31)) ||
                     (id === 'anoLei' && (input.value < 2000 || input.value > 2100))) {
                     erro.style.display = 'block';
@@ -893,4 +1127,3 @@
     </script>
 </body>
 </html>
-

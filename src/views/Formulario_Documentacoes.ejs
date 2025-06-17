@@ -39,11 +39,17 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            padding: 10px;
         }
 
         header img {
             max-width: 200px;
             height: auto;
+        }
+
+        .logo-header {
+            max-height: 80px;
+            width: auto;
         }
 
         header h1 {
@@ -161,6 +167,11 @@
             transition: border-color 0.3s;
         }
 
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
         input[type="text"]:focus,
         input[type="date"]:focus,
         select:focus,
@@ -169,46 +180,6 @@
         input[type="file"]:focus {
             border-color: #003087;
             outline: none;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* File Preview Table */
-        .file-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .file-table th, .file-table td {
-            border: 1px solid #e0e0e0;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .file-table th {
-            background-color: #f9f9f9;
-        }
-
-        .file-table img {
-            max-width: 100px;
-            max-height: 100px;
-        }
-
-        .file-table button {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .file-table button:hover {
-            background-color: #cc0000;
         }
 
         /* Botões */
@@ -295,15 +266,6 @@
             }
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-
         /* Estilo para erro de validação */
         .error {
             border-color: red !important;
@@ -314,15 +276,6 @@
             font-size: 0.8rem;
             margin-top: 5px;
             display: none;
-        }
-
-                .header-left {
-            padding: 10px;
-        }
-
-        .logo-header {
-            max-height: 80px;
-            width: auto;
         }
     </style>
 </head>
@@ -352,25 +305,6 @@
                         <div class="error-message" id="dirigente-error">Campo obrigatório</div>
                     </div>
                     <div class="half-width">
-                        <label for="cpf">CPF:</label>
-                        <input type="text" id="cpf" name="CPF do Dirigente" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="000.000.000-00" oninput="formatarCPF(this)" required>
-                        <div class="error-message" id="cpf-error">CPF inválido</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="half-width">
-                        <label for="rgDirigente">RG:</label>
-                        <input type="text" id="rgDirigente" name="RG do Dirigente" maxlength="20" required>
-                        <div class="error-message" id="rgDirigente-error">Campo obrigatório</div>
-                    </div>
-                    <div class="half-width">
-                        <label for="orgaoExpedidorDirigente">Órgão Expedidor:</label>
-                        <input type="text" id="orgaoExpedidorDirigente" name="Órgão Expedidor do Dirigente" maxlength="10" required>
-                        <div class="error-message" id="orgaoExpedidorDirigente-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="half-width">
                         <label for="cargoDirigente">Cargo:</label>
                         <input type="text" id="cargoDirigente" name="Cargo do Dirigente" maxlength="50" required>
                         <div class="error-message" id="cargoDirigente-error">Campo obrigatório</div>
@@ -384,7 +318,7 @@
                 <div class="form-row">
                     <div class="half-width">
                         <label for="entidade">Nome:</label>
-                        <input type="text" id="entidade" name="Nome da Entidade" maxlength="100" required readonly>
+                        <input type="text" id="entidade" name="Nome da Entidade" maxlength="100" readonly>
                         <div class="error-message" id="entidade-error">Nome da entidade não encontrado</div>
                     </div>
                     <div class="half-width">
@@ -396,29 +330,25 @@
                 <div class="form-row">
                     <div class="full-width">
                         <label for="endereco">Endereço Completo:</label>
-                        <input type="text" id="endereco" name="Endereço Completo da Sede" maxlength="200" required>
+                        <input type="text" id="endereco" name="Endereço Completo da Sede" maxlength="200" readonly>
                         <div class="error-message" id="endereco-error">Campo obrigatório</div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="half-width">
                         <label for="uf">UF:</label>
-                        <select id="uf" name="UF da Entidade" required>
-                            <option value="">Selecione o UF</option>
-                        </select>
+                        <input type="text" id="uf" name="UF da Entidade" readonly>
                         <div class="error-message" id="uf-error">Campo obrigatório</div>
                     </div>
                     <div class="half-width">
                         <label for="municipio">Município:</label>
-                        <select id="municipio" name="Município da Entidade" required>
-                            <option value="">Selecione o Município</option>
-                        </select>
+                        <input type="text" id="municipio" name="Município da Entidade" readonly>
                         <div class="error-message" id="municipio-error">Campo obrigatório</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Dados da Proposta e Objeto -->
+            <!-- Dados da Proposta -->
             <section class="section">
                 <h3>Dados da Proposta</h3>
                 <div class="form-row">
@@ -427,189 +357,13 @@
                         <input type="text" id="proposta" name="Número da Proposta" maxlength="20" required>
                         <div class="error-message" id="proposta-error">Campo obrigatório</div>
                     </div>
-                    <div class="half-width">
-                        <label for="objeto">Objeto:</label>
-                        <input type="text" id="objeto" name="Objeto" maxlength="200" required>
-                        <div class="error-message" id="objeto-error">Campo obrigatório</div>
-                    </div>
                 </div>
             </section>
-
-            <!-- Coordenador Geral -->
-            <section class="section">
-                <h3>Coordenador Geral</h3>
-                <div class="form-row">
-                    <label>O Coordenador Geral será cedido pelo proponente?</label>
-                </div>
-                <div class="form-row button-group">
-                    <button type="button" onclick="mostrarCoordenador('Sim')">Sim</button>
-                    <button type="button" onclick="mostrarCoordenador('Não')">Não</button>
-                </div>
-
-                <!-- Seção que aparece somente se "Sim" for selecionado -->
-                <div id="coordenadorFields" class="hidden">
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="nomeCoordenador">Nome Completo:</label>
-                            <input type="text" id="nomeCoordenador" name="Nome do Coordenador" maxlength="100">
-                            <div class="error-message" id="nomeCoordenador-error">Campo obrigatório</div>
-                        </div>
-                        <div class="half-width">
-                            <label for="cpfCoordenador">CPF:</label>
-                            <input type="text" id="cpfCoordenador" name="CPF do Coordenador" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="000.000.000-00" oninput="formatarCPF(this)">
-                            <div class="error-message" id="cpfCoordenador-error">CPF inválido</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="rgCoordenador">RG:</label>
-                            <input type="text" id="rgCoordenador" name="RG do Coordenador" maxlength="20">
-                            <div class="error-message" id="rgCoordenador-error">Campo obrigatório</div>
-                        </div>
-                        <div class="half-width">
-                            <label for="orgaoExpedidorCoordenador">Órgão Expedidor:</label>
-                            <input type="text" id="orgaoExpedidorCoordenador" name="Órgão Expedidor do Coordenador" maxlength="10">
-                            <div class="error-message" id="orgaoExpedidorCoordenador-error">Campo obrigatório</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="nomePrograma">Programa:</label>
-                            <input type="text" id="nomePrograma" name="Programa" maxlength="100">
-                            <div class="error-message" id="nomePrograma-error">Campo obrigatório</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Anexo - Histórico -->
-            <!--<section class="section">
-                <h3>Anexo - Histórico</h3>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="nomeProjeto">Nome do Projeto/Ação:</label>
-                        <input type="text" id="nomeProjeto" name="Nome do Projeto" maxlength="100" required>
-                        <div class="error-message" id="nomeProjeto-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="entidadesParceiras">Entidades Parceiras:</label>
-                        <textarea id="entidadesParceiras" name="Entidades Parceiras" required></textarea>
-                        <div class="error-message" id="entidadesParceiras-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="half-width">
-                        <label for="dataInicio">Data de Início da Execução:</label>
-                        <input type="date" id="dataInicio" name="Data de Início" required>
-                        <div class="error-message" id="dataInicio-error">Campo obrigatório</div>
-                    </div>
-                    <div class="half-width">
-                        <label for="dataTermino">Data de Término da Execução:</label>
-                        <input type="date" id="dataTermino" name="Data de Término" required>
-                        <div class="error-message" id="dataTermino-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="half-width">
-                        <label for="numeroBeneficiados">Número de Beneficiados:</label>
-                        <input type="number" id="numeroBeneficiados" name="Número de Beneficiados" min="1" required>
-                        <div class="error-message" id="numeroBeneficiados-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="atividadesDesenvolvidas">Ações/Atividades Desenvolvidas:</label>
-                        <textarea id="atividadesDesenvolvidas" name="Atividades Desenvolvidas" required></textarea>
-                        <div class="error-message" id="atividadesDesenvolvidas-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="estruturasFisicas">Estruturas Físicas Utilizadas:</label>
-                        <textarea id="estruturasFisicas" name="Estruturas Físicas" required></textarea>
-                        <div class="error-message" id="estruturasFisicas-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="qualificacaoPessoal">Qualificação Profissional do Quadro Pessoal:</label>
-                        <textarea id="qualificacaoPessoal" name="Qualificação Pessoal" required></textarea>
-                        <div class="error-message" id="qualificacaoPessoal-error">Campo obrigatório</div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="fotos">Fotos (JPG/PNG):</label>
-                        <input type="file" id="fotos" name="Fotos" accept="image/jpeg,image/png" multiple>
-                        <table id="fotoTable" class="file-table hidden">
-                            <thead>
-                                <tr>
-                                    <th>Pré-visualização</th>
-                                    <th>Nome do Arquivo</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="materiaisDivulgacao">Materiais de Divulgação (PDF/JPG/PNG):</label>
-                        <input type="file" id="materiaisDivulgacao" name="Materiais de Divulgação" accept="application/pdf,image/jpeg,image/png" multiple>
-                        <table id="materiaisTable" class="file-table hidden">
-                            <thead>
-                                <tr>
-                                    <th>Pré-visualização</th>
-                                    <th>Nome do Arquivo</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="materiasMidia">Matérias na Mídia (PDF/JPG/PNG):</label>
-                        <input type="file" id="materiasMidia" name="Matérias na Mídia" accept="application/pdf,image/jpeg,image/png" multiple>
-                        <table id="midiaTable" class="file-table hidden">
-                            <thead>
-                                <tr>
-                                    <th>Pré-visualização</th>
-                                    <th>Nome do Arquivo</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="full-width">
-                        <label for="instrumentos">Instrumentos Específicos (PDF):</label>
-                        <input type="file" id="instrumentos" name="Instrumentos Específicos" accept="application/pdf" multiple>
-                        <table id="instrumentosTable" class="file-table hidden">
-                            <thead>
-                                <tr>
-                                    <th>Nome do Arquivo</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>-->
-        </form> 
+        </form>
 
         <!-- Botão para gerar PDF -->
         <div class="button-container">
             <button id="botaoGerarPDF">Gerar Declarações</button>
-            <!--<button id="botaoGerarAtestadoPDF">Gerar Atestado de Capacidade Técnica</button>-->
-            <!--<button id="generateTermoCompromissoCoordenadorPDF">Gerar Termo de Compromisso Coordenador</button>-->
         </div>
         <div id="loadingMessage">
             Aguarde um momento, o download está sendo processado...
@@ -623,16 +377,6 @@
 
     <!-- Scripts -->
     <script>
-        // Função para formatar CPF
-        function formatarCPF(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            value = value.replace(/(\d{3})(\d)/, '$1.$2');
-            value = value.replace(/(\d{3})(\d)/, '$1.$2');
-            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            input.value = value;
-        }
-
         // Função para formatar CNPJ
         function formatCNPJ(input) {
             let value = input.value.replace(/\D/g, '');
@@ -651,16 +395,28 @@
             debounceTimer = setTimeout(() => fetchEmpresaNome(cnpj), 500);
         }
 
-        // Função para buscar nome da empresa via CNPJ usando BrasilAPI
+        // Função para buscar dados da empresa via CNPJ usando BrasilAPI
         async function fetchEmpresaNome(cnpj) {
             const cleanCnpj = cnpj.replace(/[^\d]/g, '');
             const entidadeInput = document.getElementById('entidade');
+            const enderecoInput = document.getElementById('endereco');
+            const ufInput = document.getElementById('uf');
+            const municipioInput = document.getElementById('municipio');
             const cnpjError = document.getElementById('cnpj-error');
             const entidadeError = document.getElementById('entidade-error');
+            const enderecoError = document.getElementById('endereco-error');
+            const ufError = document.getElementById('uf-error');
+            const municipioError = document.getElementById('municipio-error');
 
             entidadeInput.value = '';
+            enderecoInput.value = '';
+            ufInput.value = '';
+            municipioInput.value = '';
             cnpjError.style.display = 'none';
             entidadeError.style.display = 'none';
+            enderecoError.style.display = 'none';
+            ufError.style.display = 'none';
+            municipioError.style.display = 'none';
 
             if (cleanCnpj.length === 14) {
                 try {
@@ -669,207 +425,55 @@
                         throw new Error(`Erro ${response.status}: CNPJ não encontrado`);
                     }
                     const data = await response.json();
-                    entidadeInput.value = data.razao_social || 'Nome não encontrado';
+                    entidadeInput.value = data.razao_social || '';
+                    enderecoInput.value = `${data.logradouro || ''}, ${data.numero || ''}, ${data.bairro || ''}, ${data.complemento || ''}`.trim().replace(/,\s*,/g, ',').replace(/^\s*,/, '').replace(/,\s*$/, '') || '';
+                    ufInput.value = data.uf || '';
+                    municipioInput.value = data.municipio || '';
+
                     if (!data.razao_social) {
                         entidadeError.style.display = 'block';
                         entidadeInput.classList.add('error');
                     } else {
                         entidadeInput.classList.remove('error');
                     }
+
+                    if (!data.uf) {
+                        ufError.style.display = 'block';
+                        ufInput.classList.add('error');
+                    } else {
+                        ufInput.classList.remove('error');
+                    }
+
+                    if (!data.municipio) {
+                        municipioError.style.display = 'block';
+                        municipioInput.classList.add('error');
+                    } else {
+                        municipioInput.classList.remove('error');
+                    }
+
+                    if (!enderecoInput.value) {
+                        enderecoError.style.display = 'block';
+                        enderecoInput.classList.add('error');
+                    } else {
+                        enderecoInput.classList.remove('error');
+                    }
                 } catch (error) {
-                    console.error('Erro ao buscar nome da empresa:', error);
+                    console.error('Erro ao buscar dados da empresa:', error);
                     entidadeInput.value = '';
+                    enderecoInput.value = '';
+                    ufInput.value = '';
+                    municipioInput.value = '';
                     cnpjError.style.display = 'block';
                     entidadeError.style.display = 'block';
+                    enderecoError.style.display = 'block';
+                    ufError.style.display = 'block';
+                    municipioError.style.display = 'block';
                     entidadeInput.classList.add('error');
+                    enderecoInput.classList.add('error');
+                    ufInput.classList.add('error');
+                    municipioInput.classList.add('error');
                 }
             }
-        }
-
-        // Função para mostrar/esconder campos do Coordenador Geral
-        function mostrarCoordenador(opcao) {
-            const coordenadorFields = document.getElementById('coordenadorFields');
-            const coordinatorFields = [
-                'nomeCoordenador', 'cpfCoordenador', 'rgCoordenador',
-                'orgaoExpedidorCoordenador', 'nomePrograma'
-            ];
-
-            if (opcao === 'Sim') {
-                coordenadorFields.classList.remove('hidden');
-                coordinatorFields.forEach(field => {
-                    const input = document.getElementById(field);
-                    input.required = true;
-                });
-            } else {
-                coordenadorFields.classList.add('hidden');
-                coordinatorFields.forEach(field => {
-                    const input = document.getElementById(field);
-                    input.required = false;
-                    input.value = '';
-                    input.classList.remove('error');
-                    document.getElementById(`${field}-error`).style.display = 'none';
-                });
-            }
-        }
-
-        // Função para carregar UFs via API do IBGE
-        async function carregarUFs() {
-            const ufSelect = document.getElementById('uf');
-            const ufError = document.getElementById('uf-error');
-            try {
-                const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
-                if (!response.ok) {
-                    throw new Error(`Erro ${response.status}: Não foi possível carregar UFs`);
-                }
-                const ufs = await response.json();
-                if (!ufs || ufs.length === 0) {
-                    throw new Error('Nenhuma UF retornada pela API');
-                }
-                ufs.forEach(uf => {
-                    const option = document.createElement('option');
-                    option.value = uf.sigla;
-                    option.textContent = uf.sigla;
-                    ufSelect.appendChild(option);
-                });
-                ufError.style.display = 'none';
-            } catch (error) {
-                console.error('Erro ao carregar UFs:', error);
-                ufSelect.innerHTML = '<option value="">Erro ao carregar UFs</option>';
-                ufError.style.display = 'block';
-                ufError.textContent = 'Erro ao carregar UFs. Tente novamente.';
-            }
-        }
-
-        // Função para carregar municípios via API do IBGE
-        async function carregarMunicipios() {
-            const ufSelect = document.getElementById('uf');
-            const municipioSelect = document.getElementById('municipio');
-            const municipioError = document.getElementById('municipio-error');
-            municipioSelect.innerHTML = '<option value="">Selecione o Município</option>';
-            const uf = ufSelect.value;
-            if (!uf) {
-                municipioSelect.disabled = true;
-                return;
-            }
-
-            municipioSelect.disabled = false;
-            try {
-                const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
-                if (!response.ok) {
-                    throw new Error(`Erro ${response.status}: Não foi possível carregar municípios`);
-                }
-                const municipios = await response.json();
-                if (!municipios || municipios.length === 0) {
-                    throw new Error('Nenhum município retornado pela API');
-                }
-                municipios.forEach(municipio => {
-                    const option = document.createElement('option');
-                    option.value = municipio.nome;
-                    option.textContent = municipio.nome;
-                    municipioSelect.appendChild(option);
-                });
-                municipioError.style.display = 'none';
-            } catch (error) {
-                console.error('Erro ao carregar municípios:', error);
-                municipioSelect.innerHTML = '<option value="">Erro ao carregar municípios</option>';
-                municipioError.style.display = 'block';
-                municipioError.textContent = 'Erro ao carregar municípios. Tente novamente.';
-            }
-        }
-
-        // Animação para Data de Término
-        document.getElementById('dataInicio')?.addEventListener('change', () => {
-            const dataTerminoInput = document.getElementById('dataTermino');
-            dataTerminoInput.style.transition = 'border-color 0.3s';
-            dataTerminoInput.style.borderColor = '#003087';
-            setTimeout(() => {
-                dataTerminoInput.style.borderColor = '#ccc';
-            }, 1000);
-        });
-
-        // Função para exibir preview de arquivos em tabela
-        function displayFileTable(inputId, tableId) {
-            const input = document.getElementById(inputId);
-            const table = document.getElementById(tableId);
-            const tbody = table.querySelector('tbody');
-            tbody.innerHTML = ''; // Limpar tabela antes de adicionar novos arquivos
-            table.classList.add('hidden');
-
-            const files = input.files;
-            if (files.length === 0) return;
-
-            table.classList.remove('hidden');
-            Array.from(files).forEach((file, index) => {
-                const row = document.createElement('tr');
-                const previewCell = document.createElement('td');
-                const nameCell = document.createElement('td');
-                const actionCell = document.createElement('td');
-
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.onload = () => URL.revokeObjectURL(img.src); // Liberar memória
-                    previewCell.appendChild(img);
-                } else {
-                    previewCell.textContent = 'Não pré-visualizável';
-                }
-
-                nameCell.textContent = file.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Excluir';
-                removeBtn.onclick = () => {
-                    const dataTransfer = new DataTransfer();
-                    Array.from(input.files)
-                        .filter((_, i) => i !== index)
-                        .forEach(f => dataTransfer.items.add(f));
-                    input.files = dataTransfer.files;
-                    displayFileTable(inputId, tableId);
-                };
-                actionCell.appendChild(removeBtn);
-
-                row.appendChild(previewCell);
-                row.appendChild(nameCell);
-                row.appendChild(actionCell);
-                tbody.appendChild(row);
-            });
-        }
-
-        // Função para exibir preview de instrumentos (sem visualização de PDF)
-        function displayInstrumentosTable(inputId, tableId) {
-            const input = document.getElementById(inputId);
-            const table = document.getElementById(tableId);
-            const tbody = table.querySelector('tbody');
-            tbody.innerHTML = '';
-            table.classList.add('hidden');
-
-            const files = input.files;
-            if (files.length === 0) return;
-
-            table.classList.remove('hidden');
-            Array.from(files).forEach((file, index) => {
-                const row = document.createElement('tr');
-                const nameCell = document.createElement('td');
-                const actionCell = document.createElement('td');
-
-                nameCell.textContent = file.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Excluir';
-                removeBtn.onclick = () => {
-                    const dataTransfer = new DataTransfer();
-                    Array.from(input.files)
-                        .filter((_, i) => i !== index)
-                        .forEach(f => dataTransfer.items.add(f));
-                    input.files = dataTransfer.files;
-                    displayInstrumentosTable(inputId, tableId);
-                };
-                actionCell.appendChild(removeBtn);
-
-                row.appendChild(nameCell);
-                row.appendChild(actionCell);
-                tbody.appendChild(row);
-            });
         }
 
         // Validação e geração do PDF
@@ -901,30 +505,34 @@
 
             const entidadeInput = document.getElementById('entidade');
             const entidadeError = document.getElementById('entidade-error');
-            if (!entidadeInput.value || entidadeInput.value === 'Nome não encontrado') {
+            if (!entidadeInput.value) {
                 isValid = false;
                 entidadeInput.classList.add('error');
                 entidadeError.style.display = 'block';
             }
 
-            const cpfInput = document.getElementById('cpf');
-            const cpfError = document.getElementById('cpf-error');
-            const cleanCpf = cpfInput.value.replace(/[^\d]/g, '');
-            if (cleanCpf.length !== 11) {
+            const enderecoInput = document.getElementById('endereco');
+            const enderecoError = document.getElementById('endereco-error');
+            if (!enderecoInput.value) {
                 isValid = false;
-                cpfInput.classList.add('error');
-                cpfError.style.display = 'block';
+                enderecoInput.classList.add('error');
+                enderecoError.style.display = 'block';
             }
 
-            const cpfCoordenadorInput = document.getElementById('cpfCoordenador');
-            const cpfCoordenadorError = document.getElementById('cpfCoordenador-error');
-            if (cpfCoordenadorInput.required) {
-                const cleanCpfCoordenador = cpfCoordenadorInput.value.replace(/[^\d]/g, '');
-                if (cleanCpfCoordenador.length !== 11) {
-                    isValid = false;
-                    cpfCoordenadorInput.classList.add('error');
-                    cpfCoordenadorError.style.display = 'block';
-                }
+            const ufInput = document.getElementById('uf');
+            const ufError = document.getElementById('uf-error');
+            if (!ufInput.value) {
+                isValid = false;
+                ufInput.classList.add('error');
+                ufError.style.display = 'block';
+            }
+
+            const municipioInput = document.getElementById('municipio');
+            const municipioError = document.getElementById('municipio-error');
+            if (!municipioInput.value) {
+                isValid = false;
+                municipioInput.classList.add('error');
+                municipioError.style.display = 'block';
             }
 
             if (!isValid) {
@@ -934,62 +542,24 @@
 
             const loadingMessage = document.getElementById('loadingMessage');
             loadingMessage.style.display = 'block';
-            generateAtestadoPDF().then(() => {
-                loadingMessage.style.display = 'none';
-            }).catch(error => {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar o PDF. Verifique o console para detalhes.');
-                loadingMessage.style.display = 'none';
-            });
-        }
-
-        // Adicionar listeners para preview de arquivos
-        document.getElementById('fotos')?.addEventListener('change', () => displayFileTable('fotos', 'fotoTable'));
-        document.getElementById('materiaisDivulgacao')?.addEventListener('change', () => displayFileTable('materiaisDivulgacao', 'materiaisTable'));
-        document.getElementById('materiasMidia')?.addEventListener('change', () => displayFileTable('materiasMidia', 'midiaTable'));
-        document.getElementById('instrumentos')?.addEventListener('change', () => displayInstrumentosTable('instrumentos', 'instrumentosTable'));
-
-        // Carregar UFs ao iniciar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarUFs();
-            document.getElementById('municipio').disabled = true; // Desabilitar município até UF ser selecionado
-        });
-
-        // Carregar municípios ao selecionar um UF
-        document.getElementById('uf').addEventListener('change', carregarMunicipios);
-
-        // Adicionar validação para o botão de gerar atestado
-        document.getElementById('botaoGerarAtestadoPDF').addEventListener('click', (e) => {
-            e.preventDefault();
-            validateAndGeneratePDF();
-        });
-
-        // Adicionar validação para o botão de gerar declarações
-        document.getElementById('botaoGerarPDF').addEventListener('click', (e) => {
-            e.preventDefault();
-            const loadingMessage = document.getElementById('loadingMessage');
-            loadingMessage.style.display = 'block';
             generateAllDeclarationsPDF().then(() => {
-                loadingMessage.style.display = 'none'; // Corrigido: removido o parêntese extra
+                loadingMessage.style.display = 'none';
             }).catch(error => {
                 console.error('Erro ao gerar declarações:', error);
                 alert('Erro ao gerar declarações. Verifique o console para detalhes.');
                 loadingMessage.style.display = 'none';
             });
+        }
+
+        // Adicionar validação para o botão de gerar declarações
+        document.getElementById('botaoGerarPDF').addEventListener('click', (e) => {
+            e.preventDefault();
+            validateAndGeneratePDF();
         });
 
-        // Adicionar validação para o botão de gerar termo de compromisso
-        document.getElementById('generateTermoCompromissoCoordenadorPDF').addEventListener('click', (e) => {
-            e.preventDefault();
-            const loadingMessage = document.getElementById('loadingMessage');
-            loadingMessage.style.display = 'block';
-            generateTermoCompromissoCoordenadorPDF().then(() => {
-                loadingMessage.style.display = 'none';
-            }).catch(error => {
-                console.error('Erro ao gerar Termo de Compromisso:', error);
-                alert('Erro ao gerar Termo de Compromisso. Verifique o console para detalhes.');
-                loadingMessage.style.display = 'none';
-            });
+        // Carregar dados ao iniciar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar a página sem carregar UFs, pois agora UF e Município vêm da API
         });
     </script>
 
