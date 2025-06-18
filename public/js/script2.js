@@ -49,7 +49,7 @@ async function getBase64ImageFromUrl(imageUrl) {
     }
 }
 
-// Captura os dados do formulário
+// Captura os dados do formulário, incluindo múltiplos espaços físicos
 function capturarDadosFormulario() {
     const getValue = (id) => document.getElementById(id)?.value || '';
     const imagens = Array.from(document.getElementById('imagens')?.files || []);
@@ -58,6 +58,16 @@ function capturarDadosFormulario() {
     const diaAtual = String(dataAtual.getDate()).padStart(2, '0');
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' });
     const anoAtual = dataAtual.getFullYear();
+
+    // Captura múltiplos espaços físicos dinamicamente
+    const espacoFisicoCount = document.querySelectorAll('[id^="nomeEspacoFisico"]').length;
+    const espacosFisicos = [];
+    for (let i = 0; i < espacoFisicoCount; i++) {
+        espacosFisicos.push({
+            nome: getValue(`nomeEspacoFisico${i}`) || 'Espaço físico não informado',
+            endereco: getValue(`enderecoEspacoFisico${i}`) || 'Endereço do espaço físico não informado'
+        });
+    }
 
     return {
         nome: getValue('dirigente') || 'Nome não informado',
@@ -93,8 +103,7 @@ function capturarDadosFormulario() {
         secretarioFinancas: getValue('secretarioFinancas') || 'Secretário de Finanças',
         imagens,
         descricoes,
-        nomeEspacoFisico: getValue('nomeEspacoFisico') || 'Espaço físico não informado',
-        enderecoEspacoFisico: getValue('enderecoEspacoFisico') || 'Endereço do espaço físico não informado',
+        espacosFisicos, // Array com todos os espaços físicos
         objetoConvenio: getValue('objeto') || 'Objeto do convênio não informado',
         matricula: getValue('matricula') || 'Matrícula não informada',
         diaAtual,
@@ -140,8 +149,6 @@ function substituirPlaceholders(texto, dados) {
         .replace(/\[DIA_ATUAL\]/g, dados.diaAtual)
         .replace(/\[MES_ATUAL\]/g, dados.mesAtual)
         .replace(/\[ANO_ATUAL\]/g, dados.anoAtual)
-        .replace(/\[NOME_ESPACO_FISICO\]/g, dados.nomeEspacoFisico)
-        .replace(/\[ENDERECO_ESPACO_FISICO\]/g, dados.enderecoEspacoFisico)
         .replace(/\[OBJETO_CONVENIO\]/g, dados.objetoConvenio)
         .replace(/\[MATRICULA\]/g, dados.matricula);
 }
@@ -197,35 +204,65 @@ async function gerarPDF() {
                 pageBreak: 'after'
             }
         ]));
-
         // Função para criar conteúdo de uma declaração
-        const createDeclarationContent = (declaracao) => [
-            {
-                text: substituirPlaceholders(declaracao.title || '', dados),
-                style: 'header',
-                alignment: 'center',
-                margin: [0, 120, 0, 20]
-            },
-            {
-                text: substituirPlaceholders(declaracao.content, dados),
-                alignment: 'justify',
-                fontSize: 12,
-                margin: [0, 20, 0, 40]
-            },
-            {
-                text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`,
-                alignment: 'center',
-                fontSize: 12,
-                margin: [0, 0, 0, 40]
-            },
-            {
-                text: `__________________________________________\n${dados.nome}\n(${dados.cargoDirigente})`,
-                alignment: 'center',
-                fontSize: 12,
-                margin: [0, 0, 0, 20],
-                pageBreak: 'after'
+        const createDeclarationContent = (declaracao) => {
+            let content = substituirPlaceholders(declaracao.content, dados);
+            let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
+
+            // Verifica se é a "DECLARAÇÃO DE TITULARIDADE DO TERRENO" para 00SL_emendas ou 00SL_comissao
+            if (['00SL_emendas', '00SL_comissao'].includes(opcao) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO") {
+                const tableData = dados.espacosFisicos.map(espaco => [
+                    espaco.nome,
+                    espaco.endereco
+                ]);
+                if (tableData.length > 0) {
+                    // Substitui a seção de placeholders por uma tabela
+                    contentArray = [
+                        { text: content.replace(
+                            /Nome do Espaço Físico: \[NOME_ESPACO_FISICO\]; Endereço do Espaço Físico: \[ENDERECO_ESPACO_FISICO\]/,
+                            ''
+                        ), alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 0] }, // Remove a seção de placeholders
+                        {
+                            table: {
+                                widths: ['*', '*'],
+                                body: [
+                                    [{ text: 'Nome do Espaço Físico', bold: true }, { text: 'Endereço do Espaço Físico', bold: true }],
+                                    ...tableData
+                                ]
+                            },
+                            layout: 'lightHorizontalLines',
+                            margin: [0, 10, 0, 20]
+                        }
+                    ];
+                } else {
+                    // Se não houver dados, mantém o texto com os valores padrão
+                    contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
+                }
             }
-        ];
+
+            return [
+                {
+                    text: substituirPlaceholders(declaracao.title || '', dados),
+                    style: 'header',
+                    alignment: 'center',
+                    margin: [0, 120, 0, 20]
+                },
+                ...contentArray,
+                {
+                    text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`,
+                    alignment: 'center',
+                    fontSize: 12,
+                    margin: [0, 0, 0, 40]
+                },
+                {
+                    text: `__________________________________________\n${dados.nome}\n(${dados.cargoDirigente})`,
+                    alignment: 'center',
+                    fontSize: 12,
+                    margin: [0, 0, 0, 20],
+                    pageBreak: 'after'
+                }
+            ];
+        };
 
         // Gera o conteúdo comum
         const conteudoComum = declaracoesCompletas.map(createDeclarationContent);
@@ -398,21 +435,11 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
         content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio, que o(a) [ENTIDADE], possui condições orçamentárias para arcar com as despesas dela decorrentes e meios que garantem a sustentabilidade do objeto, por se tratar da aquisição de bens de capital.
+        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio, que o(a) [ENTIDADE], possui condições orçamentárias para arcar com as despesas dela decorrentes e meios que garantam a sustentabilidade do objeto, por se tratar da aquisição de bens de capital.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
     },
-    {
-        title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
-
-        Dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
-    }
 ];
 
 // Declarações específicas por opção
@@ -423,8 +450,17 @@ const declaracoesEspecificas = {
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno de domínio público e pertence ao Município [MUNICIPIO], assim como está disponível, apto e compatível para instalação dos equipamentos.
 
-            Nome do Espaço Físico: [NOME_ESPACO_FISICO]
-            Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
+            Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
+
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        }, 
+        {
+            title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
+
+            Dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].
 
             Por ser expressão da verdade, firmo a presente declaração.
             `
@@ -437,8 +473,17 @@ const declaracoesEspecificas = {
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno de domínio público e pertence ao Município [MUNICIPIO], assim como está disponível, apto e compatível para instalação dos equipamentos.
 
-            Nome do Espaço Físico: [NOME_ESPACO_FISICO]
-            Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
+            Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
+
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        },
+        {
+            title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
+
+            Dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].
 
             Por ser expressão da verdade, firmo a presente declaração.
             `

@@ -248,6 +248,10 @@
                     <input type="checkbox" id="improbidadeAdministrativa">
                     A entidade possui histórico de improbidade administrativa
                 </label>
+                <label>
+                    <input type="checkbox" id="sancoesLei13019">
+                    A entidade não foi punida com sanções da Lei nº 13.019/2014
+                </label>
             </div>
         </section>
 
@@ -271,7 +275,7 @@
         </section>
 
         <div class="button-container">
-            <button id="botaoGerarPDF" onclick="gerarPDF()">Gerar PDF Art 26/27</button>
+            <button id="botaoGerarPDF" onclick="validarEGerarPDF()">Gerar PDF Art 26/27</button>
         </div>
     </div>
 
@@ -506,6 +510,7 @@
             if (!emailRegex.test(email)) {
                 statusSpan.textContent = 'Email inválido';
                 statusSpan.style.color = 'red';
+                input.value = '';
                 return;
             }
 
@@ -529,6 +534,58 @@
                 statusSpan.style.color = 'red';
                 input.value = '';
             }
+        }
+
+        function validarCamposObrigatorios() {
+            const nomeEntidade = document.getElementById('nomeEntidade').value;
+            const nomeRepresentante = document.getElementById('nomeRepresentante').value;
+            const cargoRepresentante = document.getElementById('cargoRepresentante').value;
+            const ufEntidade = document.getElementById('ufEntidade').value;
+            const municipioEntidade = document.getElementById('municipioEntidade').value;
+            const numDirigentes = parseInt(document.getElementById('numDirigentes').value) || 0;
+
+            if (!nomeEntidade || !nomeRepresentante || !cargoRepresentante || !ufEntidade || !municipioEntidade || numDirigentes < 1) {
+                alert('Por favor, preencha todos os campos obrigatórios: Nome da Entidade, Nome do Representante, Cargo do Representante, UF, Município e Número de Dirigentes.');
+                return false;
+            }
+
+            for (let i = 1; i <= numDirigentes; i++) {
+                const nome = document.getElementById(`dirigenteNome${i}`)?.value;
+                const cargo = document.getElementById(`dirigenteCargo${i}`)?.value;
+                const rg = document.getElementById(`dirigenteRG${i}`)?.value;
+                const cpf = document.getElementById(`dirigenteCPF${i}`)?.value;
+                const orgao = document.getElementById(`dirigenteOrgao${i}`)?.value;
+                const uf = document.getElementById(`dirigenteUF${i}`)?.value;
+                const cep = document.getElementById(`dirigenteCEP${i}`)?.value;
+                const numero = document.getElementById(`dirigenteNumero${i}`)?.value;
+                const telefone = document.getElementById(`dirigenteTelefone${i}`)?.value;
+                const email = document.getElementById(`dirigenteEmail${i}`)?.value;
+                const emailStatus = document.getElementById(`emailStatus${i}`)?.textContent;
+
+                if (!nome || !cargo || !rg || !cpf || !orgao || !uf || !cep || !numero || !telefone || !email) {
+                    alert(`Por favor, preencha todos os campos obrigatórios para o Dirigente ${i}: Nome, Cargo, RG, CPF, Órgão Expedidor, UF do Órgão, CEP, Número, Telefone e Email.`);
+                    return false;
+                }
+
+                if (emailStatus !== 'Email válido') {
+                    alert(`O email do Dirigente ${i} não foi validado como ativo.`);
+                    return false;
+                }
+
+                const telefoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+                if (!telefoneRegex.test(telefone)) {
+                    alert(`O telefone do Dirigente ${i} está em formato inválido. Use o formato (XX) XXXXX-XXXX.`);
+                    return false;
+                }
+
+                const rgRegex = /^\d{1,9}$/;
+                if (!rgRegex.test(rg.replace(/\D/g, ''))) {
+                    alert(`O RG do Dirigente ${i} está em formato inválido. Use apenas números, até 9 dígitos.`);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         async function getBase64Image(src) {
@@ -561,12 +618,14 @@
             try {
                 watermarkImage = await getBase64Image('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
             } catch (error) {
+                console.error('Erro ao carregar a imagem da marca d\'água:', error);
                 watermarkImage = null;
             }
 
             const nomeEntidade = document.getElementById('nomeEntidade').value;
             const contasRejeitadas = document.getElementById('contasRejeitadas').checked;
             const improbidadeAdministrativa = document.getElementById('improbidadeAdministrativa').checked;
+            const sancoesLei13019 = document.getElementById('sancoesLei13019').checked;
             const numDirigentes = parseInt(document.getElementById('numDirigentes').value) || 0;
             const ufEntidade = document.getElementById('ufEntidade').value;
             const municipioEntidade = document.getElementById('municipioEntidade').value;
@@ -576,10 +635,23 @@
             const camposDirigentes = [];
 
             for (let i = 1; i <= numDirigentes; i++) {
+                const rua = document.getElementById(`dirigenteRua${i}`).value;
+                const numero = document.getElementById(`dirigenteNumero${i}`).value;
+                const complemento = document.getElementById(`dirigenteComplemento${i}`).value;
+                const bairro = document.getElementById(`dirigenteBairro${i}`).value;
+                const cidade = document.getElementById(`dirigenteCidade${i}`).value;
+                const estado = document.getElementById(`dirigenteEstado${i}`).value;
+                const cep = document.getElementById(`dirigenteCEP${i}`).value;
+                const telefone = document.getElementById(`dirigenteTelefone${i}`).value;
+                const email = document.getElementById(`dirigenteEmail${i}`).value;
+
+                let enderecoCompleto = `${rua}, nº ${numero}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+                if (complemento) enderecoCompleto += `, ${complemento}`;
+
                 camposDirigentes.push([
                     `${document.getElementById(`dirigenteNome${i}`).value} - ${document.getElementById(`dirigenteCargo${i}`).value}`,
                     `${document.getElementById(`dirigenteRG${i}`).value} - ${document.getElementById(`dirigenteOrgao${i}`).value} (${document.getElementById(`dirigenteUF${i}`).value}), CPF: ${document.getElementById(`dirigenteCPF${i}`).value}`,
-                    `${document.getElementById(`dirigenteEnderecoCompleto${i}`).value}, ${document.getElementById(`dirigenteTelefone${i}`).value}, ${document.getElementById(`dirigenteEmail${i}`).value}`
+                    `${enderecoCompleto}\nTelefone: ${telefone}\nEmail: ${email}`
                 ]);
             }
 
@@ -590,9 +662,9 @@
                   'V.3 – a decisão sobre a apreciação das contas está pendente de decisão sobre recurso com efeito suspensivo;'
                 : 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.';
 
-            let textoPunicao = contasRejeitadas
-                ? 'VI – foram punidos, mas o período que durou a penalidade já se exauriu;'
-                : 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014;';
+            let textoSancoesLei13019 = sancoesLei13019
+                ? 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014;'
+                : 'VI – foram punidos, mas o período que durou a penalidade já se exauriu;';
 
             let textoImprobidadeAdministrativa = improbidadeAdministrativa
                 ? 'c) foram considerados responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.'
@@ -635,11 +707,11 @@
                     { text: '• servidor ou empregado público, inclusive aquele que exerça cargo em comissão ou função de confiança, de órgão ou entidade da administração pública federal celebrante, ou seu cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o segundo grau, ressalvadas as hipóteses previstas em lei específica e na lei de diretrizes orçamentárias;', margin: [10, 5], alignment: 'justify' },
                     { text: '• pessoas naturais condenadas pela prática de crimes contra a administração pública ou contra o patrimônio público, de crimes eleitorais para os quais a lei comine pena privativa de liberdade, e de crimes de lavagem ou ocultação de bens, direitos e valores.', margin: [10, 5], alignment: 'justify' },
                     { text: textoContasRejeitadas, margin: [0, 10], alignment: 'justify' },
-                    { text: textoPunicao, margin: [0, 10], alignment: 'justify' },
+                    { text: textoSancoesLei13019, margin: [0, 10], alignment: 'justify' },
                     { text: 'VII – não são pessoas que, durante os últimos 8 (oito) anos:', margin: [0, 10], alignment: 'justify' },
                     { text: 'a) tiveram suas contas relativas a parcerias julgadas irregulares ou rejeitadas por Tribunal ou Conselho de Contas de qualquer esfera da Federação, em decisão irrecorrível, nos últimos 8 (oito) anos;', margin: [10, 5], alignment: 'justify' },
                     { text: 'b) foram julgados responsáveis por falta grave e inabilitados para o exercício de cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [10, 5], alignment: 'justify' },
-                    { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify', color: 'red' },
+                    { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify' },
                     { text: `\n${municipioEntidade}/${ufEntidade}, ${dataAtual}.`, alignment: 'center', margin: [0, 20] },
                     { text: '_______________________________', alignment: 'center', margin: [0, 0] },
                     { text: `${nomeRepresentante}`, alignment: 'center', margin: [0, 5] },
@@ -654,8 +726,14 @@
             pdfMake.createPdf(docDefinition).download('declaracao-dirigentes.pdf');
         }
 
+        function validarEGerarPDF() {
+            if (validarCamposObrigatorios()) {
+                gerarPDF();
+            }
+        }
+
         carregarUFs();
-        document.getElementById('botaoGerarPDF').addEventListener('click', gerarPDF);
+        document.getElementById('botaoGerarPDF').addEventListener('click', validarEGerarPDF);
     </script>
 </body>
 </html>

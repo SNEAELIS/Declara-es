@@ -27,23 +27,29 @@ async function gerarPDF() {
     const nomeEntidade = document.getElementById('nomeEntidade').value;
     const contasRejeitadas = document.getElementById('contasRejeitadas').checked;
     const improbidadeAdministrativa = document.getElementById('improbidadeAdministrativa').checked;
-    const numDirigentes = document.getElementById('numDirigentes').value;
+    const sancoesLei13019Element = document.getElementById('sancoesLei13019');
+    const sancoesLei13019 = sancoesLei13019Element ? sancoesLei13019Element.checked : false;
+    console.log('Estado do checkbox sancoesLei13019:', sancoesLei13019); // Debug log
+    const numDirigentes = parseInt(document.getElementById('numDirigentes').value) || 0;
+    const municipioEntidade = document.getElementById('municipioEntidade').value;
+    const ufEntidade = document.getElementById('ufEntidade').value;
     const camposDirigentes = [];
 
     for (let i = 1; i <= numDirigentes; i++) {
         const nome = document.getElementById('dirigenteNome' + i).value;
-        const cargo = document.getElementById('dirigenteCargo' + i) ? document.getElementById('dirigenteCargo' + i).value : ''; // Adicionado cargo, se existir
+        const cargo = document.getElementById('dirigenteCargo' + i)?.value || '';
         const rg = document.getElementById('dirigenteRG' + i).value;
         const cpf = document.getElementById('dirigenteCPF' + i).value;
         const email = document.getElementById('dirigenteEmail' + i).value;
         const cep = document.getElementById('dirigenteCEP' + i).value;
         const rua = document.getElementById('dirigenteRua' + i).value;
+        const numero = document.getElementById('dirigenteNumero' + i)?.value || '';
         const bairro = document.getElementById('dirigenteBairro' + i).value;
         const cidade = document.getElementById('dirigenteCidade' + i).value;
         const estado = document.getElementById('dirigenteEstado' + i).value;
-        const complemento = document.getElementById('dirigenteComplemento' + i).value;
+        const complemento = document.getElementById('dirigenteComplemento' + i).value || '';
 
-        const enderecoCompleto = `${rua}, ${complemento ? complemento + ', ' : ''}${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+        const enderecoCompleto = `${rua}${numero ? ', ' + numero : ''}${complemento ? ', ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
 
         camposDirigentes.push([
             `${nome} - ${cargo}`,
@@ -60,8 +66,12 @@ async function gerarPDF() {
         : 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.';
 
     let textoImprobidadeAdministrativa = improbidadeAdministrativa
-        ? 'c) foram considerados responsáveis por ato de improbidade ou foram considerados responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.'
-        : '';
+        ? 'c) foram considerados responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.'
+        : 'c) não foram considerados responsáveis por ato de improbidade;';
+
+    let textoSancoesLei13019 = sancoesLei13019
+        ? 'VI – foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014, mas o período que durou a penalidade já se exauriu.'
+        : 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014.';
 
     const docDefinition = {
         pageSize: 'A4',
@@ -108,12 +118,12 @@ async function gerarPDF() {
             { text: '• servidor ou empregado público, inclusive aquele que exerça cargo em comissão ou função de confiança, de órgão ou entidade da administração pública federal celebrante, ou seu cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o segundo grau, ressalvadas as hipóteses previstas em lei específica e na lei de diretrizes orçamentárias;', margin: [10, 5], alignment: 'justify' },
             { text: '• pessoas naturais condenadas pela prática de crimes contra a administração pública ou contra o patrimônio público, de crimes eleitorais para os quais a lei comine pena privativa de liberdade, e de crimes de lavagem ou ocultação de bens, direitos e valores.', margin: [10, 5], alignment: 'justify' },
             { text: textoContasRejeitadas, margin: [0, 10], alignment: 'justify' },
-            { text: 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014, ou foram punidos, mas o período que durou a penalidade já se exauriu;', margin: [0, 10], alignment: 'justify' },
+            { text: textoSancoesLei13019, margin: [0, 10], alignment: 'justify' },
             { text: 'VII – não são pessoas que, durante os últimos 8 (oito) anos:', margin: [0, 10], alignment: 'justify' },
             { text: 'a) tiveram suas contas relativas a parcerias julgadas irregulares ou rejeitadas por Tribunal ou Conselho de Contas de qualquer esfera da Federação, em decisão irrecorrível, nos últimos 8 (oito) anos;', margin: [10, 5], alignment: 'justify' },
             { text: 'b) foram julgados responsáveis por falta grave e inabilitados para o exercício de cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [10, 5], alignment: 'justify' },
-            { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify', color: 'red' },
-            { text: `\n${document.getElementById('enderecoEntidade').value}, na data da assinatura.\n\n`, alignment: 'center', margin: [0, 40] },
+            { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify' },
+            { text: `\n${municipioEntidade}/${ufEntidade}, na data da assinatura.\n\n`, alignment: 'center', margin: [0, 40] },
             { text: '...........................................................................................', alignment: 'center', margin: [0, 40] },
             { text: '(Nome e Cargo do Representante Legal da OSC)', alignment: 'center', margin: [0, 10] }
         ],
@@ -127,4 +137,3 @@ async function gerarPDF() {
 }
 
 document.getElementById('botaoGerarPDF').addEventListener('click', gerarPDF);
-
