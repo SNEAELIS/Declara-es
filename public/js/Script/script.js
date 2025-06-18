@@ -333,38 +333,40 @@ async function generateAllDeclarationsPDF() {
                 pageBreak: 'after'
             },
             {
-                text: 'DECLARAÇÃO DE ADIMPLÊNCIA',
-                style: 'header',
-                alignment: 'center',
-                margin: [0, 120, 0, 20]
-            },
-            {
-                text: [
-                    `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob o nº ${cnpj}, `,
-                    { text: 'DECLARO', bold: true },
-                    `, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:\n\n`,
-                    {
-                        text: 'Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS), com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares.\n\n',
-                        bold: true
-                    },
-                    'Por ser expressão da verdade, firmo a presente declaração.'
-                ],
-                alignment: 'justify',
-                fontSize: 12,
-                margin: [0, 20, 0, 10]
-            },
-            {
-                text: `${municipio}/${uf}, ${date}.`,
-                alignment: 'left',
-                fontSize: 12,
-                margin: [0, 0, 0, 20]
-            },
-            {
-                text: `__________________________________________\n${dirigente}\n(${cargoDirigente})`,
-                alignment: 'center',
-                fontSize: 12,
-                margin: [0, 0, 0, 20]
-            },
+            text: 'DECLARAÇÃO DE ADIMPLÊNCIA',
+            style: 'header',
+            alignment: 'center',
+            margin: [0, 120, 0, 20]
+        },
+        {
+            text: [
+                `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob o nº ${cnpj}, `,
+                { text: 'DECLARO', bold: true },
+                `, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:\n\n`,
+                {
+                    text: 'Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS), com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares.\n\n',
+                    bold: true
+                },
+                'Por ser expressão da verdade, firmo a presente declaração.'
+            ],
+            alignment: 'justify',
+            fontSize: 12,
+            margin: [0, 20, 0, 40]
+        },
+        {
+            text: `${municipio}/${uf}, ${date}.`,
+            alignment: 'left',
+            fontSize: 12,
+            margin: [0, 0, 0, 40]
+        },
+        {
+            text: `__________________________________________\n${dirigente}\n(${cargoDirigente})`,
+            alignment: 'center',
+            fontSize: 12,
+            margin: [0, 0, 0, 20],
+            pageBreak: 'after' // Move page break here
+        },
+
             {
                 text: 'DECLARAÇÃO DE CIÊNCIA DO ART. 42, INCISO XIX, DA LEI Nº 13.019/2014',
                 style: 'header',
