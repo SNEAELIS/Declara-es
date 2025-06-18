@@ -366,16 +366,6 @@ async function generateAllDeclarationsPDF() {
                 margin: [0, 0, 0, 20]
             },
             {
-                text: [
-                    '* Aplicável somente aos Municípios com mais de 50.000 habitantes, conforme § 12 do art. 74, da Lei n° 13.473, de 8 de agosto de 2017, alterada pela Lei n° 13.602, de janeiro de 2018'
-                ],
-                alignment: 'justify',
-                fontSize: 9,
-                margin: [0, 50, 0, 0],
-                color: 'gray',
-                pageBreak: 'after'
-            },
-            {
                 text: 'DECLARAÇÃO DE CIÊNCIA DO ART. 42, INCISO XIX, DA LEI Nº 13.019/2014',
                 style: 'header',
                 alignment: 'center',
