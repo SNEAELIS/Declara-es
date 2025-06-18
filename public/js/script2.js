@@ -355,7 +355,7 @@ const declaracoesCompletas = [
         `
     },
     {
-        title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS (incluindo a contratação de serviços de recursos humanos)",
+        title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS\n(Incluindo a contratação de serviços de recursos humanos)",
         content: `
         Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:
 
