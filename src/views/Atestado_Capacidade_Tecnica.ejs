@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atestado de Capacidade Técnica - Ministério do Esporte</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header {
+            background-color: #003087;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header img {
+            max-height: 40px;
+            width: auto;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 95%;
+            text-align: left;
+            margin-top: 70px;
+            margin-bottom: 50px;
+        }
+
+        .container h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #003087;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .form-section {
+            display: grid;
+            gap: 15px;
+        }
+
+        .input-container {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        select, input[type="text"], input[type="date"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: #fff;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: #003087;
+            outline: none;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #003087;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #002766;
+        }
+
+        .add-btn, .remove-btn {
+            background-color: #28a745;
+            width: auto;
+            padding: 6px 12px;
+            margin: 5px 0;
+            font-size: 0.85rem;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+
+        .add-btn:hover, .remove-btn:hover {
+            opacity: 0.9;
+        }
+
+        .file-section {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .annex-section {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .annex-section h4 {
+            color: #003087;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #003087;
+            color: #fff;
+            font-size: 0.8rem;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                margin-top: 60px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            header img {
+                max-height: 35px;
+            }
+
+            select, input, textarea, button {
+                padding: 6px 8px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
+            <h1>Ministério do Esporte</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Atestado de Capacidade Técnica</h2>
+        <form id="atestadoForm" onsubmit="event.preventDefault(); generatePDF();">
+            <div class="form-section">
+                <div class="input-container">
+                    <label for="tipoAtestado">Tipo de Atestado <span style="color: red;">*</span></label>
+                    <select id="tipoAtestado" required onchange="updateAnnexFields()">
+                        <option value="" disabled selected>Selecione um atestado</option>
+                        <option value="termoFomento">Termo de Fomento</option>
+                        <option value="convenio">Convênio</option>
+                    </select>
+                </div>
+                <div class="input-container">
+                    <label for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeDirigente" placeholder="Digite o nome do dirigente" required>
+                </div>
+                <div class="input-container">
+                    <label for="cargoDirigente">Cargo do Dirigente <span style="color: red;">*</span></label>
+                    <input type="text" id="cargoDirigente" placeholder="Digite o cargo do dirigente" required>
+                </div>
+                <div class="input-container">
+                    <label for="cnpj">CNPJ da Entidade <span style="color: red;">*</span></label>
+                    <input type="text" id="cnpj" placeholder="Digite o CNPJ (ex.: 27.119.091/0001-35)" required onblur="fetchEntityData()">
+                </div>
+                <div class="input-container">
+                    <label for="nomeEntidade">Nome da Entidade <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeEntidade" placeholder="Nome da entidade (preenchido automaticamente)" required readonly>
+                </div>
+                <div class="input-container">
+                    <label for="cep">CEP <span style="color: red;">*</span></label>
+                    <input type="text" id="cep" placeholder="Digite o CEP (ex.: 73080-360)" required onblur="fetchAddressData()">
+                </div>
+                <div class="input-container">
+                    <label for="endereco">Endereço <span style="color: red;">*</span></label>
+                    <input type="text" id="endereco" placeholder="Endereço (preenchido automaticamente)" required readonly>
+                </div>
+                <div class="input-container">
+                    <label for="numero">Número <span style="color: red;">*</span></label>
+                    <input type="text" id="numero" placeholder="Digite o número" required>
+                </div>
+                <div class="input-container">
+                    <label for="complemento">Complemento <span style="color: red;">*</span></label>
+                    <input type="text" id="complemento" placeholder="Digite o complemento" required>
+                </div>
+                <div class="input-container">
+                    <label for="numeroProposta">Número da Proposta <span style="color: red;">*</span></label>
+                    <input type="text" id="numeroProposta" placeholder="Digite o número da proposta (ex.: 004947/2024)" required>
+                </div>
+            </div>
+
+            <div id="annexContainer" class="form-section">
+                <h3>Anexos</h3>
+                <button type="button" class="add-btn" onclick="addAnnex()">Adicionar Anexo</button>
+            </div>
+
+            <button type="submit">Gerar PDF</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>© 2025 Ministério do Esporte</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let annexCount = 0;
+        let fileCounters = {};
+
+        async function getBase64ImageFromUrl(url) {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function updateAnnexFields() {
+            const tipoAtestado = document.getElementById('tipoAtestado').value;
+            document.getElementById('formFields').style.display = tipoAtestado ? 'block' : 'none';
+            document.getElementById('annexContainer').innerHTML = '<h3>Anexos</h3><button type="button" class="add-btn" onclick="addAnnex()">Adicionar Anexo</button>';
+            annexCount = 0;
+            fileCounters = {};
+        }
+
+        function addAnnex() {
+            annexCount++;
+            fileCounters[annexCount] = { fotos: 1, materiais: 1, midia: 1, instrumentos: 1 };
+            const tipoAtestado = document.getElementById('tipoAtestado').value;
+            const annexDiv = document.createElement('div');
+            annexDiv.classList.add('annex-section');
+            annexDiv.id = `annex-${annexCount}`;
+
+            let annexFields = `
+                <h4>Anexo ${annexCount}</h4>
+                <div class="input-container">
+                    <label for="nomeProjeto-${annexCount}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeProjeto-${annexCount}" placeholder="Digite o nome do projeto/ação" required>
+                </div>
+                <div class="input-container">
+                    <label for="entidadesParceiras-${annexCount}">Entidades Parceiras <span style="color: red;">*</span></label>
+                    <input type="text" id="entidadesParceiras-${annexCount}" placeholder="Digite as entidades parceiras" required>
+                </div>
+                <div class="input-container">
+                    <label for="numeroBeneficiados-${annexCount}">Número de Beneficiados <span style="color: red;">*</span></label>
+                    <input type="number" id="numeroBeneficiados-${annexCount}" placeholder="Digite o número de beneficiados" required min="1">
+                </div>
+                <div class="input-container">
+                    <label for="atividadesDesenvolvidas-${annexCount}">Ações/Atividades Desenvolvidas <span style="color: red;">*</span></label>
+                    <textarea id="atividadesDesenvolvidas-${annexCount}" placeholder="Descreva as atividades" required></textarea>
+                </div>
+            `;
+
+            if (tipoAtestado === 'termoFomento') {
+                annexFields += `
+                    <div class="input-container">
+                        <label for="dataInicio-${annexCount}">Data de Início <span style="color: red;">*</span></label>
+                        <input type="date" id="dataInicio-${annexCount}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="dataTermino-${annexCount}">Data de Término <span style="color: red;">*</span></label>
+                        <input type="date" id="dataTermino-${annexCount}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="estruturasFisicas-${annexCount}">Estruturas Físicas <span style="color: red;">*</span></label>
+                        <input type="text" id="estruturasFisicas-${annexCount}" placeholder="Descreva as estruturas físicas" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="qualificacaoPessoal-${annexCount}">Qualificação Profissional <span style="color: red;">*</span></label>
+                        <textarea id="qualificacaoPessoal-${annexCount}" placeholder="Descreva a qualificação do pessoal" required></textarea>
+                    </div>
+                `;
+            } else if (tipoAtestado === 'convenio') {
+                annexFields += `
+                    <div class="input-container">
+                        <label for="dataInicio-${annexCount}">Data de Início <span style="color: red;">*</span></label>
+                        <input type="date" id="dataInicio-${annexCount}" required>
+                    </div>
+                    <div class="input-container">
+                        <label for="dataTermino-${annexCount}">Data de Término <span style="color: red;">*</span></label>
+                        <input type="date" id="dataTermino-${annexCount}" required>
+                    </div>
+                `;
+            }
+
+            annexFields += `
+                <div class="file-section" id="fotos-${annexCount}-container">
+                    <label for="fotos-${annexCount}-1">Fotos <span style="color: red;">*</span></label>
+                    <input type="file" id="fotos-${annexCount}-1" accept="image/png,image/jpeg" multiple required onchange="validateFiles(this)">
+                    <button type="button" class="add-btn" onclick="addMoreFiles('fotos', ${annexCount})">Adicionar Mais</button>
+                    <button type="button" class="remove-btn" onclick="removeFile('fotos', ${annexCount}, 1)" style="display: none;">Remover</button>
+                </div>
+                <div class="file-section" id="materiais-${annexCount}-container">
+                    <label for="materiais-${annexCount}-1">Materiais de Divulgação <span style="color: red;">*</span></label>
+                    <input type="file" id="materiais-${annexCount}-1" accept="image/png,image/jpeg" multiple required onchange="validateFiles(this)">
+                    <button type="button" class="add-btn" onclick="addMoreFiles('materiais', ${annexCount})">Adicionar Mais</button>
+                    <button type="button" class="remove-btn" onclick="removeFile('materiais', ${annexCount}, 1)" style="display: none;">Remover</button>
+                </div>
+                <div class="file-section" id="midia-${annexCount}-container">
+                    <label for="midia-${annexCount}-1">Matérias na Mídia <span style="color: red;">*</span></label>
+                    <input type="file" id="midia-${annexCount}-1" accept="image/png,image/jpeg" multiple required onchange="validateFiles(this)">
+                    <button type="button" class="add-btn" onclick="addMoreFiles('midia', ${annexCount})">Adicionar Mais</button>
+                    <button type="button" class="remove-btn" onclick="removeFile('midia', ${annexCount}, 1)" style="display: none;">Remover</button>
+                </div>
+                <div class="file-section" id="instrumentos-${annexCount}-container">
+                    <label for="instrumentos-${annexCount}-1">Instrumentos Específicos <span style="color: red;">*</span></label>
+                    <input type="file" id="instrumentos-${annexCount}-1" accept="image/png,image/jpeg" multiple required onchange="validateFiles(this)">
+                    <button type="button" class="add-btn" onclick="addMoreFiles('instrumentos', ${annexCount})">Adicionar Mais</button>
+                    <button type="button" class="remove-btn" onclick="removeFile('instrumentos', ${annexCount}, 1)" style="display: none;">Remover</button>
+                </div>
+            `;
+
+            annexDiv.innerHTML = annexFields;
+            document.getElementById('annexContainer').insertBefore(annexDiv, document.querySelector('.add-btn'));
+        }
+
+        function addMoreFiles(type, annexId) {
+            const counter = fileCounters[annexId][type]++;
+            const container = document.getElementById(`${type}-${annexId}-container`);
+            const newInput = document.createElement('input');
+            newInput.type = 'file';
+            newInput.id = `${type}-${annexId}-${counter + 1}`;
+            newInput.name = `${type}-${annexId}-${counter + 1}`;
+            newInput.accept = 'image/png,image/jpeg';
+            newInput.multiple = true;
+            newInput.required = counter === 0;
+            newInput.onchange = (e) => validateFiles(e.target);
+            container.appendChild(newInput);
+
+            const removeBtn = container.querySelector('.remove-btn');
+            if (removeBtn) removeBtn.style.display = counter > 0 ? 'inline-block' : 'none';
+        }
+
+        function removeFile(type, annexId, index) {
+            const container = document.getElementById(`${type}-${annexId}-container`);
+            const input = document.getElementById(`${type}-${annexId}-${index}`);
+            if (input) {
+                input.remove();
+                fileCounters[annexId][type]--;
+                if (fileCounters[annexId][type] === 1) {
+                    const removeBtn = container.querySelector('.remove-btn');
+                    if (removeBtn) removeBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function validateFiles(input) {
+            const files = input.files;
+            if (files.length === 0 && input.required) {
+                alert('Selecione pelo menos um arquivo.');
+                input.value = '';
+                return;
+            }
+            if (files.length > 5) {
+                alert('Você pode enviar no máximo 5 arquivos por campo.');
+                input.value = '';
+                return;
+            }
+            const validTypes = ['image/png', 'image/jpeg'];
+            for (let file of files) {
+                if (!validTypes.includes(file.type)) {
+                    alert('Apenas arquivos PNG e JPEG são aceitos.');
+                    input.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Tamanho do arquivo excede 5MB.');
+                    input.value = '';
+                    return;
+                }
+            }
+        }
+
+        async function fetchEntityData() {
+            const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
+            if (!cnpj.match(/^\d{14}$/)) {
+                alert('Digite um CNPJ válido com exatamente 14 dígitos.');
+                document.getElementById('nomeEntidade').value = '';
+                return;
+            }
+            try {
+                const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+                const data = await response.json();
+                if (!response.ok || data.status === 'ERROR' || !data.razao_social) throw new Error('CNPJ inválido.');
+                document.getElementById('nomeEntidade').value = data.razao_social;
+            } catch (err) {
+                alert(`Erro ao consultar CNPJ: ${err.message}. Tente novamente.`);
+                document.getElementById('nomeEntidade').value = '';
+            }
+        }
+
+        async function fetchAddressData() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            if (!cep.match(/^\d{8}$/)) {
+                alert('Digite um CEP válido com exatamente 8 dígitos.');
+                document.getElementById('endereco').value = '';
+                return;
+            }
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                if (!response.ok || data.erro) throw new Error('CEP inválido.');
+                document.getElementById('endereco').value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+            } catch (err) {
+                alert(`Erro ao consultar CEP: ${err.message}. Tente novamente.`);
+                document.getElementById('endereco').value = '';
+            }
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+
+            const tipoAtestado = document.getElementById('tipoAtestado').value;
+            const nomeDirigente = document.getElementById('nomeDirigente').value;
+            const cargoDirigente = document.getElementById('cargoDirigente').value;
+            const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+            const nomeEntidade = document.getElementById('nomeEntidade').value;
+            const cep = document.getElementById('cep').value;
+            const endereco = document.getElementById('endereco').value;
+            const numero = document.getElementById('numero').value;
+            const complemento = document.getElementById('complemento').value;
+            const numeroProposta = document.getElementById('numeroProposta').value;
+
+            const date = new Date();
+            const dateStr = date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+            const [dia, mes, ano] = dateStr.split(' de ');
+            const enderecoCompleto = `${endereco}, ${numero}${complemento ? ', ' + complemento : ''}, CEP ${cep}`;
+            const municipio = endereco.split(', ')[2].split(' - ')[0];
+            const uf = endereco.split(' - ')[1];
+
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 255);
+            doc.text('ATESTADO DE CAPACIDADE TÉCNICA', 105, 40, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+
+            let yPosition = 50;
+            const textLines = doc.splitTextToSize(`Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestado === 'termoFomento' ? 'Termo de Fomento' : 'Convênio'} no âmbito do Ministério do Esporte - MESP, que ${nomeEntidade}, inscrito(a) no CNPJ sob o nº ${cnpj}, situado(a) no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroProposta}, em atendimento ao ${tipoAtestado === 'termoFomento' ? 'art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025)' : 'inciso V, Art. 18, da Portaria Conjunta MGI/MF/CGU nº 33, de 30 de agosto de 2023'}, considerando as experiências adquiridas na execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`, 180);
+            doc.text(textLines, 15, yPosition, { align: 'justify', maxWidth: 180 });
+            yPosition += textLines.length * 7 + 10;
+
+            const textLines2 = doc.splitTextToSize(`O(s) projeto(s)/ação(es) descrito(s) foi(ram) executado(s) com qualidade, não existindo, até a presente data, fatos que desabonem a conduta e a responsabilidade da entidade com as obrigações assumidas, confirmando assim a capacidade técnica e operacional para a execução do que foi proposto.`, 180);
+            doc.text(textLines2, 15, yPosition, { align: 'justify', maxWidth: 180 });
+            yPosition += textLines2.length * 7 + 20;
+
+            doc.text(`${municipio}/${uf}, ${dia} de ${mes} de ${ano}.`, 15, yPosition);
+            doc.line(15, yPosition + 5, 195, yPosition + 5);
+            doc.text(`${nomeDirigente}`, 105, yPosition + 15, { align: 'center' });
+            doc.text(`${cargoDirigente}`, 105, yPosition + 20, { align: 'center' });
+
+            doc.addPage();
+            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+            doc.setFontSize(18);
+            doc.text('ANEXO', 105, 40, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('HISTÓRICO', 15, 50);
+            doc.text('I. Apresentação:', 15, 60);
+
+            for (let i = 1; i <= annexCount; i++) {
+                const nomeProjeto = document.getElementById(`nomeProjeto-${i}`).value;
+                const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`).value;
+                const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`).value;
+                const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`).value;
+                const dataInicio = document.getElementById(`dataInicio-${i}`)?.value || '';
+                const dataTermino = document.getElementById(`dataTermino-${i}`)?.value || '';
+                const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || '';
+                const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || '';
+
+                let y = 70 + (i - 1) * 120;
+                if (y > 270) {
+                    doc.addPage();
+                    doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+                    y = 40;
+                }
+
+                doc.text(`Anexo ${i}:`, 15, y);
+                doc.text(`- Nome do projeto/ação: ${nomeProjeto}`, 20, y + 10);
+                doc.text(`- Entidades Parceiras: ${entidadesParceiras}`, 20, y + 15);
+                doc.text(`- Data de Início: ${dataInicio}`, 20, y + 20);
+                doc.text(`- Data de Término: ${dataTermino}`, 20, y + 25);
+                doc.text(`- Número de Beneficiados: ${numeroBeneficiados}`, 20, y + 30);
+                doc.text(`- Ações/Atividades desenvolvidas: ${atividadesDesenvolvidas}`, 20, y + 35, { maxWidth: 160});
+
+                if (tipoAtestado === 'termoFomento') {
+                    doc.text(`- Estruturas Físicas: ${estruturasFisicas}`, 20, y + 40);
+                    doc.text(`- Qualificação profissional: ${qualificacaoPessoal}`, 20, y + 45, { maxWidth: 160 });
+                }
+
+                let docY = y + 50;
+                doc.text('- Documentos Comprobatórios a serem encaminhados em anexo:', 20, docY);
+                doc.text('  a) Fotos', 25, docY + 5);
+
+                // Fotos
+                const fotoInputs = document.querySelectorAll(`input[id^="fotos-${i}-"]`);
+                let imageY = docY + 10;
+                let imagePromises = [];
+                for (let input of fotoInputs) {
+                    if (input.files.length > 0) {
+                        for (let file of input.files) {
+                            imagePromises.push(
+                                new Promise((resolve) => {
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        doc.addImage(e.target.result, 'JPEG', 20, imageY, 70, 70);
+                                        imageY += 75;
+                                        if (imageY > 270) {
+                                            doc.addPage();
+                                            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+                                            imageY = 40;
+                                        }
+                                        resolve();
+                                    };
+                                    reader.readAsDataURL(file);
+                                })
+                            );
+                        }
+                    }
+                }
+                await Promise.all(imagePromises);
+
+                doc.text('  b) Materiais de divulgação (folders, cartazes e etc)', 25, imageY);
+                // Materiais de Divulgação
+                const materialInputs = document.querySelectorAll(`input[id^="materiais-${i}-"]`);
+                imageY += 5;
+                imagePromises = [];
+                for (let input of materialInputs) {
+                    if (input.files.length > 0) {
+                        for (let file of input.files) {
+                            imagePromises.push(
+                                new Promise((resolve) => {
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        doc.addImage(e.target.result, 'JPEG', 20, imageY, 70, 70);
+                                        imageY += 75;
+                                        if (imageY > 270) {
+                                            doc.addPage();
+                                            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+                                            imageY = 40;
+                                        }
+                                        resolve();
+                                    };
+                                    reader.readAsDataURL(file);
+                                })
+                            );
+                        }
+                    }
+                }
+                await Promise.all(imagePromises);
+
+                doc.text('  c) Matérias vinculadas na mídia (jornal, revistas e etc)', 25, imageY);
+                // Matérias na Mídia
+                const midiaInputs = document.querySelectorAll(`input[id^="midia-${i}-"]`);
+                imageY += 5;
+                imagePromises = [];
+                for (let input of midiaInputs) {
+                    if (input.files.length > 0) {
+                        for (let file of input.files) {
+                            imagePromises.push(
+                                new Promise((resolve) => {
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        doc.addImage(e.target.result, 'JPEG', 20, imageY, 70, 70);
+                                        imageY += 75;
+                                        if (imageY > 270) {
+                                            doc.addPage();
+                                            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+                                            imageY = 40;
+                                        }
+                                        resolve();
+                                    };
+                                    reader.readAsDataURL(file);
+                                })
+                            );
+                        }
+                    }
+                }
+                await Promise.all(imagePromises);
+
+                doc.text('  d) Cópia de instrumento específico (contratos, convênios, termos de parceria e etc)', 25, imageY);
+                // Instrumentos Específicos
+                const instrumentoInputs = document.querySelectorAll(`input[id^="instrumentos-${i}-"]`);
+                imageY += 5;
+                imagePromises = [];
+                for (let input of instrumentoInputs) {
+                    if (input.files.length > 0) {
+                        for (let file of input.files) {
+                            imagePromises.push(
+                                new Promise((resolve) => {
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        doc.addImage(e.target.result, 'JPEG', 20, imageY, 70, 70);
+                                        imageY += 75;
+                                        if (imageY > 270) {
+                                            doc.addPage();
+                                            doc.addImage(watermarkImage, 'JPEG', 0, 0, 210, 297);
+                                            imageY = 40;
+                                        }
+                                        resolve();
+                                    };
+                                    reader.readAsDataURL(file);
+                                })
+                            );
+                        }
+                    }
+                }
+                await Promise.all(imagePromises);
+            }
+
+            const pdfName = `Atestado_Capacidade_Tecnica_${tipoAtestado === 'termoFomento' ? 'Termo_Fomento' : 'Convenio'}.pdf`;
+            doc.save(pdfName);
+            alert('PDF gerado com sucesso!');
+        }
+    </script>
+</body>
+</html>
