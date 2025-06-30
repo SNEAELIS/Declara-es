@@ -1,11 +1,13 @@
 const express = require('express');
 const { jsPDF } = require('jspdf');
+const path = require('path');
+const { title } = require('process');
 
 module.exports = ({ data, saveData }) => {
   const router = express.Router();
   const BASE_PATH = '/forms/declaracoes';
 
-  // Lista de Formulários (corrigindo o acento em Atestado_Capacidade_Técnica)
+  // Lista de Formulários (corrigindo o acento em Atestado_Capacidade_Tecnica)
   const FORMULARIOS = [
     { path: 'formulario-documentacoes', template: 'Formulario_Documentacoes', title: 'Documentações' },
     { path: 'formulario-convenio', template: 'Formulario_convenio', title: 'Convênio' },
@@ -15,7 +17,9 @@ module.exports = ({ data, saveData }) => {
     { path: 'formulario-principal', template: 'Formulario', title: 'Formulário Principal' },
     { path: 'precificacao-form', template: 'precificacaoForm', title: 'Formulário de Precificação' },
     { path: 'Formulario-merito', template: 'Formulario-merito', title: 'Formulário de Mérito' },
-    { path: 'Atestado_Capacidade_Tecnica', template: 'Atestado_Capacidade_Tecnica', title: 'Atestado de Capacidade Tecnica' }
+    { path: 'Atestado_Capacidade_Tecnica', template: 'Atestado_Capacidade_Tecnica', title: 'Atestado de Capacidade Técnica' },
+    { path: 'Declaracao_Contrapartida', template: 'Declaracao_Contrapartida', title: 'Declaracao_Contrapartida'}
+
   ];
 
   // Helper function para construir URLs
@@ -67,7 +71,7 @@ module.exports = ({ data, saveData }) => {
     });
   });
 
-  // Rotas dos Formulários
+  // Rotas dos Formulários (ajustando para caminhos relativos)
   FORMULARIOS.forEach(form => {
     router.get(`/${form.path}`, (req, res) => {
       // Verifica se o template existe antes de renderizar

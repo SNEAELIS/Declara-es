@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Declaração de Disponibilidade de Contrapartida - Ministério do Esporte</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        header {
+            background-color: #003087;
+            color: #fff;
+            padding: 15px 40px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            width: 90%;
+            text-align: left;
+            margin-top: 90px;
+            margin-bottom: 80px;
+        }
+
+        .container h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #003087;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #003087;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-section {
+            display: grid;
+            gap: 20px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #003087;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 48, 135, 0.2);
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        button {
+            background-color: #003087;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #002766;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #003087;
+            color: #fff;
+            font-size: 0.9rem;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Ministério do Esporte</h1>
+    </header>
+
+    <div class="container">
+        <h2>Gerador de Declaração de Contrapartida</h2>
+        <form id="declaracaoForm" onsubmit="event.preventDefault(); generatePDF();">
+             <div class="form-section">
+                <div class="input-container">
+                    <label for="nome">Nome do Representante <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="nome" placeholder="Ex.: Allison Adib Pinheiro" required>
+                </div>
+                <div class="input-container">
+                    <label for="cargo">Cargo <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="cargo" placeholder="Ex.: Prefeito" required>
+                </div>
+                <div class="input-container">
+                    <label for="matricula">Matrícula <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="matricula" placeholder="Ex.: 1241231" required>
+                </div>
+                <div class="input-container">
+                    <label for="cnpj">CNPJ da Entidade <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="cnpj" placeholder="Ex.: 27.119.091/0001-35" maxlength="18" required oninput="formatCNPJ(this)">
+                    <div id="cnpjError" class="error-message">Erro ao buscar entidade. Verifique o CNPJ ou tente novamente.</div>
+                </div>
+                <div class="input-container">
+                    <label for="entidade">Nome da Entidade <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="entidade" placeholder="Será preenchido automaticamente" readonly>
+                </div>
+                <div class="input-container">
+                    <label for="valorContrapartida">Valor da Contrapartida (R$) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="valorContrapartida" step="0.01" placeholder="Ex.: 5000.00" required oninput="convertToExtenso()">
+                </div>
+                <div class="input-container">
+                    <label for="valorContrapartidaExtenso">Valor por Extenso <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="valorContrapartidaExtenso" placeholder="Será gerado automaticamente" readonly>
+                </div>
+                <div class="input-container">
+                    <label for="numeroProposta">Número da Proposta <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="numeroProposta" placeholder="Ex.: 004947/2024" required>
+                </div>
+                <div class="input-container">
+                    <label for="leiOrcamentaria">Lei Orçamentária nº <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="leiOrcamentaria" placeholder="Ex.: 1412/2025" required>
+                </div>
+                <div class="input-container">
+                    <label for="dataLei">Data da Lei <span style="color: #d32f2f;">*</span></label>
+                    <input type="date" id="dataLei" required>
+                </div>
+                <div class="input-container">
+                    <label for="orgao">Órgão <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="orgao" placeholder="Ex.: Secretaria Nacional de Esporte" required>
+                </div>
+                <div class="input-container">
+                    <label for="unidade">Unidade <span style="color: #d32f2f;">*</span></label>
+                    <input type="text" id="unidade" placeholder="Ex.: dawdawdsa" required>
+                </div>
+                <div class="input-container">
+                    <label for="funcao">Função (apenas números) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="funcao" placeholder="Ex.: 412341241" required>
+                </div>
+                <div class="input-container">
+                    <label for="subfuncao">Subfunção (apenas números) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="subfuncao" placeholder="Ex.: 4123124" required>
+                </div>
+                <div class="input-container">
+                    <label for="programa">Programa (apenas números) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="programa" placeholder="Ex.: 41231241" required>
+                </div>
+                <div class="input-container">
+                    <label for="atividade">Atividade (apenas números) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="atividade" placeholder="Ex.: 4123124" required>
+                </div>
+                <div class="input-container">
+                    <label for="naturezaDespesa">Natureza da Despesa (apenas números) <span style="color: #d32f2f;">*</span></label>
+                    <input type="number" id="naturezaDespesa" placeholder="Ex.: 4123124" required>
+                </div>
+            </div>
+            <br>
+            <button type="submit">Gerar Declaração em PDF</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Ministério do Esporte - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        function formatCNPJ(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 14) value = value.slice(0, 14);
+            value = value.replace(/(\d{2})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1/$2');
+            value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            input.value = value;
+            if (input.value.length === 18) {
+                fetchEntidade(value.replace(/\D/g, ''));
+            } else {
+                document.getElementById('entidade').value = '';
+                document.getElementById('cnpjError').style.display = 'none';
+            }
+        }
+
+        async function fetchEntidade(cnpj) {
+            try {
+                const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                const data = await response.json();
+                document.getElementById('entidade').value = data.razao_social || 'Entidade não encontrada';
+                document.getElementById('cnpjError').style.display = 'none';
+            } catch (error) {
+                document.getElementById('entidade').value = 'Erro ao buscar entidade';
+                document.getElementById('cnpjError').style.display = 'block';
+            }
+        }
+        
+        function convertToExtenso() {
+            const valor = parseFloat(document.getElementById('valorContrapartida').value) || 0;
+            if (valor <= 0) {
+                document.getElementById('valorContrapartidaExtenso').value = '';
+                return;
+            }
+            const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"],
+                dezenas = ["", "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"],
+                centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"],
+                especiais = ["dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+
+            function getExtenso(n) {
+                if (n === 0) return "";
+                if (n === 100) return "cem";
+                let str = "";
+                const c = Math.floor(n / 100),
+                    d = Math.floor((n % 100) / 10),
+                    u = n % 10;
+                if (c > 0) {
+                    str += centenas[c];
+                    if (n % 100 !== 0) str += " e ";
+                }
+                if (d > 0) {
+                    if (d === 1) {
+                        str += especiais[u];
+                        return str;
+                    }
+                    str += dezenas[d];
+                    if (u > 0) str += " e ";
+                }
+                if (u > 0 && d !== 1) str += unidades[u];
+                return str;
+            }
+            let inteiro = Math.floor(valor),
+                centavos = Math.round((valor - inteiro) * 100),
+                extenso = "";
+            if (inteiro > 0) {
+                if (inteiro === 1) extenso += "um real";
+                else {
+                    let partes = [],
+                        milharCount = 0;
+                    while (inteiro > 0) {
+                        let parte = inteiro % 1000;
+                        if (parte > 0) {
+                            let parteExtenso = getExtenso(parte);
+                            if (milharCount === 1) parteExtenso += " mil";
+                            if (milharCount === 2) parteExtenso += (parte > 1 ? " milhões" : " milhão");
+                            partes.unshift(parteExtenso);
+                        }
+                        inteiro = Math.floor(inteiro / 1000);
+                        milharCount++;
+                    }
+                    extenso += partes.join(" e ").replace(/ e mil$/, " mil") + " reais";
+                }
+            }
+            if (centavos > 0) {
+                if (extenso !== "") extenso += " e ";
+                if (centavos === 1) extenso += "um centavo";
+                else extenso += getExtenso(centavos) + " centavos";
+            }
+            document.getElementById('valorContrapartidaExtenso').value = extenso.charAt(0).toUpperCase() + extenso.slice(1);
+        }
+
+        async function getBase64ImageFromUrl(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro ao buscar imagem: ${response.statusText}`);
+                const blob = await response.blob();
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (err) {
+                console.error("Não foi possível carregar a imagem de fundo.", err);
+                alert("Atenção: A imagem de fundo não pôde ser carregada. O PDF será gerado sem ela.");
+                return null;
+            }
+        }
+
+        async function generatePDF() {
+            try {
+                if (!window.jspdf) {
+                    alert('Erro: Biblioteca jsPDF não foi carregada.');
+                    return;
+                }
+                if (document.getElementById('entidade').value.includes('Erro')) {
+                    alert('Por favor, corrija o erro no CNPJ antes de gerar o PDF.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                
+                const backgroundImgUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
+                const backgroundImgData = await getBase64ImageFromUrl(backgroundImgUrl);
+                
+                if (backgroundImgData) {
+                    doc.addImage(backgroundImgData, 'JPEG', 0, 0, 210, 297);
+                }
+
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 30;
+                const maxWidth = pageWidth - margin * 2;
+                let y = 60;
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(0, 0, 0); // Texto do título em preto
+                doc.text("DECLARAÇÃO DE DISPONIBILIDADE DE CONTRAPARTIDA", pageWidth / 2, y, { align: 'center' });
+                y += 20;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+
+                const nome = document.getElementById('nome').value;
+                const cargo = document.getElementById('cargo').value;
+                const matricula = document.getElementById('matricula').value;
+                const entidade = document.getElementById('entidade').value;
+                const cnpj = document.getElementById('cnpj').value;
+                const valorFormatado = parseFloat(document.getElementById('valorContrapartida').value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const valorExtenso = document.getElementById('valorContrapartidaExtenso').value;
+                const numeroProposta = document.getElementById('numeroProposta').value;
+                const leiOrcamentaria = document.getElementById('leiOrcamentaria').value;
+                const dataLei = new Date(document.getElementById('dataLei').value + 'T00:00:00');
+                const diaLei = dataLei.getDate();
+                const mesLei = dataLei.toLocaleString('pt-BR', { month: 'long' });
+                const anoLei = dataLei.getFullYear();
+                const orgao = document.getElementById('orgao').value;
+                const unidade = document.getElementById('unidade').value;
+                const funcao = document.getElementById('funcao').value;
+                const subfuncao = document.getElementById('subfuncao').value;
+                const programa = document.getElementById('programa').value;
+                const atividade = document.getElementById('atividade').value;
+                const naturezaDespesa = document.getElementById('naturezaDespesa').value;
+
+                // **NOVA FUNÇÃO PARA ADICIONAR TEXTO - MAIS ROBUSTA**
+                const addTextRobust = (text, startY) => {
+                    const lineSpacing = 7; // Espaçamento vertical entre as linhas
+                    const lines = doc.splitTextToSize(text, maxWidth);
+                    
+                    // Verifica se o bloco de texto cabe na página
+                    if (startY + (lines.length * lineSpacing) > pageHeight - margin) {
+                        doc.addPage();
+                        if (backgroundImgData) {
+                            doc.addImage(backgroundImgData, 'JPEG', 0, 0, 210, 297);
+                        }
+                        startY = 40; // Posição inicial em uma nova página
+                    }
+
+                    // Desenha linha por linha
+                    lines.forEach(line => {
+                        doc.text(line, margin, startY, { align: 'left' });
+                        startY += lineSpacing;
+                    });
+                    
+                    return startY; // Retorna a nova posição Y
+                };
+                
+                const text1 = `Eu, ${nome}, matrícula nº ${matricula}, na condição de ${cargo} do(a) ${entidade}, CNPJ Nº ${cnpj}, DECLARO, em conformidade com a Lei de Diretrizes Orçamentárias vigente, que a presente Entidade dispõe e se compromete com o montante financeiro de R$ ${valorFormatado} (${valorExtenso}), referente a contrapartida financeira destinada ao cumprimento do objeto constante da Proposta n.º ${numeroProposta}, do Sistema Transferegov.`;
+                y = addTextRobust(text1, y);
+                y += 5; // Espaço extra após o parágrafo
+
+                const text2 = `Os recursos estão disponíveis na Lei Orçamentária Municipal/Estadual nº ${leiOrcamentaria}, de ${diaLei} de ${mesLei} de ${anoLei}, conforme rubrica orçamentária abaixo especificada, e cópia anexa:`;
+                y = addTextRobust(text2, y);
+                y += 7;
+
+                const rubricaText = `Órgão: ${orgao}\nUnidade: ${unidade}\nFunção: ${funcao}\nSubfunção: ${subfuncao}\nPrograma: ${programa}\nAtividade: ${atividade}\nNatureza da Despesa: ${naturezaDespesa}`;
+                y = addTextRobust(rubricaText, y);
+                y += 7;
+
+                const text3 = `Por ser expressão da verdade, firmo a presente declaração.`;
+                y = addTextRobust(text3, y);
+                y += 20;
+                
+                doc.text(`Brasília/DF, 30 de junho de 2025`, pageWidth / 2, y, { align: 'center' });
+                y += 25;
+                
+                const lineLength = 80;
+                const lineX = (pageWidth - lineLength) / 2;
+                doc.line(lineX, y, lineX + lineLength, y);
+                y += 7;
+
+                doc.setFont('helvetica', 'bold');
+                doc.text(nome.toUpperCase(), pageWidth / 2, y, { align: 'center' });
+                y += 7;
+                doc.setFont('helvetica', 'normal');
+                doc.text(cargo, pageWidth / 2, y, { align: 'center' });
+                
+                doc.save(`Declaracao_Contrapartida_${entidade.replace(/\s/g, '_')}.pdf`);
+                alert('Declaração gerada com sucesso!');
+
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Ocorreu um erro ao gerar o PDF. Verifique os dados e o console de erros.');
+            }
+        }
+    </script>
+</body>
+
+</html>

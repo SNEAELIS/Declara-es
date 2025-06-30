@@ -21,7 +21,7 @@
         .status { font-size: 0.9rem; color: #666; }
         .section { margin-bottom: 20px; }
         .section h3 { font-size: 1.2rem; font-weight: bold; color: #003087; margin-bottom: 10px; }
-        .form-row { display: flex; flex-wrap: wrap; gap: 15px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #e0e0e0; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 15px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
         .form-row .half-width { flex: 1; min-width: 200px; }
         .form-row .third-width { flex: 1; min-width: 150px; }
         .form-row .full-width { width: 100%; }
@@ -46,7 +46,7 @@
         .tab { display: none; }
         .tab.active { display: block; }
         .error-message { color: red; font-size: 0.8rem; display: none; margin-top: 5px; }
-        .espaco-fisico-container { margin-top: 10px; }
+        .espaco-fisico-container { margin-top: 10px; width: 100%;}
         .remove-btn { background-color: #dc3545; color: #fff; padding: 5px 10px; margin-left: 10px; }
         .remove-btn:hover { background-color: #c82333; }
         @media (max-width: 600px) {
@@ -76,7 +76,6 @@
             <button onclick="mostrarAba('aba1')" class="active">1</button>
             <button onclick="mostrarAba('aba2')" disabled>2</button>
             <button onclick="mostrarAba('aba3')" disabled>3</button>
-            <button onclick="mostrarAba('aba4')" disabled>4</button>
         </div>
         <form id="declaracoesForm">
             <div id="aba1" class="tab active">
@@ -102,7 +101,7 @@
                         </div>
                         <div class="half-width">
                             <label for="proposta">Proposta (XXXXX/ANO):</label>
-                            <input type="text" id="proposta" oninput="validarProposta(this)" maxlength="9" placeholder="Ex: 00012/2025" required>
+                            <input type="text" id="proposta" oninput="validarProposta(this)" maxlength="10" placeholder="Ex: 00012/2025" required>
                             <span id="erro-proposta" class="error-message">Digite no formato XXXXX/ANO (5 dígitos/ano).</span>
                         </div>
                     </div>
@@ -148,89 +147,7 @@
                             <span id="erro-cep" class="error-message">CEP não preenchido.</span>
                         </div>
                     </div>
-                </section>
-                <div class="button-container">
-                    <button type="button" onclick="mostrarAba('aba1')">Voltar</button>
-                    <button type="button" onclick="validarAba('aba2', 'aba3')">Próxima</button>
-                </div>
-            </div>
-            <div id="aba3" class="tab">
-                <section class="section">
-                    <h3>Rubrica Orçamentária</h3>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="leiOrcamentaria">Lei Orçamentária:</label>
-                            <input type="text" id="leiOrcamentaria" required>
-                            <span id="erro-leiOrcamentaria" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="third-width">
-                            <label for="diaLei">Dia:</label>
-                            <input type="number" id="diaLei" min="1" max="31" required>
-                            <span id="erro-diaLei" class="error-message">Digite um dia válido (1-31).</span>
-                        </div>
-                        <div class="third-width">
-                            <label for="mesLei">Mês:</label>
-                            <input type="text" id="mesLei" oninput="validarLetras(this)" placeholder="Ex: Janeiro" required>
-                            <span id="erro-mesLei" class="error-message">Digite apenas letras.</span>
-                        </div>
-                        <div class="third-width">
-                            <label for="anoLei">Ano:</label>
-                            <input type="number" id="anoLei" min="2000" max="2100" required>
-                            <span id="erro-anoLei" class="error-message">Digite um ano válido (2000-2100).</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="orgao">Órgão:</label>
-                            <input type="text" id="orgao" required>
-                            <span id="erro-orgao" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="unidade">Unidade:</label>
-                            <input type="text" id="unidade" required>
-                            <span id="erro-unidade" class="error-message">Campo obrigatório.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="funcao">Função:</label>
-                            <input type="text" id="funcao" oninput="validarNumeros(this)" required>
-                            <span id="erro-funcao" class="error-message">Digite apenas números.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="subfuncao">Subfunção:</label>
-                            <input type="text" id="subfuncao" oninput="validarNumeros(this)" required>
-                            <span id="erro-subfuncao" class="error-message">Digite apenas números.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="programa">Programa:</label>
-                            <input type="text" id="programa" oninput="validarNumeros(this)" required>
-                            <span id="erro-programa" class="error-message">Digite apenas números.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="atividade">Atividade:</label>
-                            <input type="text" id="atividade" oninput="validarNumeros(this)" required>
-                            <span id="erro-atividade" class="error-message">Digite apenas números.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="naturezaDespesa">Natureza da Despesa:</label>
-                            <input type="text" id="naturezaDespesa" oninput="validarNumeros(this)" required>
-                            <span id="erro-naturezaDespesa" class="error-message">Digite apenas números.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
+                     <div class="form-row">
                         <div class="full-width">
                             <label for="valorContrapartida">Valor da Contrapartida (R$):</label>
                             <input type="text" id="valorContrapartida" oninput="mascaraMoeda(this); atualizarValorExtenso();" required>
@@ -246,11 +163,11 @@
                     </div>
                 </section>
                 <div class="button-container">
-                    <button type="button" onclick="mostrarAba('aba2')">Voltar</button>
-                    <button type="button" onclick="validarAba('aba3', 'aba4')">Próxima</button>
+                    <button type="button" onclick="mostrarAba('aba1')">Voltar</button>
+                    <button type="button" onclick="validarAba('aba2', 'aba3')">Próxima</button>
                 </div>
             </div>
-            <div id="aba4" class="tab">
+            <div id="aba3" class="tab">
                 <section class="section">
                     <h3>Escolha uma Opção para Gerar o PDF</h3>
                     <div class="form-row">
@@ -287,14 +204,14 @@
                                 <button type="button" class="remove-btn" onclick="removerEspacoFisico(0)" style="display: none;">Remover</button>
                             </div>
                         </div>
-                        <div class="button-container">
+                         <div class="button-container" style="width: 100%;">
                             <button type="button" onclick="adicionarEspacoFisico()">Adicionar Novo Espaço Físico</button>
                             <button type="button" onclick="salvarEspacoFisico()">Salvar</button>
                         </div>
                     </div>
                 </section>
                 <div class="button-container">
-                    <button type="button" onclick="mostrarAba('aba3')">Voltar</button>
+                    <button type="button" onclick="mostrarAba('aba2')">Voltar</button>
                     <button type="button" id="gerarPDF" disabled>Gerar PDF</button>
                 </div>
             </div>
@@ -336,27 +253,39 @@
             }
         }
 
+        /**
+         * FUNÇÃO CORRIGIDA
+         * Valida e formata o campo Proposta no formato XXXXX/YYYY.
+         */
         function validarProposta(input) {
             const erro = document.getElementById('erro-proposta');
             if (erro) {
-                let value = input.value.replace(/[^0-9]/g, '');
-                if (value.length > 9) value = value.slice(0, 9);
-                if (value.length >= 5) {
-                    const numero = value.slice(0, 5).padStart(5, '0');
-                    const ano = value.slice(5, 9) || new Date().getFullYear().toString();
-                    if (/^\d{5}$/.test(numero) && /^\d{4}$/.test(ano)) {
-                        input.value = `${numero}/${ano}`;
-                        erro.style.display = 'none';
-                    } else {
-                        input.value = value;
-                        erro.style.display = 'block';
-                    }
+                // 1. Pega apenas os dígitos do valor do input.
+                let value = input.value.replace(/\D/g, '');
+
+                // 2. Limita o total de dígitos a 9 (5 para a proposta + 4 para o ano).
+                if (value.length > 9) {
+                    value = value.slice(0, 9);
+                }
+
+                // 3. Aplica a máscara XXXXX/YYYY dinamicamente.
+                if (value.length > 5) {
+                    value = value.slice(0, 5) + '/' + value.slice(5);
+                }
+
+                // 4. Atualiza o valor no campo de input.
+                input.value = value;
+
+                // 5. Verifica o formato final para mostrar ou esconder a mensagem de erro.
+                // A mensagem aparece se o campo não estiver vazio e não corresponder ao formato completo.
+                if (input.value.length > 0 && !/^\d{5}\/\d{4}$/.test(input.value)) {
+                    erro.style.display = 'block';
                 } else {
-                    input.value = value.padStart(value.length, '0');
-                    erro.style.display = value.length > 0 && value.length < 5 ? 'block' : 'none';
+                    erro.style.display = 'none';
                 }
             }
         }
+
 
         function mascaraCNPJ(input) {
             const erro = document.getElementById('erro-cnpj');
@@ -366,7 +295,7 @@
                 fetchCNPJData(value);
             } else {
                 erro.style.display = 'block';
-                erro.textContent = 'Digite pelo menos 14 números.';
+                erro.textContent = 'Digite 14 números.';
                 document.getElementById('entidade').value = '';
                 document.getElementById('endereco').value = '';
                 document.getElementById('uf').value = '';
@@ -446,12 +375,12 @@
             const erro = document.getElementById('erro-valorContrapartida');
             let valor = input.value.replace(/\D/g, '');
             if (valor) {
-                valor = (parseInt(valor) / 100).toFixed(2).replace('.', ',');
+                valor = (parseInt(valor, 10) / 100).toFixed(2).replace('.', ',');
                 valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
                 input.value = `R$ ${valor}`;
                 erro.style.display = 'none';
             } else {
-                input.value = 'R$ 0,00';
+                input.value = '';
                 erro.style.display = 'block';
             }
         }
@@ -460,125 +389,145 @@
             const inputValor = document.getElementById('valorContrapartida').value;
             const erro = document.getElementById('erro-valorContrapartidaExtenso');
             const extensoInput = document.getElementById('valorContrapartidaExtenso');
-            let valor = inputValor.replace(/[^0-9]/g, '');
+            let valor = inputValor.replace(/\D/g, '');
             if (!valor) {
                 extensoInput.value = '';
                 erro.style.display = 'block';
                 return;
             }
-            valor = parseInt(valor) / 100;
+            valor = parseInt(valor, 10) / 100;
             extensoInput.value = numeroPorExtenso(valor);
-            erro.style.display = 'none';
+            erro.style.display = extensoInput.value ? 'none' : 'block';
         }
 
         function numeroPorExtenso(num) {
-            const unidades = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
-            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
-            const milhares = ['mil', 'milhões', 'bilhões'];
-            if (num === 0) return 'zero reais';
-            let partes = [], parteInteira = Math.floor(num), parteDecimal = Math.round((num - parteInteira) * 100);
-            function converterGrupo(n, nivel) {
-                if (n === 0) return '';
-                let str = '';
-                if (n >= 100) { str += centenas[Math.floor(n / 100)] + ' '; n %= 100; }
-                if (n >= 20) { str += dezenas[Math.floor(n / 10)] + ' '; n %= 10; if (n > 0) str += 'e ' + unidades[n] + ' '; }
-                else if (n >= 10) {
-                    if (n === 10) str += 'dez ';
-                    else if (n === 11) str += 'onze ';
-                    else if (n === 12) str += 'doze ';
-                    else if (n === 13) str += 'treze ';
-                    else if (n === 14) str += 'quatorze ';
-                    else if (n === 15) str += 'quinze ';
-                    else if (n === 16) str += 'dezesseis ';
-                    else if (n === 17) str += 'dezessete ';
-                    else if (n === 18) str += 'dezoito ';
-                    else if (n === 19) str += 'dezenove ';
-                } else if (n > 0) str += unidades[n] + ' ';
-                return str.trim() + (nivel > 0 ? ' ' + milhares[nivel-1] : '');
+            const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+            const centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+            
+            if (num === 0) return 'zero';
+
+            let n = Math.floor(num);
+            let centavos = Math.round((num - n) * 100);
+
+            function getExtenso(numero) {
+                if (numero === 0) return "";
+                if (numero === 100) return "cem";
+                let str = "";
+                let c = Math.floor(numero / 100);
+                let d = Math.floor((numero % 100) / 10);
+                let u = numero % 10;
+
+                if (c > 0) str += centenas[c] + (d > 0 || u > 0 ? " e " : "");
+                if (d > 0) {
+                    if (d === 1) {
+                        str += unidades[10 + u];
+                        u = 0;
+                    } else {
+                        str += dezenas[d] + (u > 0 ? " e " : "");
+                    }
+                }
+                if (u > 0) str += unidades[u];
+                return str;
             }
-            let nivel = 0;
-            while (parteInteira > 0) {
-                let grupo = parteInteira % 1000;
-                if (grupo > 0) { let textoGrupo = converterGrupo(grupo, nivel); if (textoGrupo) partes.unshift(textoGrupo); }
-                parteInteira = Math.floor(parteInteira / 1000);
-                nivel++;
-            }
-            let resultado = partes.join(' e ').trim();
-            resultado += parteInteira === 1 ? ' real' : ' reais';
-            if (parteDecimal > 0) {
-                resultado += ' e ';
-                if (parteDecimal < 10) resultado += unidades[parteDecimal] + ' centavo';
-                else if (parteDecimal >= 10 && parteDecimal < 20) {
-                    const teens = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-                    resultado += teens[parteDecimal - 10] + ' centavos';
+
+            let extenso = [];
+            if (n === 0) {
+                // Não faz nada
+            } else if (n < 1000) {
+                extenso.push(getExtenso(n));
+            } else {
+                let mil = Math.floor(n / 1000);
+                let resto = n % 1000;
+                if (mil === 1) {
+                    extenso.push("mil");
                 } else {
-                    let dezena = Math.floor(parteDecimal / 10), unidade = parteDecimal % 10;
-                    resultado += dezenas[dezena];
-                    if (unidade > 0) resultado += ' e ' + unidades[unidade];
-                    resultado += ' centavos';
+                    extenso.push(getExtenso(mil) + " mil");
+                }
+                if (resto > 0) {
+                    extenso.push(getExtenso(resto));
                 }
             }
-            return resultado;
+
+            let resultado = extenso.join(" e ");
+            
+            if (n > 0) {
+              resultado += (n === 1 ? " real" : " reais");
+            }
+
+            if (centavos > 0) {
+                if (n > 0) resultado += " e ";
+                resultado += getExtenso(centavos) + (centavos === 1 ? " centavo" : " centavos");
+            }
+            
+            return resultado.trim();
         }
 
         function validarAba(currentTab, nextTab) {
             let campos;
             switch (currentTab) {
-                case 'aba1': campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta']; break;
-                case 'aba2': campos = ['entidade', 'cnpj', 'endereco', 'uf', 'municipio', 'cep']; break;
-                case 'aba3': campos = ['leiOrcamentaria', 'diaLei', 'mesLei', 'anoLei', 'orgao', 'unidade', 'funcao', 'subfuncao', 'programa', 'atividade', 'naturezaDespesa', 'valorContrapartida', 'valorContrapartidaExtenso']; break;
-                default: return;
+                case 'aba1':
+                    campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta'];
+                    break;
+                case 'aba2':
+                    campos = ['entidade', 'cnpj', 'endereco', 'uf', 'municipio', 'cep', 'valorContrapartida', 'valorContrapartidaExtenso'];
+                    break;
+                default:
+                    return;
             }
             let valido = true;
             campos.forEach(id => {
-                const input = document.getElementById(id), erro = document.getElementById(`erro-${id}`);
-                if (!input || !erro) { console.warn(`Elemento ou erro não encontrado para ${id}`); return; }
-                if (id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
-                    erro.style.display = 'block'; erro.textContent = 'O CNPJ deve conter 14 números.'; valido = false;
+                const input = document.getElementById(id);
+                const erro = document.getElementById(`erro-${id}`);
+                if (!input || !erro) {
+                    console.warn(`Elemento ou erro não encontrado para ${id}`);
+                    return;
+                }
+                let isInvalid = false;
+                if (!input.value) {
+                    isInvalid = true;
+                } else if (id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
+                    erro.textContent = 'O CNPJ deve conter 14 números.';
+                    isInvalid = true;
                 } else if (id === 'proposta' && !/^\d{5}\/\d{4}$/.test(input.value)) {
-                    erro.style.display = 'block'; valido = false;
-                } else if (id === 'valorContrapartida' && (!input.value || input.value === 'R$ 0,00')) {
-                    erro.style.display = 'block'; valido = false;
-                } else if (!input.value || (id === 'cep' && input.value.length !== 9) || (id === 'diaLei' && (input.value < 1 || input.value > 31)) || (id === 'anoLei' && (input.value < 2000 || input.value > 2100))) {
-                    erro.style.display = 'block'; valido = false;
-                } else erro.style.display = 'none';
+                    isInvalid = true;
+                } else if (id === 'valorContrapartida' && input.value === 'R$ 0,00') {
+                    isInvalid = true;
+                } else if (id === 'cep' && input.value.length !== 9) {
+                    isInvalid = true;
+                }
+
+                if (isInvalid) {
+                    erro.style.display = 'block';
+                    valido = false;
+                } else {
+                    erro.style.display = 'none';
+                }
             });
             if (valido) {
                 const nextButton = document.querySelector(`button[onclick="mostrarAba('${nextTab}')"]`);
-                if (nextButton) { nextButton.disabled = false; mostrarAba(nextTab); }
+                if (nextButton) {
+                    nextButton.disabled = false;
+                    mostrarAba(nextTab);
+                }
             }
         }
+
 
         function toggleMarcador00SL() {
             const marcador = document.getElementById('marcador00SL');
             const camposEspacoFisico = document.getElementById('camposEspacoFisico');
-            if (marcador.checked && !is00SLEnabled) {
-                camposEspacoFisico.style.display = 'flex';
-            } else if (!marcador.checked) {
+            const options = document.querySelectorAll('option[value*="00SL"]');
+
+            if (!marcador.checked) {
                 camposEspacoFisico.style.display = 'none';
-                document.getElementById('espacoFisicoFields').innerHTML = `
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="nomeEspacoFisico0">Nome do Espaço Físico:</label>
-                            <input type="text" id="nomeEspacoFisico0" oninput="validarLetras(this)" required>
-                            <span id="erro-nomeEspacoFisico0" class="error-message">Digite apenas letras e espaços.</span>
-                        </div>
-                        <div class="half-width">
-                            <label for="enderecoEspacoFisico0">Endereço do Espaço Físico:</label>
-                            <input type="text" id="enderecoEspacoFisico0" required>
-                            <span id="erro-enderecoEspacoFisico0" class="error-message">Campo obrigatório.</span>
-                        </div>
-                        <button type="button" class="remove-btn" onclick="removerEspacoFisico(0)" style="display: none;">Remover</button>
-                    </div>
-                `;
-                espacoFisicoCount = 1;
-                document.getElementById('opcaoSelecao').value = '';
-                document.getElementById('gerarPDF').disabled = true;
-                const options = document.querySelectorAll('option[value*="00SL"]');
-                options.forEach(option => option.disabled = true);
                 is00SLEnabled = false;
+                options.forEach(option => option.disabled = true);
+                document.getElementById('opcaoSelecao').value = '';
+            } else if (!is00SLEnabled) {
+                camposEspacoFisico.style.display = 'flex';
             }
+            
             validarGerarPDF();
         }
 
@@ -587,6 +536,7 @@
             const index = espacoFisicoCount;
             const div = document.createElement('div');
             div.className = 'form-row';
+            div.id = `espacoFisicoRow${index}`;
             div.innerHTML = `
                 <div class="half-width">
                     <label for="nomeEspacoFisico${index}">Nome do Espaço Físico:</label>
@@ -602,50 +552,25 @@
             `;
             container.appendChild(div);
             espacoFisicoCount++;
-            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = espacoFisicoCount > 1 ? 'inline-block' : 'none');
+            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = 'inline-block');
         }
 
         function removerEspacoFisico(index) {
-            const container = document.getElementById('espacoFisicoFields');
-            const toRemove = container.querySelector(`#nomeEspacoFisico${index}`).parentElement.parentElement;
+            const toRemove = document.getElementById(`espacoFisicoRow${index}`);
             if (toRemove) {
-                container.removeChild(toRemove);
-                espacoFisicoCount--;
-                renumerarCampos();
+                toRemove.remove();
             }
-            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = espacoFisicoCount > 1 ? 'inline-block' : 'none');
+            if (document.querySelectorAll('#espacoFisicoFields .form-row').length <= 1) {
+                 document.querySelector('#espacoFisicoFields .remove-btn').style.display = 'none';
+            }
             validarGerarPDF();
         }
-
-        function renumerarCampos() {
-            const container = document.getElementById('espacoFisicoFields');
-            container.innerHTML = '';
-            for (let i = 0; i < espacoFisicoCount; i++) {
-                const div = document.createElement('div');
-                div.className = 'form-row';
-                div.innerHTML = `
-                    <div class="half-width">
-                        <label for="nomeEspacoFisico${i}">Nome do Espaço Físico:</label>
-                        <input type="text" id="nomeEspacoFisico${i}" oninput="validarLetras(this)" required value="${document.getElementById(`nomeEspacoFisico${i}`)?.value || ''}">
-                        <span id="erro-nomeEspacoFisico${i}" class="error-message">Digite apenas letras e espaços.</span>
-                    </div>
-                    <div class="half-width">
-                        <label for="enderecoEspacoFisico${i}">Endereço do Espaço Físico:</label>
-                        <input type="text" id="enderecoEspacoFisico${i}" required value="${document.getElementById(`enderecoEspacoFisico${i}`)?.value || ''}">
-                        <span id="erro-enderecoEspacoFisico${i}" class="error-message">Campo obrigatório.</span>
-                    </div>
-                    <button type="button" class="remove-btn" onclick="removerEspacoFisico(${i})">Remover</button>
-                `;
-                container.appendChild(div);
-            }
-            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = espacoFisicoCount > 1 ? 'inline-block' : 'none');
-        }
-
+        
         function mostrarCamposEspacoFisico() {
             const select = document.getElementById('opcaoSelecao');
             const camposEspacoFisico = document.getElementById('camposEspacoFisico');
-            const marcador = document.getElementById('marcador00SL');
-            if (select.value.includes('00SL') && marcador.checked && is00SLEnabled) {
+            
+            if (select.value.includes('00SL')) {
                 camposEspacoFisico.style.display = 'flex';
             } else {
                 camposEspacoFisico.style.display = 'none';
@@ -654,37 +579,42 @@
         }
 
         function salvarEspacoFisico() {
-            const marcador = document.getElementById('marcador00SL');
-            if (!marcador.checked) {
-                alert('Marque a opção "Marcar como 00SL" antes de salvar.');
+            let valido = true;
+            const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
+
+            if (campos.length === 0) {
+                alert('Adicione pelo menos um espaço físico.');
                 return;
             }
 
-            let valido = true;
-            for (let i = 0; i < espacoFisicoCount; i++) {
-                const nomeInput = document.getElementById(`nomeEspacoFisico${i}`);
-                const enderecoInput = document.getElementById(`enderecoEspacoFisico${i}`);
-                const erroNome = document.getElementById(`erro-nomeEspacoFisico${i}`);
-                const erroEndereco = document.getElementById(`erro-enderecoEspacoFisico${i}`);
+            campos.forEach((row, index) => {
+                 const idSuffix = row.id.replace('espacoFisicoRow', '');
+                 const nomeInput = document.getElementById(`nomeEspacoFisico${idSuffix}`);
+                 const enderecoInput = document.getElementById(`enderecoEspacoFisico${idSuffix}`);
+                 const erroNome = document.getElementById(`erro-nomeEspacoFisico${idSuffix}`);
+                 const erroEndereco = document.getElementById(`erro-enderecoEspacoFisico${idSuffix}`);
+
                 if (!nomeInput.value || /[^A-Za-zÀ-ÿ\s]/.test(nomeInput.value)) {
                     erroNome.style.display = 'block';
                     valido = false;
-                } else erroNome.style.display = 'none';
+                } else {
+                    erroNome.style.display = 'none';
+                }
                 if (!enderecoInput.value) {
                     erroEndereco.style.display = 'block';
                     valido = false;
-                } else erroEndereco.style.display = 'none';
-            }
+                } else {
+                    erroEndereco.style.display = 'none';
+                }
+            });
 
-            if (valido && espacoFisicoCount > 0) {
+            if (valido) {
                 is00SLEnabled = true;
                 const options = document.querySelectorAll('option[value*="00SL"]');
                 options.forEach(option => option.disabled = false);
-                document.getElementById('camposEspacoFisico').style.display = 'flex';
-                document.getElementById('gerarPDF').disabled = false;
-                alert('Dados salvos com sucesso!');
+                alert('Dados do espaço físico salvos com sucesso! Agora você pode selecionar uma opção 00SL.');
             } else {
-                alert('Preencha todos os campos corretamente antes de salvar.');
+                alert('Preencha todos os campos dos espaços físicos corretamente.');
             }
             validarGerarPDF();
         }
@@ -694,19 +624,33 @@
             const opcaoSelecao = document.getElementById('opcaoSelecao').value;
             const marcador = document.getElementById('marcador00SL').checked;
 
-            if (marcador && is00SLEnabled && opcaoSelecao.includes('00SL')) {
-                let allValid = espacoFisicoCount > 0;
-                for (let i = 0; i < espacoFisicoCount; i++) {
-                    const nome = document.getElementById(`nomeEspacoFisico${i}`).value;
-                    const endereco = document.getElementById(`enderecoEspacoFisico${i}`).value;
-                    if (!nome || !endereco) {
+            if (!opcaoSelecao) {
+                 gerarPDFBtn.disabled = true;
+                 return;
+            }
+            
+            if (opcaoSelecao.includes('20JP')) {
+                gerarPDFBtn.disabled = false;
+                return;
+            }
+            
+            if (opcaoSelecao.includes('00SL')) {
+                if (marcador && is00SLEnabled) {
+                    let allValid = true;
+                    const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
+                    if(campos.length === 0) {
                         allValid = false;
-                        break;
                     }
+                    campos.forEach(row => {
+                        const inputs = row.querySelectorAll('input[type="text"]');
+                        if(!inputs[0].value || !inputs[1].value) {
+                            allValid = false;
+                        }
+                    });
+                    gerarPDFBtn.disabled = !allValid;
+                } else {
+                    gerarPDFBtn.disabled = true;
                 }
-                gerarPDFBtn.disabled = !allValid;
-            } else {
-                gerarPDFBtn.disabled = !opcaoSelecao || (marcador && !is00SLEnabled);
             }
         }
     </script>
