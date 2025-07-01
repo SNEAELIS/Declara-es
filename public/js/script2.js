@@ -320,24 +320,7 @@ async function gerarPDF() {
 }
 
 const declaracoesCompletas = [
-    {
-        title: "DECLARAÇÃO DE DISPONIBILIDADE DE CONTRAPARTIDA",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, em conformidade com a Lei de Diretrizes Orçamentárias vigente, que a presente Entidade dispõe e se compromete com o montante financeiro de R$ [VALOR_CONTRAPARTIDA] ([VALOR_CONTRAPARTIDA_EXTENSO]), referente a contrapartida financeira destinada ao cumprimento do objeto constante da Proposta n.º [PROPOSTA], do Sistema Transferegov.
 
-        Os recursos estão disponíveis na Lei Orçamentária Municipal/Estadual nº [LEI_ORCAMENTARIA], de [DIA_LEI] de [MES_LEI] de [ANO_LEI], conforme rubrica orçamentária abaixo especificada, e cópia anexa:
-
-        Órgão: [ORGAO]
-        Unidade: [UNIDADE]
-        Função: [FUNCAO]
-        Subfunção: [SUBFUNCAO]
-        Programa: [PROGRAMA]
-        Atividade: [ATIVIDADE]
-        Natureza da despesa: [NATUREZA_DESPESA]
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
-    }, 
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
         content: `
