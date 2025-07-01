@@ -89,15 +89,15 @@
                         </div>
                         <div class="half-width">
                             <label for="matricula">Matrícula:</label>
-                            <input type="text" id="matricula" required>
-                            <span id="erro-matricula" class="error-message">Campo obrigatório.</span>
+                            <input type="text" id="matricula" oninput="validarNumeros(this)" required>
+                            <span id="erro-matricula" class="error-message">Digite apenas números.</span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="half-width">
                             <label for="cargoDirigente">Cargo do Dirigente:</label>
-                            <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" oninput="validarCargo(this)" required>
-                            <span id="erro-cargo" class="error-message">Digite apenas letras, espaços ou hífens.</span>
+                            <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" onkeypress="return validarLetrasApenas(event)" oninput="validarLetras(this)" required>
+                            <span id="erro-cargo" class="error-message">Digite apenas letras e espaços.</span>
                         </div>
                         <div class="half-width">
                             <label for="proposta">Proposta (XXXXX/ANO):</label>
@@ -241,8 +241,17 @@
             const erro = document.getElementById(`erro-${input.id}`);
             if (erro) {
                 input.value = input.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
-                erro.style.display = /[^A-Za-zÀ-ÿ\s]/.test(input.value) ? 'block' : 'none';
+                erro.style.display = input.value ? 'none' : 'block';
             }
+        }
+
+        function validarLetrasApenas(event) {
+            const char = String.fromCharCode(event.which || event.keyCode);
+            if (!/^[A-Za-zÀ-ÿ\s]$/.test(char)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
         }
 
         function validarNumeros(input) {
@@ -285,7 +294,6 @@
                 }
             }
         }
-
 
         function mascaraCNPJ(input) {
             const erro = document.getElementById('erro-cnpj');
@@ -360,14 +368,6 @@
                 document.getElementById('erro-uf').style.display = 'block';
                 document.getElementById('erro-municipio').style.display = 'block';
                 document.getElementById('erro-cep').style.display = 'block';
-            }
-        }
-
-        function validarCargo(input) {
-            const erro = document.getElementById('erro-cargo');
-            if (erro) {
-                input.value = input.value.replace(/[^A-Za-zÀ-ÿ\s-]/g, '');
-                erro.style.display = /[^A-Za-zÀ-ÿ\s-]/.test(input.value) ? 'block' : 'none';
             }
         }
 
@@ -512,7 +512,6 @@
                 }
             }
         }
-
 
         function toggleMarcador00SL() {
             const marcador = document.getElementById('marcador00SL');
