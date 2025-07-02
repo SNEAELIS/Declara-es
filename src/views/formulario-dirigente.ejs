@@ -332,7 +332,6 @@
                         option.value = municipio.nome;
                         option.textContent = municipio.nome;
                         municipioSelect.appendChild(option);
-                   Dad
                     });
                 } catch (error) {
                     console.error('Erro ao carregar municípios:', error);
@@ -700,23 +699,28 @@
 
             let textoContasRejeitadas;
             if (contasRejeitadas) {
-                textoContasRejeitadas = 'V – tiveram as contas rejeitadas, mas demonstraram, nos termos do art. 39, IV, alíneas "a", "b" e "c", da Lei nº 13.019, de 2014, que:\nV.1 – a irregularidade que motivou a rejeição das contas foi sanada e que os débitos eventualmente imputados foram quitados;\nV.2 – a decisão de rejeição das contas foi reconsiderada ou revista;\nV.3 – a decisão sobre a apreciação das contas está pendente de decisão sobre recurso com efeito suspensivo;';
+                textoContasRejeitadas = [
+                    { text: 'V – tiveram as contas rejeitadas, mas demonstraram, nos termos do art. 39, IV, alíneas “a”, “b” e “c”, da Lei nº 13.019, de 2014, que:', margin: [0, 10], alignment: 'justify' },
+                    { text: 'V.1 – a irregularidade que motivou a rejeição das contas foi sanada e que os débitos eventualmente imputados foram quitados;', margin: [10, 5], alignment: 'justify' },
+                    { text: 'V.2 – a decisão de rejeição das contas foi reconsiderada ou revista;', margin: [10, 5], alignment: 'justify' },
+                    { text: 'V.3 – a decisão sobre a apreciação das contas está pendente de decisão sobre recurso com efeito suspensivo;', margin: [10, 5], alignment: 'justify' }
+                ];
             } else {
-                textoContasRejeitadas = 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.';
+                textoContasRejeitadas = { text: 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.', margin: [0, 10], alignment: 'justify' };
             }
-
+            
             let textoSancoesLei13019;
             if (sancoesLei13019) {
-                textoSancoesLei13019 = 'VI – foram punidos, mas o período que durou a penalidade já se exauriu.';
+                textoSancoesLei13019 = { text: 'VI – foram punidos, mas o período que durou a penalidade já se exauriu.', margin: [0, 10], alignment: 'justify' };
             } else {
-                textoSancoesLei13019 = 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas "a", "b", "c" e "d", da Lei nº 13.019, de 2014, ou foram punidos, mas o período que durou a penalidade já se exauriu.';
+                textoSancoesLei13019 = { text: 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas “a”, “b”, “c” e “d”, da Lei nº 13.019, de 2014.', margin: [0, 10], alignment: 'justify' };
             }
-
+            
             let textoImprobidadeAdministrativa;
             if (improbidadeAdministrativa) {
-                textoImprobidadeAdministrativa = 'c) foram consideradas responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.';
+                textoImprobidadeAdministrativa = { text: 'c) foram consideradas responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.', margin: [10, 5], alignment: 'justify' };
             } else {
-                textoImprobidadeAdministrativa = 'c) não foram considerados responsáveis por ato de improbidade;';
+                textoImprobidadeAdministrativa = { text: 'c) não foram considerados responsáveis por ato de improbidade;', margin: [10, 5], alignment: 'justify' };
             }
 
             const docDefinition = {
@@ -755,12 +759,12 @@
                     { text: '• membro de Poder ou do Ministério Público ou dirigente de órgão ou entidade da administração pública federal;', margin: [10, 5], alignment: 'justify' },
                     { text: '• servidor ou empregado público, inclusive aquele que exerça cargo em comissão ou função de confiança, de órgão ou entidade da administração pública federal celebrante, ou seu cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o segundo grau, ressalvadas as hipóteses previstas em lei específica e na lei de diretrizes orçamentárias;', margin: [10, 5], alignment: 'justify' },
                     { text: '• pessoas naturais condenadas pela prática de crimes contra a administração pública ou contra o patrimônio público, de crimes eleitorais para os quais a lei comine pena privativa de liberdade, e de crimes de lavagem ou ocultação de bens, direitos e valores.', margin: [10, 5], alignment: 'justify' },
-                    { text: textoContasRejeitadas, margin: [0, 10], alignment: 'justify' },
-                    { text: textoSancoesLei13019, margin: [0, 10], alignment: 'justify' },
+                    textoContasRejeitadas,
+                    textoSancoesLei13019,
                     { text: 'VII – não são pessoas que, durante os últimos 8 (oito) anos:', margin: [0, 10], alignment: 'justify' },
                     { text: 'a) tiveram suas contas relativas a parcerias julgadas irregulares ou rejeitadas por Tribunal ou Conselho de Contas de qualquer esfera da Federação, em decisão irrecorrível, nos últimos 8 (oito) anos;', margin: [10, 5], alignment: 'justify' },
                     { text: 'b) foram julgados responsáveis por falta grave e inabilitados para o exercício de cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [10, 5], alignment: 'justify' },
-                    { text: textoImprobidadeAdministrativa, margin: [10, 5], alignment: 'justify' },
+                    textoImprobidadeAdministrativa,
                     { text: `\n${municipioEntidade}/${ufEntidade}, ${dataAtual}.`, alignment: 'center', margin: [0, 20] },
                     { text: '_______________________________', alignment: 'center', margin: [0, 0] },
                     { text: `${nomeRepresentante}`, alignment: 'center', margin: [0, 5] },
