@@ -61,8 +61,8 @@
             max-width: 800px;
             width: 95%;
             text-align: left;
-            margin-top: 90px; /* Aumentado para não sobrepor header */
-            margin-bottom: 70px; /* Aumentado para não sobrepor footer */
+            margin-top: 90px;
+            margin-bottom: 70px;
         }
 
         .container h2 {
@@ -303,6 +303,9 @@
 
             <div id="annexContainer" class="form-section">
                 <h3>Anexos</h3>
+                <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">
+                    <strong>Orientação:</strong> Utilize imagens (PNG/JPEG, máx. 5MB) e PDFs (máx. 10MB) de tamanho reduzido para evitar arquivos grandes e garantir a geração eficiente do Atestado de Capacidade Técnica.
+                </p>
                 <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">Adicionar Anexo</button>
             </div>
 
@@ -386,7 +389,12 @@
         function updateAnnexFields() {
             const annexContainer = document.getElementById('annexContainer');
             const addAnnexBtn = document.getElementById('addAnnexBtn');
-            annexContainer.innerHTML = '<h3>Anexos</h3>';
+            annexContainer.innerHTML = `
+                <h3>Anexos</h3>
+                <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">
+                    <strong>Orientação:</strong> Utilize imagens (PNG/JPEG, máx. 5MB) e PDFs (máx. 10MB) de tamanho reduzido para evitar arquivos grandes e garantir a geração eficiente do Atestado de Capacidade Técnica.
+                </p>
+            `;
             annexContainer.appendChild(addAnnexBtn);
             annexCount = 0;
             fileCounters = {};
@@ -468,13 +476,19 @@
                 `;
             }
 
-            const fileSections = ['fotos', 'materiais', 'midia', 'instrumentos'];
-            fileSections.forEach(type => {
+            const fileSections = [
+                { type: 'fotos', label: 'Fotos e PDFs Relacionados <span style="color: red;">*</span>', required: true },
+                { type: 'materiais', label: 'Materiais e PDFs Relacionados (Não se Aplica)', required: false },
+                { type: 'midia', label: 'Mídia e PDFs Relacionados (Não se Aplica)', required: false },
+                { type: 'instrumentos', label: 'Instrumentos e PDFs Relacionados (Não se Aplica)', required: false }
+            ];
+
+            fileSections.forEach(({ type, label, required }) => {
                 annexFieldsHTML += `
                     <div class="file-section" id="${type}-${newAnnexId}-container">
-                        <label for="${type}-${newAnnexId}-1">${type.charAt(0).toUpperCase() + type.slice(1)} e PDFs Relacionados <span style="color: red;">*</span></label>
+                        <label for="${type}-${newAnnexId}-1">${label}</label>
                         <div class="file-input-wrapper" id="wrapper-${type}-${newAnnexId}-1">
-                            <input type="file" id="${type}-${newAnnexId}-1" accept="image/png,image/jpeg,application/pdf" multiple required onchange="validateMixedFiles(this)">
+                            <input type="file" id="${type}-${newAnnexId}-1" accept="image/png,image/jpeg,application/pdf" multiple ${required ? 'required' : ''} onchange="validateMixedFiles(this)">
                             <button type="button" class="remove-btn" onclick="removeFile('${type}', ${newAnnexId}, 1)" style="display: none;">Remover</button>
                         </div>
                         <button type="button" class="add-btn" onclick="addMoreFiles('${type}', ${newAnnexId})">Adicionar Mais</button>
@@ -487,7 +501,7 @@
             const addAnnexBtn = document.getElementById('addAnnexBtn');
             annexContainer.insertBefore(annexDiv, addAnnexBtn);
 
-            fileSections.forEach(type => {
+            fileSections.forEach(({ type }) => {
                 toggleRemoveButtonVisibility(type, newAnnexId);
             });
         }
@@ -524,7 +538,6 @@
             newInput.id = `${type}-${annexId}-${newIndex}`;
             newInput.accept = 'image/png,image/jpeg,application/pdf';
             newInput.multiple = true;
-            newInput.required = true;
             newInput.onchange = (e) => validateMixedFiles(e.target);
 
             const removeButton = document.createElement('button');
@@ -699,243 +712,235 @@
             return y;
         }
 
+        async function generatePDF() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('generatePdfBtn').disabled = true;
 
-async function generatePDF() {
-    document.getElementById('loadingOverlay').style.display = 'flex';
-    document.getElementById('generatePdfBtn').disabled = true;
+            try {
+                if (typeof window.jspdf === 'undefined' || typeof pdfjsLib === 'undefined') {
+                    throw new Error('Bibliotecas jsPDF ou PDF.js não carregadas.');
+                }
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    try {
-        if (typeof window.jspdf === 'undefined' || typeof pdfjsLib === 'undefined') {
-            throw new Error('Bibliotecas jsPDF ou PDF.js não carregadas.');
-        }
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const watermarkImageUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
+                let watermarkBase64 = '';
+                try {
+                    watermarkBase64 = await getBase64ImageFromUrl(watermarkImageUrl);
+                } catch (error) {
+                    console.error("Erro ao carregar a imagem da marca d'água:", error);
+                }
 
-        const watermarkImageUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
-        let watermarkBase64 = '';
-        try {
-            watermarkBase64 = await getBase64ImageFromUrl(watermarkImageUrl);
-        } catch (error) {
-            console.error("Erro ao carregar a imagem da marca d'água:", error);
-        }
+                const pageHeight = 297;
+                const pageWidth = 210;
+                const margin = 20;
+                let isMainContentPage = true;
 
-        const pageHeight = 297;
-        const pageWidth = 210;
-        const margin = 20;
-        let isMainContentPage = true;
+                const addWatermarkToPage = () => {
+                    if (isMainContentPage && watermarkBase64) {
+                        doc.addImage(watermarkBase64, 'JPEG', 0, 0, pageWidth, pageHeight, '', 'FAST', 0.2);
+                    }
+                };
 
-        const addWatermarkToPage = () => {
-            if (isMainContentPage && watermarkBase64) {
-                doc.addImage(watermarkBase64, 'JPEG', 0, 0, pageWidth, pageHeight, '', 'FAST', 0.2);
-            }
-        };
+                let yPos = margin;
+                const addNewPdfPage = (isContentPage = true) => {
+                    isMainContentPage = isContentPage;
+                    doc.addPage();
+                    addWatermarkToPage();
+                    return margin;
+                };
 
-        let yPos = margin;
-        const addNewPdfPage = (isContentPage = true) => {
-            isMainContentPage = isContentPage;
-            doc.addPage();
-            addWatermarkToPage();
-            return margin;
-        };
+                addWatermarkToPage();
+                yPos = margin + 20;
 
-        addWatermarkToPage();
-        yPos = margin + 20;
+                const tipoAtestado = document.getElementById('tipoAtestado').value;
+                const nomeDirigente = document.getElementById('nomeDirigente').value || 'Pedro Dias Pereira';
+                const cargoDirigente = document.getElementById('cargoDirigente').value || 'Presidente';
+                const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                const nomeEntidade = document.getElementById('nomeEntidade').value || 'Não informado';
+                const cep = document.getElementById('cep').value || '';
+                const endereco = document.getElementById('endereco').value || '';
+                const numeroValue = document.getElementById('numero')?.value || '';
+                const complementoValue = document.getElementById('complemento')?.value || '';
+                const numeroPropostaValue = document.getElementById('numeroProposta')?.value || '';
+                const [cidade, uf] = (endereco ? endereco.split(', ').pop().split(' - ') : ['', '']) || ['Brasília', 'DF'];
+                const currentDate = new Date('2025-07-03T10:07:42-03:00');
+                const day = currentDate.getDate().toString().padStart(2, '0');
+                const monthName = currentDate.toLocaleString('pt-BR', { month: 'long' });
+                const year = currentDate.getFullYear();
+                const enderecoCompleto = `${endereco}, ${numeroValue}${complementoValue ? ', ' + complementoValue : ''}, CEP ${cep}`;
 
-        const tipoAtestado = document.getElementById('tipoAtestado').value;
-        const nomeDirigente = document.getElementById('nomeDirigente').value || 'Pedro Dias Pereira';
-        const cargoDirigente = document.getElementById('cargoDirigente').value || 'Presidente';
-        const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-        const nomeEntidade = document.getElementById('nomeEntidade').value || 'Não informado';
-        const cep = document.getElementById('cep').value || '';
-        const endereco = document.getElementById('endereco').value || '';
-        const numeroValue = document.getElementById('numero')?.value || '';
-        const complementoValue = document.getElementById('complemento')?.value || '';
-        const numeroPropostaValue = document.getElementById('numeroProposta')?.value || '';
-        const [cidade, uf] = (endereco ? endereco.split(', ').pop().split(' - ') : ['', '']) || ['Brasília', 'DF'];
-        const currentDate = new Date('2025-07-03T10:07:42-03:00');
-        const day = currentDate.getDate().toString().padStart(2, '0');
-        const monthName = currentDate.toLocaleString('pt-BR', { month: 'long' });
-        const year = currentDate.getFullYear();
-        const enderecoCompleto = `${endereco}, ${numeroValue}${complementoValue ? ', ' + complementoValue : ''}, CEP ${cep}`;
+                doc.setFontSize(18);
+                doc.setTextColor(0, 0, 255);
+                doc.text('ATESTADO DE CAPACIDADE TÉCNICA', pageWidth / 2, yPos, { align: 'center' });
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                yPos += 15;
 
-        doc.setFontSize(18);
-        doc.setTextColor(0, 0, 255);
-        doc.text('ATESTADO DE CAPACIDADE TÉCNICA', pageWidth / 2, yPos, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        yPos += 15;
+                const text1 = `Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestado === 'termoFomento' ? 'Termo de Fomento' : 'Convênio'} no âmbito do Ministério do Esporte - MESP, que ${nomeEntidade}, inscrito(a) no CNPJ sob o nº ${cnpj}, situado(a) no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroPropostaValue}, em atendimento ao ${tipoAtestado === 'termoFomento' ? 'art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025)' : 'inciso V, Art. 18, da Portaria Conjunta MGI/MF/CGU nº 33, de 30 de agosto de 2023'}, considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`;
+                let lines1 = doc.splitTextToSize(text1, pageWidth - 2 * margin);
+                doc.text(lines1, margin, yPos);
+                yPos += lines1.length * 5 + 10;
 
-        const text1 = `Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestado === 'termoFomento' ? 'Termo de Fomento' : 'Convênio'} no âmbito do Ministério do Esporte - MESP, que ${nomeEntidade}, inscrito(a) no CNPJ sob o nº ${cnpj}, situado(a) no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroPropostaValue}, em atendimento ao ${tipoAtestado === 'termoFomento' ? 'art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025)' : 'inciso V, Art. 18, da Portaria Conjunta MGI/MF/CGU nº 33, de 30 de agosto de 2023'}, considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`;
-        let lines1 = doc.splitTextToSize(text1, pageWidth - 2 * margin);
-        doc.text(lines1, margin, yPos);
-        yPos += lines1.length * 5 + 10;
+                const text2 = `O(s) projeto(s)/ação(es) descrito(s) foi(ram) executado(s) com qualidade, não existindo, até a presente data, fatos que desabonem a conduta e a responsabilidade da entidade com as obrigações assumidas, confirmando assim a capacidade técnica e operacional para a execução do que foi proposto.`;
+                let lines2 = doc.splitTextToSize(text2, pageWidth - 2 * margin);
+                doc.text(lines2, margin, yPos);
+                yPos += lines2.length * 5 + 20;
 
-        const text2 = `O(s) projeto(s)/ação(es) descrito(s) foi(ram) executado(s) com qualidade, não existindo, até a presente data, fatos que desabonem a conduta e a responsabilidade da entidade com as obrigações assumidas, confirmando assim a capacidade técnica e operacional para a execução do que foi proposto.`;
-        let lines2 = doc.splitTextToSize(text2, pageWidth - 2 * margin);
-        doc.text(lines2, margin, yPos);
-        yPos += lines2.length * 5 + 20;
+                if (yPos + 40 > pageHeight - margin) {
+                    yPos = addNewPdfPage(true);
+                }
+                doc.text(`${cidade}/${uf}, ${day} de ${monthName} de ${year}`, pageWidth / 2, yPos, { align: 'center' });
+                yPos += 20;
 
-        if (yPos + 40 > pageHeight - margin) {
-            yPos = addNewPdfPage(true);
-        }
-        doc.text(`${cidade}/${uf}, ${day} de ${monthName} de ${year}`, pageWidth / 2, yPos, { align: 'center' });
-        yPos += 20;
+                const signatureLineLength = 80;
+                const signatureLineStartX = (pageWidth - signatureLineLength) / 2;
+                doc.line(signatureLineStartX, yPos, signatureLineStartX + signatureLineLength, yPos);
+                yPos += 6;
+                doc.text(nomeDirigente, pageWidth / 2, yPos, { align: 'center' });
+                yPos += 6;
+                doc.text(cargoDirigente, pageWidth / 2, yPos, { align: 'center' });
 
-        const signatureLineLength = 80;
-        const signatureLineStartX = (pageWidth - signatureLineLength) / 2;
-        doc.line(signatureLineStartX, yPos, signatureLineStartX + signatureLineLength, yPos);
-        yPos += 6;
-        doc.text(nomeDirigente, pageWidth / 2, yPos, { align: 'center' });
-        yPos += 6;
-        doc.text(cargoDirigente, pageWidth / 2, yPos, { align: 'center' });
-
-        // *** LÓGICA CORRIGIDA PARA RENDERIZAR OS ANEXOS ***
-        for (const i of annexOrder) {
-            // --- PÁGINA 1: DETALHES EM TEXTO DO ANEXO ---
-            yPos = addNewPdfPage(true);
-            yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
-
-            // Coleta todos os dados do formulário para este anexo
-            const nomeProjeto = document.getElementById(`nomeProjeto-${i}`)?.value || 'Não informado';
-            const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`)?.value || 'Não informado';
-            const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`)?.value || 'Não informado';
-            const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`)?.value || 'Não informado';
-            const dataInicio = formatDateToBrazilian(document.getElementById(`dataInicio-${i}`)?.value);
-            const dataTermino = formatDateToBrazilian(document.getElementById(`dataTermino-${i}`)?.value);
-            const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
-            const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
-
-            // Função auxiliar para adicionar texto e cuidar da quebra de página
-            const addTextSection = (label, value) => {
-                const labelHeight = 6;
-                const valueLines = doc.splitTextToSize(value, pageWidth - margin * 2 - 5);
-                const valueHeight = valueLines.length * 5;
-
-                if (yPos + labelHeight + valueHeight > pageHeight - margin) {
+                for (const i of annexOrder) {
                     yPos = addNewPdfPage(true);
                     yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
-                }
 
-                doc.setFont('helvetica', 'bold');
-                doc.text(label, margin, yPos);
-                yPos += labelHeight;
+                    const nomeProjeto = document.getElementById(`nomeProjeto-${i}`)?.value || 'Não informado';
+                    const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`)?.value || 'Não informado';
+                    const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`)?.value || 'Não informado';
+                    const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`)?.value || 'Não informado';
+                    const dataInicio = formatDateToBrazilian(document.getElementById(`dataInicio-${i}`)?.value);
+                    const dataTermino = formatDateToBrazilian(document.getElementById(`dataTermino-${i}`)?.value);
+                    const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
+                    const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
 
-                doc.setFont('helvetica', 'normal');
-                doc.text(valueLines, margin + 5, yPos);
-                yPos += valueHeight + 5; // Espaçamento extra
-            };
-            
-            // Renderiza os campos de texto no PDF
-            addTextSection('Nome do Projeto/Ação:', nomeProjeto);
-            addTextSection('Entidades Parceiras:', entidadesParceiras);
-            addTextSection('Número de Beneficiados:', numeroBeneficiados);
-            addTextSection('Data de Início:', dataInicio);
-            addTextSection('Data de Término:', dataTermino);
-            addTextSection('Ações/Atividades Desenvolvidas:', atividadesDesenvolvidas);
+                    const addTextSection = (label, value) => {
+                        const labelHeight = 6;
+                        const valueLines = doc.splitTextToSize(value, pageWidth - margin * 2 - 5);
+                        const valueHeight = valueLines.length * 5;
 
-            // Renderiza campos condicionais baseados no tipo de atestado
-            if (tipoAtestado === 'termoFomento') {
-                addTextSection('Estruturas Físicas:', estruturasFisicas);
-                addTextSection('Qualificação Profissional:', qualificacaoPessoal);
-            }
+                        if (yPos + labelHeight + valueHeight > pageHeight - margin) {
+                            yPos = addNewPdfPage(true);
+                            yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+                        }
 
-            // --- PÁGINA 2 EM DIANTE: DOCUMENTOS COMPROBATÓRIOS ---
-            yPos = addNewPdfPage(true);
-            yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
-            doc.text('- Documentos Comprobatórios:', margin, yPos);
-            yPos += 10;
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(label, margin, yPos);
+                        yPos += labelHeight;
 
-            let filesToRenderInPDF = [];
-            const evidenceTypes = ['fotos', 'materiais', 'midia', 'instrumentos'];
-            for (const type of evidenceTypes) {
-                const inputs = document.querySelectorAll(`input[id^="${type}-${i}-"]`);
-                inputs.forEach(input => {
-                    if (input.files) {
-                        Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file }));
-                    }
-                });
-            }
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(valueLines, margin + 5, yPos);
+                        yPos += valueHeight + 5;
+                    };
+                    
+                    addTextSection('Nome do Projeto/Ação:', nomeProjeto);
+                    addTextSection('Entidades Parceiras:', entidadesParceiras);
+                    addTextSection('Número de Beneficiados:', numeroBeneficiados);
+                    addTextSection('Data de Início:', dataInicio);
+                    addTextSection('Data de Término:', dataTermino);
+                    addTextSection('Ações/Atividades Desenvolvidas:', atividadesDesenvolvidas);
 
-            for (const { file } of filesToRenderInPDF) {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    const imgData = await new Promise((resolve) => { reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); });
-                    const img = new Image();
-                    img.src = imgData;
-                    await new Promise((resolve) => { img.onload = resolve; });
-
-                    const maxWidth = pageWidth - 2 * margin;
-                    const maxHeight = pageHeight - (margin * 2) - 40;
-                    const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-                    const finalHeight = img.height * ratio;
-                    const finalWidth = img.width * ratio;
-                    const captionHeight = 15;
-
-                    if (yPos + finalHeight + captionHeight > pageHeight - margin) {
-                        yPos = addNewPdfPage(true);
-                        yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+                    if (tipoAtestado === 'termoFomento') {
+                        addTextSection('Estruturas Físicas:', estruturasFisicas);
+                        addTextSection('Qualificação Profissional:', qualificacaoPessoal);
                     }
 
-                    doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
-                    yPos += finalHeight + 5;
-                    doc.setFontSize(9);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text(`Arquivo: ${file.name}`, pageWidth / 2, yPos, { align: 'center' });
-                    doc.setTextColor(0, 0, 0);
+                    yPos = addNewPdfPage(true);
+                    yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+                    doc.text('- Documentos Comprobatórios:', margin, yPos);
                     yPos += 10;
-                    doc.setFontSize(12);
 
-                } else if (file.type === 'application/pdf') {
-                    const pdfBytes = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+                    let filesToRenderInPDF = [];
+                    const evidenceTypes = ['fotos', 'materiais', 'midia', 'instrumentos'];
+                    for (const type of evidenceTypes) {
+                        const inputs = document.querySelectorAll(`input[id^="${type}-${i}-"]`);
+                        inputs.forEach(input => {
+                            if (input.files) {
+                                Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file }));
+                            }
+                        });
+                    }
 
-                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                        yPos = addNewPdfPage(true);
-                        yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+                    for (const { file } of filesToRenderInPDF) {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            const imgData = await new Promise((resolve) => { reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); });
+                            const img = new Image();
+                            img.src = imgData;
+                            await new Promise((resolve) => { img.onload = resolve; });
 
-                        const page = await pdf.getPage(pageNum);
-                        const viewport = page.getViewport({ scale: 1 });
-                        const maxWidth = pageWidth - (2 * margin);
-                        const maxHeight = pageHeight - yPos - margin;
-                        const scale = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
-                        const renderHeight = viewport.height * scale;
-                        const renderWidth = viewport.width * scale;
+                            const maxWidth = pageWidth - 2 * margin;
+                            const maxHeight = pageHeight - (margin * 2) - 40;
+                            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                            const finalHeight = img.height * ratio;
+                            const finalWidth = img.width * ratio;
+                            const captionHeight = 15;
 
-                        const renderScale = 3;
-                        const scaledViewport = page.getViewport({ scale: scale * renderScale });
-                        const canvas = document.createElement('canvas');
-                        canvas.width = scaledViewport.width;
-                        canvas.height = scaledViewport.height;
+                            if (yPos + finalHeight + captionHeight > pageHeight - margin) {
+                                yPos = addNewPdfPage(true);
+                                yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+                            }
 
-                        await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaledViewport }).promise;
-                        const imageData = canvas.toDataURL('image/jpeg', 0.95);
-                        
-                        doc.addImage(imageData, 'JPEG', (pageWidth - renderWidth) / 2, yPos, renderWidth, renderHeight);
-                        yPos += renderHeight + 5;
-                        doc.setFontSize(9);
-                        doc.setTextColor(100, 100, 100);
-                        doc.text(`Arquivo: ${file.name} (Página ${pageNum})`, pageWidth / 2, yPos, { align: 'center' });
-                        doc.setTextColor(0, 0, 0);
-                        doc.setFontSize(12);
+                            doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
+                            yPos += finalHeight + 5;
+                            doc.setFontSize(9);
+                            doc.setTextColor(100, 100, 100);
+                            doc.text(`Arquivo: ${file.name}`, pageWidth / 2, yPos, { align: 'center' });
+                            doc.setTextColor(0, 0, 0);
+                            yPos += 10;
+                            doc.setFontSize(12);
+
+                        } else if (file.type === 'application/pdf') {
+                            const pdfBytes = await file.arrayBuffer();
+                            const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+
+                            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                                yPos = addNewPdfPage(true);
+                                yPos = addAnnexHeader(doc, margin + 30, margin, pageWidth);
+
+                                const page = await pdf.getPage(pageNum);
+                                const viewport = page.getViewport({ scale: 1 });
+                                const maxWidth = pageWidth - (2 * margin);
+                                const maxHeight = pageHeight - yPos - margin;
+                                const scale = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
+                                const renderHeight = viewport.height * scale;
+                                const renderWidth = viewport.width * scale;
+
+                                const renderScale = 3;
+                                const scaledViewport = page.getViewport({ scale: scale * renderScale });
+                                const canvas = document.createElement('canvas');
+                                canvas.width = scaledViewport.width;
+                                canvas.height = scaledViewport.height;
+
+                                await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaledViewport }).promise;
+                                const imageData = canvas.toDataURL('image/jpeg', 0.95);
+                                
+                                doc.addImage(imageData, 'JPEG', (pageWidth - renderWidth) / 2, yPos, renderWidth, renderHeight);
+                                yPos += renderHeight + 5;
+                                doc.setFontSize(9);
+                                doc.setTextColor(100, 100, 100);
+                                doc.text(`Arquivo: ${file.name} (Página ${pageNum})`, pageWidth / 2, yPos, { align: 'center' });
+                                doc.setTextColor(0, 0, 0);
+                                doc.setFontSize(12);
+                            }
+                        }
                     }
                 }
+
+                const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s/g, '_')}.pdf`;
+                doc.save(pdfName);
+                alert('PDF gerado com sucesso!');
+
+            } catch (fatalError) {
+                alert(`Um erro grave ocorreu durante a geração do PDF: ${fatalError.message}. Por favor, verifique o console para mais detalhes.`);
+                console.error("Erro fatal na geração do PDF:", fatalError);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('generatePdfBtn').disabled = false;
             }
         }
-
-        const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s/g, '_')}.pdf`;
-        doc.save(pdfName);
-        alert('PDF gerado com sucesso!');
-
-    } catch (fatalError) {
-        alert(`Um erro grave ocorreu durante a geração do PDF: ${fatalError.message}. Por favor, verifique o console para mais detalhes.`);
-        console.error("Erro fatal na geração do PDF:", fatalError);
-    } finally {
-        document.getElementById('loadingOverlay').style.display = 'none';
-        document.getElementById('generatePdfBtn').disabled = false;
-    }
-}
     </script>
 </body>
 </html>
