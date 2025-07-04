@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador Documentações</title>
     <style>
-        /* Existing styles remain unchanged */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333; line-height: 1.6; }
         header { background-color: #003087; color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; width: 100%; top: 0; z-index: 1000; height: 60px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
@@ -46,9 +45,36 @@
         .tab { display: none; }
         .tab.active { display: block; }
         .error-message { color: red; font-size: 0.8rem; display: none; margin-top: 5px; }
-        .espaco-fisico-container { margin-top: 10px; width: 100%;}
+        .espaco-fisico-container { margin-top: 10px; width: 100%; }
         .remove-btn { background-color: #dc3545; color: #fff; padding: 5px 10px; margin-left: 10px; }
         .remove-btn:hover { background-color: #c82333; }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1001;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+        @keyframes fadeout {
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: 0; opacity: 0; }
+        }
         @media (max-width: 600px) {
             .form-row { flex-direction: column; }
             .container { margin: 70px 10px 20px; padding: 15px; }
@@ -147,7 +173,7 @@
                             <span id="erro-cep" class="error-message">CEP não preenchido.</span>
                         </div>
                     </div>
-                     <div class="form-row">
+                    <div class="form-row">
                         <div class="full-width">
                             <label for="valorContrapartida">Valor da Contrapartida (R$):</label>
                             <input type="text" id="valorContrapartida" oninput="mascaraMoeda(this); atualizarValorExtenso();" required>
@@ -204,7 +230,7 @@
                                 <button type="button" class="remove-btn" onclick="removerEspacoFisico(0)" style="display: none;">Remover</button>
                             </div>
                         </div>
-                         <div class="button-container" style="width: 100%;">
+                        <div class="button-container" style="width: 100%;">
                             <button type="button" onclick="adicionarEspacoFisico()">Adicionar Novo Espaço Físico</button>
                             <button type="button" onclick="salvarEspacoFisico()">Salvar</button>
                         </div>
@@ -217,6 +243,7 @@
             </div>
         </form>
         <div id="loadingMessage" style="display:none;">Aguarde, gerando PDF...</div>
+        <div id="toast" class="toast">Dados salvos com sucesso!</div>
     </div>
     <footer>
         <p>© 2025 Ministério do Esporte</p>
@@ -262,31 +289,13 @@
             }
         }
 
-        /**
-         * FUNÇÃO CORRIGIDA
-         * Valida e formata o campo Proposta no formato XXXXX/YYYY.
-         */
         function validarProposta(input) {
             const erro = document.getElementById('erro-proposta');
             if (erro) {
-                // 1. Pega apenas os dígitos do valor do input.
                 let value = input.value.replace(/\D/g, '');
-
-                // 2. Limita o total de dígitos a 9 (5 para a proposta + 4 para o ano).
-                if (value.length > 9) {
-                    value = value.slice(0, 9);
-                }
-
-                // 3. Aplica a máscara XXXXX/YYYY dinamicamente.
-                if (value.length > 5) {
-                    value = value.slice(0, 5) + '/' + value.slice(5);
-                }
-
-                // 4. Atualiza o valor no campo de input.
+                if (value.length > 9) value = value.slice(0, 9);
+                if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5);
                 input.value = value;
-
-                // 5. Verifica o formato final para mostrar ou esconder a mensagem de erro.
-                // A mensagem aparece se o campo não estiver vazio e não corresponder ao formato completo.
                 if (input.value.length > 0 && !/^\d{5}\/\d{4}$/.test(input.value)) {
                     erro.style.display = 'block';
                 } else {
@@ -526,7 +535,6 @@
             } else if (!is00SLEnabled) {
                 camposEspacoFisico.style.display = 'flex';
             }
-            
             validarGerarPDF();
         }
 
@@ -560,7 +568,7 @@
                 toRemove.remove();
             }
             if (document.querySelectorAll('#espacoFisicoFields .form-row').length <= 1) {
-                 document.querySelector('#espacoFisicoFields .remove-btn').style.display = 'none';
+                document.querySelector('#espacoFisicoFields .remove-btn').style.display = 'none';
             }
             validarGerarPDF();
         }
@@ -568,8 +576,9 @@
         function mostrarCamposEspacoFisico() {
             const select = document.getElementById('opcaoSelecao');
             const camposEspacoFisico = document.getElementById('camposEspacoFisico');
+            const marcador = document.getElementById('marcador00SL');
             
-            if (select.value.includes('00SL')) {
+            if (select.value.includes('00SL') && marcador.checked) {
                 camposEspacoFisico.style.display = 'flex';
             } else {
                 camposEspacoFisico.style.display = 'none';
@@ -580,38 +589,53 @@
         function salvarEspacoFisico() {
             let valido = true;
             const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
+            const opcaoSelecao = document.getElementById('opcaoSelecao').value;
+            const marcador = document.getElementById('marcador00SL').checked;
 
-            if (campos.length === 0) {
-                alert('Adicione pelo menos um espaço físico.');
-                return;
+            // Only validate "Espaço Físico" fields if "00SL" is selected and checkbox is checked
+            if (opcaoSelecao.includes('00SL') && marcador) {
+                if (campos.length === 0) {
+                    alert('Adicione pelo menos um espaço físico.');
+                    return;
+                }
+
+                campos.forEach(row => {
+                    const nomeInput = row.querySelector('input[id^="nomeEspacoFisico"]');
+                    const enderecoInput = row.querySelector('input[id^="enderecoEspacoFisico"]');
+                    const erroNome = row.querySelector('span.error-message');
+                    const erroEndereco = row.querySelector('span.error-message:nth-child(4)');
+
+                    if (!nomeInput || !erroNome || !enderecoInput || !erroEndereco) {
+                        console.error('Elemento não encontrado no row:', row);
+                        valido = false;
+                        return;
+                    }
+
+                    console.log('Nome:', nomeInput.value.trim(), 'Endereço:', enderecoInput.value.trim());
+
+                    if (!nomeInput.value.trim()) {
+                        erroNome.style.display = 'block';
+                        valido = false;
+                    } else {
+                        erroNome.style.display = 'none';
+                    }
+                    if (!enderecoInput.value.trim()) {
+                        erroEndereco.style.display = 'block';
+                        valido = false;
+                    } else {
+                        erroEndereco.style.display = 'none';
+                    }
+                });
+            } else {
+                // For "20JP" or no "00SL" selection, consider it valid if no "00SL" is required
+                valido = true;
             }
-
-            campos.forEach((row, index) => {
-                 const idSuffix = row.id.replace('espacoFisicoRow', '');
-                 const nomeInput = document.getElementById(`nomeEspacoFisico${idSuffix}`);
-                 const enderecoInput = document.getElementById(`enderecoEspacoFisico${idSuffix}`);
-                 const erroNome = document.getElementById(`erro-nomeEspacoFisico${idSuffix}`);
-                 const erroEndereco = document.getElementById(`erro-enderecoEspacoFisico${idSuffix}`);
-
-                if (!nomeInput.value || /[^A-Za-zÀ-ÿ\s]/.test(nomeInput.value)) {
-                    erroNome.style.display = 'block';
-                    valido = false;
-                } else {
-                    erroNome.style.display = 'none';
-                }
-                if (!enderecoInput.value) {
-                    erroEndereco.style.display = 'block';
-                    valido = false;
-                } else {
-                    erroEndereco.style.display = 'none';
-                }
-            });
 
             if (valido) {
                 is00SLEnabled = true;
                 const options = document.querySelectorAll('option[value*="00SL"]');
                 options.forEach(option => option.disabled = false);
-                alert('Dados do espaço físico salvos com sucesso! Agora você pode selecionar uma opção 00SL.');
+                showToast('Dados do espaço físico salvos com sucesso!');
             } else {
                 alert('Preencha todos os campos dos espaços físicos corretamente.');
             }
@@ -624,25 +648,25 @@
             const marcador = document.getElementById('marcador00SL').checked;
 
             if (!opcaoSelecao) {
-                 gerarPDFBtn.disabled = true;
-                 return;
-            }
-            
-            if (opcaoSelecao.includes('20JP')) {
-                gerarPDFBtn.disabled = false;
+                gerarPDFBtn.disabled = true;
                 return;
             }
-            
+
+            if (opcaoSelecao.includes('20JP')) {
+                gerarPDFBtn.disabled = false; // Enable for 20JP without further checks
+                return;
+            }
+
             if (opcaoSelecao.includes('00SL')) {
                 if (marcador && is00SLEnabled) {
                     let allValid = true;
                     const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
-                    if(campos.length === 0) {
+                    if (campos.length === 0) {
                         allValid = false;
                     }
                     campos.forEach(row => {
                         const inputs = row.querySelectorAll('input[type="text"]');
-                        if(!inputs[0].value || !inputs[1].value) {
+                        if (!inputs[0].value.trim() || !inputs[1].value.trim()) {
                             allValid = false;
                         }
                     });
@@ -651,6 +675,15 @@
                     gerarPDFBtn.disabled = true;
                 }
             }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
         }
     </script>
 </body>
