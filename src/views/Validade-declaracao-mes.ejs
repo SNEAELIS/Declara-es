@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0056b3"> <meta name="description" content="Gerador de Declarações para Entidades Públicas do Ministério do Esporte.">
+    <title>Gerador de Declarações - Ministério do Esporte</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
+    <style>
+        /* --- Variáveis de Tema e Layout --- */
+        :root {
+            --header-height: 85px;
+            --header-height-mobile: 75px;
+
+            --bg-primary: #0d1b2a;
+            --bg-secondary: #1b263b;
+            --text-primary: #e0e1dd;
+            --text-secondary: #a9b4c2;
+            --accent: #415a77;
+            --accent-light: #5a7b9d;
+            --border: rgba(224, 225, 221, 0.1);
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            --gradient: linear-gradient(135deg, var(--accent), var(--accent-light));
+            --error: #e53e3e;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f6fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #1c2526;
+            --text-secondary: #5c6b73;
+            --accent: #0056b3;       /* <<-- AZUL MAIS FORTE E VIVO -->> */
+            --accent-light: #0069d9;  /* <<-- Variação para o efeito hover -->> */
+            --border: rgba(28, 37, 38, 0.1);
+            --shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Reset e Estilos Base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-top: var(--header-height);
+        }
+
+        /* --- Cabeçalho --- */
+        header {
+            background-color: var(--bg-secondary);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        header img { max-width: 180px; height: auto; transition: transform 0.3s ease; }
+        header img:hover { transform: scale(1.05); }
+        header h1 { font-size: 1.7rem; font-weight: 600; }
+        .theme-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.4rem; cursor: pointer; transition: color 0.3s ease, transform 0.3s ease; }
+        .theme-toggle:hover { color: var(--accent-light); transform: rotate(15deg); }
+
+        /* --- Conteúdo Principal --- */
+        main.container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 40px auto 60px;
+            padding: 30px 40px;
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .container-header { text-align: center; margin-bottom: 35px; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
+        .container-header h2 { font-size: 2.2rem; font-weight: 600; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .status { font-size: 1rem; color: #fff; font-weight: 500; background: var(--accent); padding: 4px 12px; border-radius: 20px; display: inline-block; margin-top: 10px; }
+
+        /* --- Stepper / Barra de Progresso --- */
+        .stepper-nav { margin-bottom: 40px; }
+        .stepper-wrapper { display: flex; justify-content: space-between; position: relative; }
+        .stepper-item { display: flex; flex-direction: column; align-items: center; text-align: center; width: 33.33%; position: relative; z-index: 1; }
+        .step-counter { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-primary); border: 3px solid var(--text-secondary); color: var(--text-secondary); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 600; transition: all 0.4s ease; z-index: 2; }
+        .step-name { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); margin-top: 10px; transition: all 0.4s ease; }
+        .stepper-wrapper::before { content: ''; position: absolute; top: 25px; left: 0; right: 0; height: 3px; background-color: var(--text-secondary); transform: translateY(-50%); z-index: 0; }
+        .stepper-progress { position: absolute; top: 25px; left: 0; height: 3px; background: var(--gradient); transform: translateY(-50%); width: 0; transition: width 0.5s ease-in-out; z-index: 1; }
+        .stepper-item.active .step-counter { border-color: var(--accent); color: var(--accent); background-color: var(--bg-secondary); transform: scale(1.1); }
+        .stepper-item.active .step-name { color: var(--text-primary); }
+        .stepper-item.completed .step-counter { background: var(--gradient); border-color: var(--accent); color: white; transform: scale(1); }
+        .stepper-item.completed:hover { cursor: pointer; }
+        .stepper-item.completed:hover .step-counter { box-shadow: 0 0 15px var(--accent-light); }
+        
+        /* Abas e Formulário */
+        .tab { display: none; animation: fadeIn 0.4s; }
+        .tab.active { display: block; }
+        .section { margin-bottom: 25px; }
+        .section h3 { font-size: 1.6rem; margin-bottom: 20px; position: relative; padding-bottom: 10px; }
+        .section h3::after { content: ''; position: absolute; bottom: 0; left: 0; width: 50px; height: 3px; background: var(--gradient); border-radius: 2px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 15px; }
+        .form-group { flex: 1; min-width: 220px; position: relative; }
+        .full-width { flex-basis: 100%; }
+        label { font-size: 1rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; display: block; }
+        input[type="text"], select { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: all 0.3s ease; }
+        input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+        input[readonly] { background-color: rgba(0,0,0,0.2); cursor: not-allowed; }
+        input:focus, select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-light); }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a9b4c2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: .65em auto; }
+        .error-message { color: var(--error); font-size: 0.9rem; display: none; margin-top: 5px; animation: shake 0.3s ease; }
+        .form-group.invalid input, .form-group.invalid select { border-color: var(--error); }
+        .form-group.invalid .error-message { display: block; }
+        .button-container { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+        button { background: var(--gradient); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        button:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(65, 90, 119, 0.4); }
+        button:disabled { background: var(--text-secondary); opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        /* Popups e Overlays */
+        .loading-overlay, .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1001; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .loading-overlay p { color: var(--text-primary); font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(224, 225, 221, 0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-secondary); padding: 25px 40px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; z-index: 1002; opacity: 0; visibility: hidden; transition: opacity 0.3s, transform 0.3s, visibility 0.3s; }
+        .popup.show, .overlay.show, .loading-overlay.show { opacity: 1; visibility: visible; }
+        .popup.show { transform: translate(-50%, -50%) scale(1); }
+        .popup p { font-size: 1.1rem; font-weight: 500; margin-bottom: 20px; }
+        
+        /* Rodapé */
+        footer { background: var(--bg-secondary); padding: 20px 30px; text-align: center; border-top: 1px solid var(--border); transition: background-color 0.3s ease, color 0.3s ease; }
+        footer a { color: var(--accent); text-decoration: none; transition: color 0.3s ease; font-weight: 600; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Regras para o tema claro */
+        [data-theme="light"] header,
+        [data-theme="light"] footer {
+            background: var(--accent);
+            color: #fff;
+        }
+        [data-theme="light"] .theme-toggle,
+        [data-theme="light"] header h1 {
+            color: #fff;
+        }
+        [data-theme="light"] footer,
+        [data-theme="light"] footer a {
+            color: #fff;
+        }
+        [data-theme="light"] footer a {
+            text-decoration: underline;
+        }
+        [data-theme="light"] footer a:hover {
+            color: #ddd;
+        }
+        
+        /* Animações e Responsividade */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 768px) {
+            body { padding-top: var(--header-height-mobile); }
+            header { height: var(--header-height-mobile); }
+            .header-content { padding: 0 15px; }
+            header h1 { font-size: 1.2rem; }
+            header img { max-width: 150px; }
+            main.container { margin: 20px 15px 40px; padding: 20px; }
+            .form-row { flex-direction: column; gap: 15px; }
+            .button-container { flex-direction: column; gap: 10px; }
+            .button-container button { width: 100%; }
+            .step-name { font-size: 0.8rem; }
+            .step-counter { width: 40px; height: 40px; font-size: 1.2rem; }
+            .stepper-wrapper::before, .stepper-progress { top: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
+                <h1>Ministério do Esporte</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                <i class="fas fa-adjust"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="container-header">
+            <h2>Declaração de Entidade Pública</h2>
+            <span class="status">Emissão</span>
+        </div>
+
+        <nav class="stepper-nav">
+            <div class="stepper-wrapper">
+                <div class="stepper-progress"></div>
+                <div class="stepper-item active" data-tab="aba1">
+                    <div class="step-counter"><i class="fa-solid fa-user"></i></div>
+                    <div class="step-name">Responsável</div>
+                </div>
+                <div class="stepper-item" data-tab="aba2">
+                    <div class="step-counter"><i class="fa-solid fa-building"></i></div>
+                    <div class="step-name">Entidade</div>
+                </div>
+                <div class="stepper-item" data-tab="aba3">
+                    <div class="step-counter"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="step-name">Finalizar</div>
+                </div>
+            </div>
+        </nav>
+
+        <form id="declaracoesForm" novalidate>
+            <div id="aba1" class="tab active">
+                <section class="section">
+                    <h3>Dados do Responsável</h3>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="nomeResponsavel">Nome do Responsável</label>
+                            <input type="text" id="nomeResponsavel" required autocomplete="name" placeholder="Nome completo">
+                            <span class="error-message" aria-live="polite">Por favor, digite um nome válido.</span>
+                        </div>
+                        <div class="form-group half-width">
+                            <label for="cargo">Cargo</label>
+                            <select id="cargo" required>
+                                <option value="" disabled selected>Selecione o cargo</option>
+                                <option value="Governador do Estado">Governador do Estado</option>
+                                <option value="Prefeito do Município">Prefeito do Município</option>
+                                <option value="Secretário de Finanças">Secretário de Finanças</option>
+                            </select>
+                            <span class="error-message" aria-live="polite">Por favor, selecione um cargo.</span>
+                        </div>
+                    </div>
+                </section>
+                <div class="button-container" style="justify-content: flex-end;">
+                    <button type="button" class="nav-button" data-next-tab="aba2" disabled>Próximo <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="aba2" class="tab">
+                <section class="section">
+                    <h3>Dados da Entidade</h3>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="cnpj">CNPJ</label>
+                            <input type="text" id="cnpj" maxlength="18" placeholder="00.000.000/0000-00" required>
+                            <span class="error-message" aria-live="polite">Por favor, digite um CNPJ válido.</span>
+                        </div>
+                        <div class="form-group half-width">
+                            <label for="cep">CEP</label>
+                            <input type="text" id="cep" maxlength="9" placeholder="Preenchido via CNPJ" readonly required>
+                            <span class="error-message" aria-live="polite">CEP não encontrado.</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="endereco">Endereço (Rua, Número, Bairro)</label>
+                            <input type="text" id="endereco" placeholder="Preenchido via CNPJ" readonly required>
+                            <span class="error-message" aria-live="polite">Endereço não encontrado.</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                         <div class="form-group half-width">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" id="complemento" autocomplete="street-address" placeholder="Ex: Bloco A, Sala 101">
+                         </div>
+                        <div class="form-group half-width">
+                            <label for="cidadeUF">Cidade/UF</label>
+                            <input type="text" id="cidadeUF" placeholder="Preenchido via CNPJ" readonly required>
+                            <span class="error-message" aria-live="polite">Cidade/UF não encontrada.</span>
+                        </div>
+                    </div>
+                     <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="nomeEstadoMunicipio">Nome do Estado ou Município</label>
+                            <input type="text" id="nomeEstadoMunicipio" placeholder="Preenchido via CNPJ" readonly required>
+                            <span class="error-message" aria-live="polite">Nome não encontrado.</span>
+                        </div>
+                    </div>
+                </section>
+                <div class="button-container">
+                    <button type="button" class="nav-button" data-prev-tab="aba1"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <button type="button" class="nav-button" data-next-tab="aba3" disabled>Próximo <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="aba3" class="tab">
+                <section class="section">
+                    <h3>Finalizar e Gerar Documento</h3>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="opcaoSelecao">Selecione o tipo de declaração</label>
+                            <select id="opcaoSelecao" required>
+                                <option value="" disabled selected>Selecione uma opção</option>
+                                <option value="20JP_emenda">Convênio 20JP - Emenda Individual e Bancada</option>
+                                <option value="20JP_comissao">Convênio 20JP - Discricionário e Comissão</option>
+                                <option value="00SL_emenda">Convênio 00SL - Emenda Individual e Bancada</option>
+                                <option value="00SL_comissao">Convênio 00SL - Discricionário e Comissão</option>
+                            </select>
+                            <span class="error-message" aria-live="polite">Por favor, selecione uma opção válida.</span>
+                        </div>
+                    </div>
+                </section>
+                <div class="button-container">
+                    <button type="button" class="nav-button" data-prev-tab="aba2"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <button type="submit" id="gerarPDFBtn"><i class="fa-solid fa-check"></i> Gerar PDF</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="loadingMessage" class="loading-overlay" aria-hidden="true" role="status">
+            <p>Aguarde... <span class="spinner"></span></p>
+        </div>
+    </main>
+
+    <div id="successPopup" class="popup" role="alert" aria-hidden="true">
+        <p>PDF baixado com sucesso!</p>
+        <button id="closePopupBtn">Fechar</button>
+    </div>
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <footer>
+        <p>&copy; 2025 Ministério do Esporte | <a href="https://www.esporte.gov.br" target="_blank" rel="noopener noreferrer">Visite nosso site</a></p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
+    <script>
+        // O JavaScript permanece o mesmo da versão anterior, pois já está funcional.
+        // Cole aqui o bloco de script completo da resposta anterior.
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores do DOM ---
+            const form = document.getElementById('declaracoesForm');
+            const themeToggle = document.getElementById('themeToggle');
+            const cnpjInput = document.getElementById('cnpj');
+            const navButtons = document.querySelectorAll('.nav-button');
+            const stepperItems = document.querySelectorAll('.stepper-item');
+            const progress = document.querySelector('.stepper-progress');
+            const successPopup = document.getElementById('successPopup');
+            const closePopupBtn = document.getElementById('closePopupBtn');
+            const overlay = document.getElementById('overlay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            // --- Lógica de Tema ---
+            const applyTheme = (theme) => {
+                document.body.dataset.theme = theme;
+                themeToggle.setAttribute('aria-label', `Mudar para tema ${theme === 'light' ? 'escuro' : 'claro'}`);
+            };
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', currentTheme);
+                applyTheme(currentTheme);
+            });
+            applyTheme(localStorage.getItem('theme') || 'dark');
+
+            // --- Lógica do Stepper e Abas ---
+            const tabs = ['aba1', 'aba2', 'aba3'];
+            const updateStepper = (currentTabIndex) => {
+                stepperItems.forEach((item, index) => {
+                    const counter = item.querySelector('.step-counter');
+                    item.classList.remove('active', 'completed');
+                    const icons = ['<i class="fa-solid fa-user"></i>', '<i class="fa-solid fa-building"></i>', '<i class="fa-solid fa-file-pdf"></i>'];
+                    if (index < currentTabIndex) {
+                        item.classList.add('completed');
+                        counter.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    } else if (index === currentTabIndex) {
+                        item.classList.add('active');
+                        counter.innerHTML = icons[index];
+                    } else {
+                        counter.innerHTML = icons[index];
+                    }
+                });
+                const progressWidth = (currentTabIndex / (stepperItems.length - 1)) * 100;
+                progress.style.width = `${progressWidth}%`;
+            };
+
+            const showTab = (tabId) => {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.getElementById(tabId)?.classList.add('active');
+                const currentTabIndex = tabs.indexOf(tabId);
+                updateStepper(currentTabIndex);
+            };
+
+            stepperItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (item.classList.contains('completed')) {
+                        showTab(item.dataset.tab);
+                    }
+                });
+            });
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTabId = button.dataset.nextTab || button.dataset.prevTab;
+                    if (button.dataset.nextTab && !validateTab(button.closest('.tab').id)) {
+                        return;
+                    }
+                    showTab(targetTabId);
+                });
+            });
+
+            // --- Validação ---
+            const validateInput = (input) => {
+                const formGroup = input.closest('.form-group');
+                if (!input.checkValidity() || input.value.trim() === '') {
+                    formGroup.classList.add('invalid');
+                    return false;
+                }
+                formGroup.classList.remove('invalid');
+                return true;
+            };
+
+            const validateTab = (tabId) => {
+                const tab = document.getElementById(tabId);
+                if (!tab) return false;
+                const inputs = tab.querySelectorAll('input[required], select[required]');
+                let isTabValid = true;
+                inputs.forEach(input => {
+                    if (!validateInput(input)) isTabValid = false;
+                });
+                if (!isTabValid) tab.querySelector('.invalid input, .invalid select')?.focus();
+                
+                const nextButton = tab.querySelector('.nav-button[data-next-tab]');
+                if (nextButton) nextButton.disabled = !isTabValid;
+
+                return isTabValid;
+            };
+
+            form.addEventListener('input', (e) => {
+                if(e.target.hasAttribute('required')) {
+                    validateTab(e.target.closest('.tab').id);
+                }
+            });
+
+            // --- Máscara e API de CNPJ ---
+            cnpjInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if(value.length > 14) value = value.substring(0, 14);
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                e.target.value = value;
+                if (value.length === 18) fetchCNPJData(value.replace(/\D/g, ''));
+            });
+
+            const fetchCNPJData = async (cnpj) => {
+                toggleLoading(true, 'Buscando dados do CNPJ...');
+                const errorSpan = cnpjInput.nextElementSibling;
+                try {
+                    const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+                    if (!response.ok) throw new Error('CNPJ não encontrado ou inválido.');
+                    const data = await response.json();
+                    document.getElementById('cep').value = data.cep?.replace(/(\d{5})(\d{3})/, '$1-$2') || '';
+                    document.getElementById('endereco').value = `${data.logradouro || ''}, ${data.numero || ''}, ${data.bairro || ''}`.trim().replace(/^,|,$/g, '');
+                    document.getElementById('cidadeUF').value = `${data.municipio || ''}/${data.uf || ''}`;
+                    document.getElementById('nomeEstadoMunicipio').value = data.municipio || data.nome_fantasia || data.razao_social || '';
+                } catch (error) {
+                    console.error("Erro ao buscar CNPJ:", error);
+                    const formGroup = cnpjInput.closest('.form-group');
+                    formGroup.classList.add('invalid');
+                    errorSpan.textContent = error.message;
+                    ['cep', 'endereco', 'cidadeUF', 'nomeEstadoMunicipio'].forEach(id => document.getElementById(id).value = '');
+                } finally {
+                    toggleLoading(false);
+                    validateTab('aba2');
+                }
+            };
+            
+            // --- Geração do PDF ---
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!validateTab('aba1') || !validateTab('aba2') || !validateTab('aba3')) {
+                     alert("Por favor, preencha todos os campos obrigatórios antes de gerar o PDF.");
+                     return;
+                }
+                gerarPDF();
+            });
+
+            const gerarPDF = async () => {
+                toggleLoading(true, 'Gerando PDF...');
+                try {
+                    const dados = {
+                        nome: document.getElementById('nomeResponsavel').value.trim(),
+                        cargo: document.getElementById('cargo').value,
+                        cnpj: document.getElementById('cnpj').value,
+                        cep: document.getElementById('cep').value,
+                        endereco: document.getElementById('endereco').value.trim(),
+                        complemento: document.getElementById('complemento').value.trim(),
+                        cidadeUF: document.getElementById('cidadeUF').value,
+                        nomeEstadoMunicipio: document.getElementById('nomeEstadoMunicipio').value.trim(),
+                        diaAtual: new Date().getDate(),
+                        mesAtual: new Date().toLocaleString('pt-BR', { month: 'long' }),
+                        anoAtual: new Date().getFullYear(),
+                    };
+                    const opcao = document.getElementById('opcaoSelecao').value;
+                    const declaracoes = getDeclaracoes(opcao, dados);
+                    if (!declaracoes || declaracoes.length === 0) {
+                        throw new Error("A opção de declaração selecionada é inválida ou não retornou conteúdo.");
+                    }
+                    const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+                    const conteudo = declaracoes.map(dec => createDeclarationContent(dec, dados)).flat();
+                    const lastItem = conteudo[conteudo.length - 1];
+                    if(lastItem && lastItem.pageBreak) delete lastItem.pageBreak;
+
+                    const docDefinition = {
+                        pageSize: 'A4',
+                        pageMargins: [40, 50, 40, 50],
+                        background: (currentPage) => (currentPage > 0 && watermarkImage) ? { image: watermarkImage, width: 595, height: 842, absolutePosition: { x: 0, y: 0 }, opacity: 0.9 } : null,
+                        content: conteudo,
+                        styles: { header: { fontSize: 13, bold: true, color: '#1c2526', alignment: 'center' }, content: { fontSize: 12, alignment: 'justify', lineHeight: 1.5 } },
+                        defaultStyle: { font: 'Roboto' }
+                    };
+
+                    pdfMake.createPdf(docDefinition).download(`Declaracoes_${opcao}_${dados.nome.split(' ')[0]}.pdf`);
+                    showPopup();
+                } catch (error) {
+                    console.error('Erro ao gerar o PDF:', error);
+                    alert(`Não foi possível gerar o PDF: ${error.message}`);
+                } finally {
+                    toggleLoading(false);
+                }
+            };
+
+            // --- Funções de Ajuda ---
+            const toggleLoading = (show, text = 'Aguarde...') => {
+                const p = loadingMessage.querySelector('p');
+                p.firstChild.textContent = text + ' ';
+                loadingMessage.classList.toggle('show', show);
+            };
+            const showPopup = () => { successPopup.classList.add('show'); overlay.classList.add('show'); };
+            const closePopup = () => { successPopup.classList.remove('show'); overlay.classList.remove('show'); };
+            closePopupBtn.addEventListener('click', closePopup);
+            overlay.addEventListener('click', closePopup);
+            const getBase64ImageFromUrl = (url) => new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/jpeg'));
+                };
+                img.onerror = () => {
+                    console.warn('Falha ao carregar a imagem de fundo. O PDF será gerado sem ela.');
+                    resolve(null);
+                };
+                img.src = url;
+            });
+            
+            // --- CONTEÚDO COMPLETO DAS DECLARAÇÕES (CORRIGIDO) ---
+            const getDeclaracoes = (opcao, dados) => {
+                const templates = {
+                    '20JP_emenda': [
+                        { title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\nINCISO VII DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso VII, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo.` },
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\n§ 17, DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento ao § 17, do Art. 29, da Portaria Interministerial MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo.` },
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISO XXXIV, DO ART. 29, DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso XXXIV, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui legislação, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta MGI/MF/CGU n.º 33/2023.` }
+                    ],
+                    '20JP_comissao': [
+                        { title: 'DECLARAÇÃO DE TRANSPARÊNCIA DA EXECUÇÃO ORÇAMENTÁRIA E FINANCEIRA EM MEIO ELETRÔNICO DE ACESSO PÚBLICO E ADOÇÃO DE SISTEMA INTEGRADO DE ADMINISTRAÇÃO FINANCEIRA E CONTROLE\nINCISOS XV E XVI DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XV e XVI do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\nI. confere transparência à execução orçamentária em meios eletrônicos, nos termos do art. 48, § 1º, inciso II, e do art. 48-A da Lei Complementar nº 101, de 4 de maio de 2000; e\nII. adota sistema integrado de administração financeira e controle, nos termos do art. 48, § 1º, inciso III, da Lei Complementar nº 101, de 4 de maio de 2000 e do Decreto nº 10.540, de 5 de novembro de 2020.` },
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO FORNECIMENTO DA RELAÇÃO DAS EMPRESasS PÚBLICAS E DAS SOCIEDADES DE ECONOMIA MISTA AO REGISTRO PÚBLICO DE EMPRESAS MERCANTIS E ATIVIDADES AFINS E REGULARIDADE NA CONTRATAÇÃO DE OPERAÇÃO DE CRÉDITO COM INSTITUIÇÃO FINANCEIRA\nINCISOS XX E XXXII DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XX e XXXII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se:\na) regular no fornecimento da relação das empresas públicas e das sociedades de economia mista junto ao Registro Público de Empresas Mercantis e Atividades Afins, nos termos do art. 92 da Lei nº 13.303, de 30 de junho de 2016; e\nb) regular na contratação de operação de crédito com instituição financeira, nos termos do art. 33 da Lei Complementar nº 101, de 4 de maio de 2000.` },
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.` },
+                        { title: 'REGULARIDADE NA DESTINAÇÃO DOS PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\nINCISO XXXIII DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento ao inciso XXXIII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`},
+                        { title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento § 16, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`},
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO PAGAMENTO DE PRECATÓRIOS JUDICIAIS\nINCISO II c/c § 6º DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`},
+                        { title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISOS VII E XXXIV DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\na) possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`},
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`}
+                    ],
+                    '00SL_emenda': [
+                        { title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\nINCISO VII DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso VII, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo.` },
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\n§ 17, DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento ao § 17, do Art. 29, da Portaria Interministerial MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo.` },
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISO XXXIV, DO ART. 29, DA PORTARIA CONJUNTA N.º 33/2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso XXXIV, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, endereço ${dados.endereco}, ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui legislação, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta MGI/MF/CGU n.º 33/2023.` }
+                    ],
+                    '00SL_comissao': [
+                        { title: 'DECLARAÇÃO DE TRANSPARÊNCIA DA EXECUÇÃO ORÇAMENTÁRIA E FINANCEIRA EM MEIO ELETRÔNICO DE ACESSO PÚBLICO E ADOÇÃO DE SISTEMA INTEGRADO DE ADMINISTRAÇÃO FINANCEIRA E CONTROLE\nINCISOS XV E XVI DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XV e XVI do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\nI. confere transparência à execução orçamentária em meios eletrônicos, nos termos do art. 48, § 1º, inciso II, e do art. 48-A da Lei Complementar nº 101, de 4 de maio de 2000; e\nII. adota sistema integrado de administração financeira e controle, nos termos do art. 48, § 1º, inciso III, da Lei Complementar nº 101, de 4 de maio de 2000 e do Decreto nº 10.540, de 5 de novembro de 2020.` },
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO FORNECIMENTO DA RELAÇÃO DAS EMPRESAS PÚBLICAS E DAS SOCIEDADES DE ECONOMIA MISTA AO REGISTRO PÚBLICO DE EMPRESAS MERCANTIS E ATIVIDADES AFINS E REGULARIDADE NA CONTRATAÇÃO DE OPERAÇÃO DE CRÉDITO COM INSTITUIÇÃO FINANCEIRA\nINCISOS XX E XXXII DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XX e XXXII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se:\na) regular no fornecimento da relação das empresas públicas e das sociedades de economia mista junto ao Registro Público de Empresas Mercantis e Atividades Afins, nos termos do art. 92 da Lei nº 13.303, de 30 de junho de 2016; e\nb) regular na contratação de operação de crédito com instituição financeira, nos termos do art. 33 da Lei Complementar nº 101, de 4 de maio de 2000.` },
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.` },
+                        { title: 'REGULARIDADE NA DESTINAÇÃO DOS PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\nINCISO XXXIII DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento ao inciso XXXIII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`},
+                        { title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que esta subscreve, em cumprimento § 16, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`},
+                        { title: 'DECLARAÇÃO DE REGULARIDADE NO PAGAMENTO DE PRECATÓRIOS JUDICIAIS\nINCISO II c/c § 6º DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que essa subscrevo, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}, está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`},
+                        { title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISOS VII E XXXIV DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\na) possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`},
+                        { title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023', content: `Eu, ${dados.nome}, cargo ${dados.cargo}, que este subscreve, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, DECLARO, sob as penas da lei, que o(a) ${dados.nomeEstadoMunicipio}, CNPJ: ${dados.cnpj}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`}
+                    ]
+                };
+                return templates[opcao] || [];
+            };
+
+            const createDeclarationContent = (declaracao, dados) => [
+                { text: declaracao.title, style: 'header', margin: [0, 80, 0, 20] },
+                { text: `${declaracao.content}\n\nPor ser verdade, firmo a presente no exercício do respectivo cargo.`, style: 'content' },
+                { text: `${dados.cidadeUF}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', margin: [0, 60, 0, 20] },
+                { text: `_____________________________________________________\n${dados.nome}\n${dados.cargo === 'Secretário de Finanças' ? 'Secretário de Finanças' : 'Chefe do Poder Executivo'}`, alignment: 'center', fontSize: 12 },
+                { text: '', pageBreak: 'after' }
+            ];
+            
+            // Inicia a aplicação
+            showTab('aba1');
+            validateTab('aba1');
+            validateTab('aba2');
+        });
+    </script>
+</body>
+</html>

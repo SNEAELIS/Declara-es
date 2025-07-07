@@ -18,8 +18,8 @@ module.exports = ({ data, saveData }) => {
     { path: 'precificacao-form', template: 'precificacaoForm', title: 'Formulário de Precificação' },
     { path: 'Formulario-merito', template: 'Formulario-merito', title: 'Formulário de Mérito' },
     { path: 'Atestado_Capacidade_Tecnica', template: 'Atestado_Capacidade_Tecnica', title: 'Atestado de Capacidade Técnica' },
-    { path: 'Declaracao_Contrapartida', template: 'Declaracao_Contrapartida', title: 'Declaracao_Contrapartida'}
-
+    { path: 'Declaracao_Contrapartida', template: 'Declaracao_Contrapartida', title: 'Declaracao_Contrapartida' },
+    { path: 'Validade-declaracao-mes', template: 'Validade-declaracao-mes', title: 'Validação de Declaração Mensal' }
   ];
 
   // Helper function para construir URLs
