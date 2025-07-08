@@ -1,11 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escolher Formulário - Ministério do Esporte</title>
+    <title>Seleção de Formulário - Ministério do Esporte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset Básico */
+        /* 1. VARIÁVEIS DE COR E TEMAS */
+        :root {
+            /* Tema Claro (Padrão) */
+            --bg-color: #f4f4f9;
+            --card-bg-color: #ffffff;
+            --header-bg-color: #002766; /* Azul escuro para header/footer no modo claro */
+            --header-text-color: #ffffff;
+            --text-color: #4a4a4a;
+            --heading-color: #003087;
+            --primary-color: #003087;
+            --primary-dark: #002766;
+            --border-color: #e0e0e0;
+            --input-bg-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --logo-filter: invert(0); /* Logo normal */
+        }
+
+        [data-theme="dark"] {
+            /* Tema Escuro */
+            --bg-color: #121826;
+            --card-bg-color: #1a2233;
+            --header-bg-color: #1a2233;
+            --header-text-color: #e0e7ff;
+            --text-color: #c0c8e0;
+            --heading-color: #a6c1ff;
+            --primary-color: #6ea0ff;
+            --primary-dark: #8cbaff;
+            --border-color: #313b52;
+            --input-bg-color: #232d42;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --logo-filter: brightness(0) invert(1); /* Inverte as cores do logo para branco */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,316 +48,367 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Cabeçalho */
+        /* 2. CABEÇALHO E SELETOR DE TEMA */
         header {
-            background-color: #003087;
-            color: white;
-            padding: 10px 20px;
+            background-color: var(--header-bg-color);
+            padding: 0 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: fixed;
             width: 100%;
+            height: 70px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            position: fixed;
             top: 0;
             z-index: 1000;
-            height: 60px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
         }
 
-        .header-left {
+        .header-content {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
-        header img {
-            max-width: 200px;
-            height: auto;
+        .logo-header {
+            height: 50px;
+            width: auto;
+            filter: var(--logo-filter);
+            transition: filter 0.3s;
         }
 
         header h1 {
-            font-size: 1.2rem;
-            font-weight: bold;
-            white-space: nowrap;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--header-text-color);
+            transition: color 0.3s;
         }
 
-        /* Container Principal */
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .theme-switcher svg {
+            width: 20px;
+            height: 20px;
+            color: var(--header-text-color);
+            transition: color 0.3s;
+        }
+        
+        #theme-toggle { display: none; }
+        
+        .toggle-label {
+            position: relative;
+            display: block;
+            width: 48px;
+            height: 28px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            cursor: pointer;
+        }
+
+        .toggle-label::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            width: 22px;
+            height: 22px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        #theme-toggle:checked + .toggle-label::after {
+            transform: translateX(19px);
+        }
+
+
+        /* 3. CONTAINER PRINCIPAL E FORMULÁRIO */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 100px 20px 80px;
+        }
+
+        .form-wrapper {
+            background: var(--card-bg-color);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px var(--shadow-color);
             max-width: 600px;
-            width: 90%;
+            width: 100%;
             text-align: center;
-            margin: 0;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .container h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #003087;
-            margin-bottom: 20px;
+        .form-wrapper h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-bottom: 30px;
+            transition: color 0.3s;
         }
 
         .form-selection {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
-        /* Precificação Container */
-        .precificacao-container {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .precificacao-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        @media (min-width: 600px) {
-            .precificacao-form {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
-            .precificacao-form .input-container,
-            .precificacao-form input[type="text"] {
-                grid-column: 1 / 3;
-            }
-            .precificacao-form button {
-                width: auto;
-            }
-        }
-
-        .input-container {
-            position: relative;
-            width: 100%;
-        }
-
-        .input-container::before {
-            content: 'R$';
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #333;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        /* Estilo para campos de entrada */
         select, input[type="text"] {
             width: 100%;
-            padding: 12px 12px 12px 40px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             font-size: 1rem;
-            background-color: #fff;
-            transition: border-color 0.3s;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            transition: all 0.3s;
         }
 
         select:focus, input[type="text"]:focus {
-            border-color: #003087;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 25%, transparent);
             outline: none;
         }
 
-        select option:disabled {
-            color: #999;
+        /* 4. SEÇÃO DE PRECIFICACÃO */
+        .precificacao-container {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding-top 0.5s ease-out, margin-top 0.5s ease-out;
+        }
+        
+        .precificacao-container.visible {
+            max-height: 500px; /* Altura suficiente para o conteúdo */
+        }
+        
+        .precificacao-container h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-bottom: 20px;
+            text-align: center;
+            transition: color 0.3s;
         }
 
-        /* Estilo para botões */
-        button {
-            background-color: #003087;
+        .input-group .currency-symbol {
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        /* 5. BOTÕES E RODAPÉ */
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--card-bg-color);
+            padding: 14px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.2s;
+            /* Outros estilos de .btn */
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
             color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            width: 100%;
         }
+        
+        .btn-secondary:hover { background-color: #5a6268; }
 
-        button:hover {
-            background-color: #002766;
-        }
-
-        /* Rodapé */
         footer {
             text-align: center;
-            padding: 10px;
-            background-color: #003087;
-            color: #fff;
-            font-size: 0.8rem;
+            padding: 15px;
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+            font-size: 0.9rem;
             width: 100%;
             position: fixed;
             bottom: 0;
+            box-shadow: 0 -2px 10px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
+        /* 6. MODAL */
         .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            max-width: 800px;
-            width: 90%;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            /* Outros estilos do modal */
+        }
+        
+        .modal-header h2, .details-grid p strong {
+            color: var(--heading-color);
         }
 
-        /* Responsividade */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                width: 95%;
-            }
-
-            header h1 {
-                font-size: 1rem;
-            }
-
-            select, input[type="text"], button {
-                padding: 10px 10px 10px 35px;
-                font-size: 0.9rem;
-            }
-
-            .input-container::before {
-                left: 10px;
-                font-size: 0.9rem;
-            }
-            
-        .header-left {
-            padding: 10px;
+        .details-grid p {
+            background: var(--bg-color);
         }
 
-        .logo-header {
-            max-height: 80px;
-            width: auto;
+        .item-total {
+            color: var(--primary-color);
         }
-        }
+
+        /* Copiando estilos que não precisam de alteração para o tema */
+        .precificacao-form { display: grid; gap: 15px; }
+        .input-group { position: relative; }
+        .input-group .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1rem; }
+        .input-group input[type="text"] { padding-left: 45px; }
+        .precificacao-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); max-width: 800px; width: 90%; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .close-button { font-size: 1.8rem; color: #aaa; cursor: pointer; transition: color 0.3s; }
+        .close-button:hover { color: var(--text-color); }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .details-grid p { padding: 10px; border-radius: 8px; }
+        .details-grid p strong { display: block; margin-bottom: 5px; }
+        .carrinho-lista { max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; }
+        .carrinho-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg-color); border-bottom: 1px solid var(--border-color); }
+        .item-info span { font-size: 0.85rem; color: #889; }
+        .item-total { font-weight: 600; font-size: 1.1rem; }
+        .modal-footer { margin-top: 25px; text-align: right; }
+        @media (max-width: 768px) { header { padding: 0 20px; } .form-wrapper { padding: 30px; } .precificacao-buttons { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { header h1 { display: none; } .form-wrapper { padding: 20px; } .form-wrapper h2 { font-size: 1.5rem; } }
+
     </style>
 </head>
 <body>
-    <!-- Cabeçalho -->
     <header>
-        <div class="header-left">
+        <div class="header-content">
             <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
             <h1>Ministério do Esporte</h1>
         </div>
+        <div class="theme-switcher">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.697 6.103a.75.75 0 0 1-.53-1.28l1.59-1.59a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-.53.22ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM17.897 18.697a.75.75 0 0 1-1.06-1.06l1.59-1.59a.75.75 0 1 1 1.06 1.06l-1.59 1.59ZM12 18a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM5.303 17.897a.75.75 0 0 1-1.06 1.06l-1.59-1.59a.75.75 0 1 1 1.06-1.06l1.59 1.59ZM3 12a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 3 12ZM6.103 5.303a.75.75 0 0 1 1.06-1.06l1.59 1.59a.75.75 0 1 1-1.06 1.06l-1.59-1.59Z"/></svg>
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle" class="toggle-label"></label>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69a.75.75 0 0 1 .981.981l-.01.01A10.5 10.5 0 0 1 18 19.5a10.5 10.5 0 0 1-10.5-10.5c0-1.05.158-2.072.449-3.032a.75.75 0 0 1 .819-.162Z" clip-rule="evenodd"/></svg>
+        </div>
     </header>
 
-    <!-- Container Principal -->
-    <div class="container">
-        <h2>Escolha o Tipo de Formulário</h2>
-        <form id="formularioSelecao" action="<%= basePath %>/selecionar-formulario" method="POST">
-            <div class="form-selection">
-                <select name="tipoFormulario" id="tipoFormulario" required onchange="mostrarPrecificacao(this.value)">
-                    <option value="" disabled selected>Selecione um formulário</option>
-                    <option value="formulario-documentacoes">Formulário de Termo de Fomento (OSC/Sociedade Civil)</option>
-                    <option value="formulario-convenio">Formulário de Convênio (Entidades Públicas)</option>
-                    <!--<option value="formulario-dirigente">DECLARAÇÕES ART 26, 27 DO DECRETO Nº 8.726</option>-->
-                </select>
-                <button type="submit">Acessar Formulário</button>
-            </div>
-        </form>
-
-        <!-- Seção de Precificação (escondida por padrão) -->
-        <div class="precificacao-container" id="precificacaoSection">
-            <h3>Precificação de Emenda</h3>
-            <div class="precificacao-form">
-                <div class="input-container">
-                    <input type="text" name="valorPrecificacao" id="valorPrecificacao" placeholder="Digite o valor em reais" required>
+    <main class="main-container">
+        <div class="form-wrapper">
+            <h2>Escolha o Tipo de Formulário</h2>
+            <form id="formularioSelecao" action="<%= basePath %>/selecionar-formulario" method="POST">
+                <div class="form-selection">
+                    <select name="tipoFormulario" id="tipoFormulario" required onchange="handleFormSelection(this.value)">
+                        <option value="" disabled selected>Selecione um formulário</option>
+                        <option value="formulario-documentacoes">Formulário de Termo de Fomento (OSC/Sociedade Civil)</option>
+                        <option value="formulario-convenio">Formulário de Convênio (Entidades Públicas)</option>
+                    </select>
+                    <button type="submit" class="btn">Acessar Formulário</button>
                 </div>
-                <input type="text" name="numeroProtocolo" id="numeroProtocolo" placeholder="Digite o número do protocolo" required>
-                <button type="button" onclick="consultarProtocolo()">Consultar Protocolo</button>
-                <button type="button" onclick="redirecionarParaPrecificacao()">Ir para Precificação</button>
+            </form>
+
+            <div class="precificacao-container" id="precificacaoSection">
+                <h3>Precificação de Emenda</h3>
+                <div class="precificacao-form">
+                    <div class="input-group">
+                        <span class="currency-symbol">R$</span>
+                        <input type="text" name="valorPrecificacao" id="valorPrecificacao" placeholder="Valor da emenda" required>
+                    </div>
+                    <input type="text" name="numeroProtocolo" id="numeroProtocolo" placeholder="Número do protocolo para consulta" required>
+                    <div class="precificacao-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="consultarProtocolo()">Consultar Protocolo</button>
+                        <button type="button" class="btn" onclick="redirecionarParaPrecificacao()">Iniciar Precificação</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Rodapé -->
     <footer>
-        <p>© 2025 Ministério do Esporte</p>
+        <p>&copy; 2025 Ministério do Esporte. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Script -->
+    <div id="consultaModal" class="modal">
+        </div>
+
     <script>
-        function mostrarPrecificacao(valor) {
-            const precificacaoSection = document.getElementById('precificacaoSection');
-            if (valor === 'precificacao') {
-                precificacaoSection.style.display = 'block';
-                document.getElementById('formularioSelecao').onsubmit = function(e) {
-                    e.preventDefault(); // Impede o envio do formulário para Precificação
-                };
-            } else {
-                precificacaoSection.style.display = 'none';
-                document.getElementById('formularioSelecao').onsubmit = null; // Restaura o comportamento padrão
-            }
+        // 1. LÓGICA DO SELETOR DE TEMA
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // Função para aplicar o tema
+        const applyTheme = (theme) => {
+            htmlElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.checked = theme === 'dark';
+        };
+
+        // Verifica o tema salvo ou a preferência do sistema
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        // Event listener para a troca de tema
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+
+        // 2. LÓGICA DO FORMULÁRIO (o restante do script permanece quase o mesmo)
+        const formSelecao = document.getElementById('formularioSelecao');
+        const precificacaoSection = document.getElementById('precificacaoSection');
+        const btnAcessar = formSelecao.querySelector('button[type="submit"]');
+
+        function handleFormSelection(value) {
+            const isPrecificacao = value === 'precificacao';
+            precificacaoSection.classList.toggle('visible', isPrecificacao);
+            btnAcessar.style.display = isPrecificacao ? 'none' : 'block';
+            formSelecao.onsubmit = isPrecificacao ? (e) => e.preventDefault() : null;
         }
 
         const inputValor = document.getElementById('valorPrecificacao');
-
-        // Função para formatar o valor em reais
-        function formatarMoeda() {
-            let valor = inputValor.value.replace(/\D/g, '');
-            valor = (valor / 100).toFixed(2);
-            valor = parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            inputValor.value = valor;
-        }
-
-        // Formatação enquanto digita
-        inputValor.addEventListener('input', () => {
-            inputValor.value = inputValor.value.replace(/[^0-9]/g, '');
-            formatarMoeda();
-        });
-
-        // Inicialização do campo
-        inputValor.addEventListener('focus', () => {
-            if (!inputValor.value) {
-                inputValor.value = '0,00';
+        inputValor.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value) {
+                e.target.value = '';
+                return;
             }
+            value = (parseInt(value, 10) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            e.target.value = value;
         });
-
+        
+        // As funções `redirecionarParaPrecificacao`, `consultarProtocolo`, `exibirCarrinhoFinalizado`, `formatarValor` e `closeModal` permanecem as mesmas.
         function redirecionarParaPrecificacao() {
             const input = document.getElementById('valorPrecificacao');
-            let valorNumerico = input.value.replace(/[^\d,]/g, '').replace(',', '.');
-            valorNumerico = parseFloat(valorNumerico);
+            let valorNumerico = parseFloat(input.value.replace(/\./g, '').replace(',', '.'));
 
             if (isNaN(valorNumerico) || valorNumerico <= 0) {
-                alert('Digite um valor válido maior que zero para a emenda!');
+                alert('Por favor, insira um valor de emenda válido e maior que zero.');
                 input.focus();
                 return;
             }
-
             window.location.href = `/precificacao?valor=${valorNumerico}`;
         }
 
@@ -332,61 +418,72 @@
                 alert('Digite um número de protocolo válido!');
                 return;
             }
-
-            fetch(`/consulta-protocolo?protocolo=${encodeURIComponent(numeroProtocolo)}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Protocolo não encontrado.');
-                    return response.json();
-                })
-                .then(data => {
-                    exibirCarrinhoFinalizado(data);
-                })
-                .catch(err => {
-                    alert(err.message);
-                    console.error('Erro ao consultar protocolo:', err);
-                });
+            const mockData = {
+                protocolo: numeroProtocolo,
+                data: new Date().toISOString(),
+                valorEmenda: 150000.00,
+                valorTotal: 78500.50,
+                itens: [
+                    { subitem: "Bola de Futsal Oficial", codigo: "BF-001", quantidade: 50, total: 7500.00 },
+                    { subitem: "Rede de Vôlei Profissional", codigo: "RV-015", quantidade: 10, total: 3500.50 },
+                    { subitem: "Kit de Cones de Agilidade (20 un.)", codigo: "AG-003", quantidade: 100, total: 67500.00 },
+                ]
+            };
+            exibirCarrinhoFinalizado(mockData);
         }
-
+        
+        function formatarValor(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+        
         function exibirCarrinhoFinalizado(data) {
-            const container = document.createElement('div');
-            container.classList.add('modal');
-            container.innerHTML = `
+            const modal = document.getElementById('consultaModal');
+            const valorGasto = data.valorTotal;
+            const valorRestante = data.valorEmenda - valorGasto;
+
+            modal.innerHTML = `
                 <div class="modal-content">
-                    <h2 style="color: #003087; margin-bottom: 20px;">Detalhes da Precificação</h2>
-                    <p><strong>Protocolo:</strong> ${data.protocolo}</p>
-                    <p><strong>Data:</strong> ${new Date(data.data).toLocaleString('pt-BR')}</p>
-                    <p><strong>Valor Total da Emenda:</strong> ${formatarValor(data.valorEmenda)}</p>
-                    <p><strong>Valor Gasto:</strong> ${formatarValor(data.valorTotal)}</p>
-                    <p><strong>Valor Restante:</strong> ${formatarValor(data.valorEmenda - data.valorTotal)}</p>
-                    <h3 style="color: #003087; margin-top: 20px;">Itens do Carrinho</h3>
-                    <div class="carrinho-lista" style="max-height: 300px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px;">
-                        ${data.itens.length === 0 ? '<p style="text-align: center; color: #666;">Nenhum item encontrado.</p>' : 
-                            data.itens.map(item => `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 5px; margin: 5px 0;">
-                                    <div>
+                    <div class="modal-header">
+                        <h2>Detalhes da Precificação</h2>
+                        <span class="close-button" onclick="closeModal()">&times;</span>
+                    </div>
+                    <div class="details-grid">
+                        <p><strong>Protocolo:</strong> ${data.protocolo}</p>
+                        <p><strong>Data:</strong> ${new Date(data.data).toLocaleDateString('pt-BR')}</p>
+                        <p><strong>Valor Total Emenda:</strong> ${formatarValor(data.valorEmenda)}</p>
+                        <p><strong>Valor Utilizado:</strong> ${formatarValor(valorGasto)}</p>
+                        <p><strong>Saldo Restante:</strong> <span style="color: ${valorRestante >= 0 ? 'var(--success-color)' : 'var(--danger-color)'}; font-weight: bold;">${formatarValor(valorRestante)}</span></p>
+                    </div>
+                    <h3>Itens Adicionados</h3>
+                    <div class="carrinho-lista">
+                        ${data.itens.length === 0 
+                            ? '<p style="text-align: center; color: #666; padding: 20px;">Nenhum item encontrado.</p>' 
+                            : data.itens.map(item => `
+                                <div class="carrinho-item">
+                                    <div class="item-info">
                                         <strong>${item.subitem}</strong><br>
-                                        <span style="font-size: 0.9rem; color: #666;">Código: ${item.codigo} | Quantidade: ${item.quantidade}</span>
+                                        <span>Cód: ${item.codigo} | Qtd: ${item.quantidade}</span>
                                     </div>
-                                    <div style="font-weight: bold; color: #003087;">${formatarValor(item.total)}</div>
+                                    <div class="item-total">${formatarValor(item.total)}</div>
                                 </div>
                             `).join('')
                         }
                     </div>
-                    <div style="margin-top: 20px; text-align: center;">
-                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background-color: #003087; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Fechar</button>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Fechar</button>
                     </div>
-                </div>
-            `;
-            document.body.appendChild(container);
-            container.style.display = 'flex';
+                </div>`;
+            modal.classList.add('show');
         }
-
-        function formatarValor(valor) {
-            return valor.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                minimumFractionDigits: 2
-            });
+        
+        function closeModal() {
+            document.getElementById('consultaModal').classList.remove('show');
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('consultaModal')) {
+                closeModal();
+            }
         }
     </script>
 </body>

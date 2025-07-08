@@ -4,7 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atestado de Capacidade Técnica - Ministério do Esporte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* 1. CSS Variables for Theming */
+        :root {
+            --bg-color: #f4f7f9;
+            --surface-color: #ffffff;
+            --text-color: #1a1a1a;
+            --text-secondary-color: #555;
+            --primary-color: #0d47a1; /* Azul principal */
+            --primary-hover-color: #0b3c8a; /* Azul mais escuro para hover */
+            --accent-color-success: #2e7d32;
+            --accent-color-danger: #c62828;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --input-bg-color: #f9fafb;
+            --header-footer-bg: #0d47a1;
+            --header-footer-text: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-secondary-color: #a0a0a0;
+            --primary-color: #42a5f5;
+            --primary-hover-color: #64b5f6;
+            --accent-color-success: #66bb6a;
+            --accent-color-danger: #ef5350;
+            --border-color: #424242;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --input-bg-color: #2a2a2a;
+            --header-footer-bg: #1e1e1e;
+            --header-footer-text: #e0e0e0;
+        }
+
+        /* 2. Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -12,250 +49,376 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            font-family: 'Inter', 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+            padding-top: 100px;
+            padding-bottom: 80px;
         }
 
+        /* 3. Layout */
+        header, footer {
+            background-color: var(--header-footer-bg);
+            color: var(--header-footer-text);
+            padding: 15px 40px;
+            width: 100%;
+            position: fixed;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s, color 0.3s;
+        }
+        
         header {
-            background-color: #003087;
-            color: white;
-            padding: 15px 30px;
+            top: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        header img {
-            max-height: 40px;
-            width: auto;
-        }
-
-        header h1 {
-            font-size: 1.3rem;
-            font-weight: 600;
+        
+        footer {
+            bottom: 0;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         .container {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
+            background: var(--surface-color);
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            max-width: 1100px;
             width: 95%;
+            margin: 30px auto;
             text-align: left;
-            margin-top: 90px;
-            margin-bottom: 70px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* 4. Header Components */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .container h2 {
-            font-size: 1.8rem;
+        header img {
+            max-height: 50px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+        
+        header h1 {
+            font-size: 1.6rem;
             font-weight: 700;
-            color: #003087;
-            margin-bottom: 15px;
+        }
+
+        /* 5. Theme Switcher */
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .theme-switcher-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--header-footer-text);
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            border-radius: 24px;
+            transition: 0.4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* 6. Form Styles */
+        .container h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 35px;
             text-transform: uppercase;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
         }
-
-        .form-section {
+        
+        .form-grid {
             display: grid;
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
         }
-
+        
         .input-container {
             margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         label {
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             display: block;
-            color: #444;
-            font-size: 0.9rem;
+            color: var(--text-secondary-color);
+            font-size: 1rem;
         }
 
-        select, input[type="text"], input[type="date"], textarea, input[type="file"] {
+        select, input[type="text"], input[type="date"], input[type="number"], textarea, input[type="file"] {
             width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            background-color: #fff;
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
         }
 
         select:focus, input:focus, textarea:focus {
-            border-color: #003087;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-color) 25%, transparent);
             outline: none;
         }
 
         textarea {
-            height: 80px;
+            min-height: 120px;
             resize: vertical;
         }
+        
+        input::placeholder, textarea::placeholder {
+            color: color-mix(in srgb, var(--text-secondary-color) 70%, transparent);
+        }
 
-        button {
-            background-color: #003087;
-            color: white;
+        /* 7. Buttons */
+        button, .add-btn, .remove-btn, .add-annex-btn, .remove-annex-section-btn {
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 14px 22px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            transition: background-color 0.3s;
-            width: 100%;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        button:hover {
-            background-color: #002766;
+        
+        button:hover, .add-btn:hover, .remove-btn:hover, .add-annex-btn:hover, .remove-annex-section-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-
-        .add-btn, .remove-btn, .add-annex-btn, .remove-annex-section-btn {
-            background-color: #28a745;
+        
+        button[type="submit"] {
+             background-color: var(--primary-color);
+             color: white;
+             width: 100%;
+             margin-top: 30px;
+             padding: 16px;
+        }
+        
+        button[type="submit"]:hover {
+             background-color: var(--primary-hover-color);
+        }
+        
+        .add-btn, .add-annex-btn {
+            background-color: var(--accent-color-success);
+            color: white;
             width: auto;
-            padding: 6px 12px;
-            margin: 5px 0;
-            font-size: 0.85rem;
+            padding: 10px 18px;
+            margin-top: 10px;
+            font-size: 0.95rem;
             display: inline-block;
         }
-
+        
         .remove-btn, .remove-annex-section-btn {
-            background-color: #dc3545;
-            margin-left: 10px;
+            background-color: var(--accent-color-danger);
+            color: white;
+            padding: 8px 14px;
+            font-size: 0.9rem;
         }
 
-        .add-btn:hover, .remove-btn:hover, .add-annex-btn:hover, .remove-annex-section-btn:hover {
-            opacity: 0.9;
+        /* 8. Annex and File Sections */
+        #annexSectionContainer h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 40px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .annex-accordion-item {
+            margin-top: 10px;
+        }
+        
+        .annex-accordion-header {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            outline: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.4s;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .annex-accordion-header.active {
+            border-bottom: 1px solid var(--primary-color);
+        }
+        
+        .annex-accordion-header .annex-title::after {
+            content: '\\2795'; /* Plus sign */
+            font-size: 1rem;
+            color: var(--primary-color);
+            margin-left: 15px;
         }
 
+        .annex-accordion-header.active .annex-title::after {
+            content: "\\2796"; /* Minus sign */
+        }
+        
+        .annex-accordion-header:not(.active):hover {
+             background-color: color-mix(in srgb, var(--bg-color) 80%, var(--primary-color));
+        }
+
+        .annex-accordion-panel {
+            padding: 25px;
+            background-color: var(--surface-color);
+            display: none;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .annex-accordion-panel .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .annex-accordion-header .remove-annex-section-btn {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            z-index: 2;
+        }
+        
+        .file-section {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            background-color: var(--bg-color);
+            grid-column: 1 / -1;
+        }
+        
         .file-input-wrapper {
             display: flex;
             align-items: center;
-            margin-top: 5px;
-            gap: 5px;
-        }
-        .file-input-wrapper input[type="file"] {
-            flex-grow: 1;
-        }
-
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #003087;
-            color: #fff;
-            font-size: 0.8rem;
-            width: 100%;
-            position: fixed;
-            bottom: 0;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .file-section {
-            border: 1px solid #eee;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .annex-section {
-            border: 1px solid #eee;
-            padding: 15px;
-            border-radius: 4px;
+            gap: 15px;
             margin-top: 10px;
-            background-color: #f9f9f9;
-            position: relative;
         }
+        
+        .file-input-wrapper input[type="file"] { flex-grow: 1; }
 
-        .annex-section h4 {
-            color: #003087;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
+        /* 9. Loading Overlay */
         #loadingOverlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5em;
-            z-index: 9999;
-            flex-direction: column;
-            text-align: center;
+            justify-content: center; align-items: center;
+            font-size: 1.5em; z-index: 9999;
+            flex-direction: column; text-align: center;
         }
-
         .spinner {
             border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
+            border-top: 8px solid var(--primary-color);
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             animation: spin 1s linear infinite;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-                margin-top: 80px;
-            }
-
-            header h1 {
-                font-size: 1.1rem;
-            }
-
-            header img {
-                max-height: 35px;
-            }
-
-            select, input, textarea, button {
-                padding: 6px 8px;
-                font-size: 0.85rem;
+        
+        /* 10. Responsive Design */
+        @media (max-width: 900px) {
+            .form-grid, .annex-accordion-panel .form-grid {
+                grid-template-columns: 1fr;
             }
         }
+        
+        @media (max-width: 768px) {
+             body { padding-top: 150px; }
+             header {
+                 padding: 15px;
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 15px;
+             }
+             header h1 { font-size: 1.3rem; }
+             header img { max-height: 45px; }
+             .container { padding: 25px; }
+             .container h2 { font-size: 1.8rem; }
+        }
+
     </style>
 </head>
-<body>
+<body data-theme="light">
     <header>
         <div class="header-left">
             <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
             <h1>Ministério do Esporte</h1>
+        </div>
+        <div class="theme-switcher">
+            <span class="theme-switcher-label">Modo Escuro</span>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
         </div>
     </header>
 
     <div class="container">
         <h2>Atestado de Capacidade Técnica</h2>
         <form id="atestadoForm" onsubmit="event.preventDefault(); generatePDF();">
-            <div class="form-section">
-                <div class="input-container">
+            <div class="form-grid">
+                <div class="input-container full-width">
                     <label for="tipoAtestado">Tipo de Atestado <span style="color: red;">*</span></label>
                     <select id="tipoAtestado" required onchange="updateAnnexFields()">
                         <option value="" disabled selected>Selecione um atestado</option>
@@ -265,61 +428,62 @@
                 </div>
                 <div class="input-container">
                     <label for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
-                    <input type="text" id="nomeDirigente" placeholder="Digite o nome do dirigente" required oninput="validateLettersOnly(this)">
+                    <input type="text" id="nomeDirigente" placeholder="Digite o nome completo do dirigente" required oninput="validateLettersOnly(this)">
                 </div>
                 <div class="input-container">
                     <label for="cargoDirigente">Cargo do Dirigente <span style="color: red;">*</span></label>
-                    <input type="text" id="cargoDirigente" placeholder="Digite o cargo do dirigente" required oninput="validateLettersOnly(this)">
+                    <input type="text" id="cargoDirigente" placeholder="Ex: Presidente, Secretário(a)" required oninput="validateLettersOnly(this)">
                 </div>
                 <div class="input-container">
                     <label for="cnpj">CNPJ da Entidade <span style="color: red;">*</span></label>
-                    <input type="text" id="cnpj" placeholder="Digite o CNPJ (ex.: 27.119.091/0001-35)" required onblur="fetchEntityData()">
+                    <input type="text" id="cnpj" placeholder="Digite o CNPJ para buscar os dados" required onblur="fetchEntityData()">
                 </div>
                 <div class="input-container">
                     <label for="nomeEntidade">Nome da Entidade <span style="color: red;">*</span></label>
-                    <input type="text" id="nomeEntidade" placeholder="Nome da entidade (preenchido automaticamente)" required readonly>
+                    <input type="text" id="nomeEntidade" placeholder="Preenchido automaticamente após digitar o CNPJ" required readonly>
                 </div>
                 <div class="input-container">
                     <label for="cep">CEP <span style="color: red;">*</span></label>
-                    <input type="text" id="cep" placeholder="Digite o CEP (ex.: 73080-360)" required onblur="fetchAddressData()">
+                    <input type="text" id="cep" placeholder="Digite o CEP para buscar o endereço" required onblur="fetchAddressData()">
                 </div>
                 <div class="input-container">
                     <label for="endereco">Endereço <span style="color: red;">*</span></label>
-                    <input type="text" id="endereco" placeholder="Endereço (preenchido automaticamente)" required readonly>
+                    <input type="text" id="endereco" placeholder="Preenchido automaticamente após digitar o CEP" required readonly>
                 </div>
-                <div class="input-container">
+                 <div class="input-container">
                     <label for="numero">Número <span style="color: red;">*</span></label>
-                    <input type="text" id="numero" placeholder="Digite o número" required>
+                    <input type="text" id="numero" placeholder="Ex: 123, S/N" required>
                 </div>
                 <div class="input-container">
                     <label for="complemento">Complemento</label>
-                    <input type="text" id="complemento" placeholder="Digite o complemento">
+                    <input type="text" id="complemento" placeholder="Ex: Bloco A, Sala 101">
                 </div>
-                <div class="input-container">
+                <div class="input-container full-width">
                     <label for="numeroProposta">Número da Proposta <span style="color: red;">*</span></label>
-                    <input type="text" id="numeroProposta" placeholder="Digite o número da proposta (ex.: 004947/2024)" required>
+                    <input type="text" id="numeroProposta" placeholder="Ex: 004947/2024" required>
                 </div>
             </div>
 
-            <div id="annexContainer" class="form-section">
+            <div id="annexSectionContainer" class="full-width">
                 <h3>Anexos</h3>
-                <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">
-                    <strong>Orientação:</strong> Utilize imagens (PNG/JPEG, máx. 5MB) e PDFs (máx. 10MB) de tamanho reduzido para evitar arquivos grandes e garantir a geração eficiente do Atestado de Capacidade Técnica.
+                <p style="color: var(--text-secondary-color); font-size: 0.9rem; margin-bottom: 15px;">
+                    <strong>Orientação:</strong> Para um melhor desempenho, utilize imagens (PNG/JPEG) com no máximo 5MB e arquivos PDF com no máximo 10MB.
                 </p>
-                <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">Adicionar Anexo</button>
+                <div id="annexAccordionContainer"></div>
+                <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">Adicionar Bloco de Anexo</button>
             </div>
 
-            <button type="submit" id="generatePdfBtn">Gerar PDF</button>
+            <button type="submit" id="generatePdfBtn" class="full-width">Gerar PDF</button>
         </form>
     </div>
 
     <footer>
-        <p>© 2025 Ministério do Esporte</p>
+        <p>&copy; 2025 Ministério do Esporte. Todos os direitos reservados.</p>
     </footer>
 
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        Gerando PDF... Por favor, aguarde. <br> (Isso pode demorar em PDFs grandes)
+        Gerando PDF... Por favor, aguarde.<br>(Isso pode levar alguns instantes)
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -327,7 +491,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
 
     <script>
-        // Configura o worker do PDF.js
+        // Theme switcher script (no changes)
+        const themeToggle = document.getElementById('themeToggle');
+        const themeSwitcherLabel = document.querySelector('.theme-switcher-label');
+        const currentTheme = localStorage.getItem('theme');
+        const applyTheme = (theme) => {
+            document.body.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeToggle.checked = true;
+                themeSwitcherLabel.textContent = 'Modo Claro';
+            } else {
+                themeToggle.checked = false;
+                themeSwitcherLabel.textContent = 'Modo Escuro';
+            }
+        };
+        if (currentTheme) {
+            applyTheme(currentTheme);
+        }
+        themeToggle.addEventListener('change', () => {
+            let theme = themeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+        });
+
+        // Form functionality scripts
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
@@ -335,70 +522,64 @@
         let annexCount = 0;
         let fileCounters = {};
         let annexOrder = [];
-
+        let jspdfLoaded = false;
+        let pdfjsLoaded = false;
+        
         document.addEventListener('DOMContentLoaded', () => {
             const jspdfScript = document.querySelector('script[src*="jspdf.umd.min.js"]');
             const pdfjsScript = document.querySelector('script[src*="pdf.min.js"]');
 
             if (jspdfScript) {
-                jspdfScript.onload = () => { setTimeout(() => { jspdfLoaded = true; checkLibrariesLoaded(); }, 0); };
+                jspdfScript.onload = () => { jspdfLoaded = true; checkLibrariesLoaded(); };
                 jspdfScript.onerror = () => { console.error("Falha ao carregar jsPDF."); alert("Erro ao carregar jsPDF. Verifique sua conexão."); };
             }
 
             if (pdfjsScript) {
-                pdfjsScript.onload = () => { setTimeout(() => { pdfjsLoaded = true; checkLibrariesLoaded(); }, 0); };
+                pdfjsScript.onload = () => { pdfjsLoaded = true; checkLibrariesLoaded(); };
                 pdfjsScript.onerror = () => { console.error("Falha ao carregar PDF.js."); alert("Erro ao carregar PDF.js. Verifique sua conexão."); };
             }
 
             document.getElementById('generatePdfBtn').disabled = true;
-            checkLibrariesLoaded();
+            setTimeout(checkLibrariesLoaded, 500);
+
+            // CORRECTED: Setup one listener for the entire accordion container
+            setupAccordionListener();
         });
-
+        
         function checkLibrariesLoaded() {
-            if (typeof window.jspdf !== 'undefined' && typeof pdfjsLib !== 'undefined') {
-                jspdfLoaded = true;
-                pdfjsLoaded = true;
-            }
-
-            if (jspdfLoaded && pdfjsLoaded) {
-                document.getElementById('generatePdfBtn').disabled = false;
-            }
+             if (typeof window.jspdf !== 'undefined') jspdfLoaded = true;
+             if (typeof pdfjsLib !== 'undefined') pdfjsLoaded = true;
+             if (jspdfLoaded && pdfjsLoaded) {
+                 document.getElementById('generatePdfBtn').disabled = false;
+             }
         }
-
-        async function getBase64ImageFromUrl(url) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Falha ao carregar imagem: ' + response.statusText);
-                const blob = await response.blob();
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-            } catch (err) {
-                console.error("Erro em getBase64ImageFromUrl:", err);
-                throw new Error("Não foi possível carregar a imagem de fundo.");
-            }
-        }
-
-        function validateLettersOnly(input) {
-            input.value = input.value.replace(/[^a-zA-Z\sÀ-ú]/g, '');
-        }
-
+        
         function updateAnnexFields() {
-            const annexContainer = document.getElementById('annexContainer');
-            const addAnnexBtn = document.getElementById('addAnnexBtn');
-            annexContainer.innerHTML = `
-                <h3>Anexos</h3>
-                <p style="color: #555; font-size: 0.9rem; margin-bottom: 10px;">
-                    <strong>Orientação:</strong> Utilize imagens (PNG/JPEG, máx. 5MB) e PDFs (máx. 10MB) de tamanho reduzido para evitar arquivos grandes e garantir a geração eficiente do Atestado de Capacidade Técnica.
-                </p>
-            `;
-            annexContainer.appendChild(addAnnexBtn);
+            document.getElementById('annexAccordionContainer').innerHTML = '';
             annexCount = 0;
             fileCounters = {};
             annexOrder = [];
+        }
+        
+        // CORRECTED: Uses event delegation. One listener for all annexes.
+        function setupAccordionListener() {
+            const container = document.getElementById('annexAccordionContainer');
+            container.addEventListener('click', function(event) {
+                const header = event.target.closest('.annex-accordion-header');
+
+                // Ignore clicks that are not on a header or are on the remove button
+                if (!header || event.target.classList.contains('remove-annex-section-btn')) {
+                    return;
+                }
+
+                header.classList.toggle('active');
+                const panel = header.nextElementSibling;
+                if (panel.style.display === 'block') {
+                    panel.style.display = 'none';
+                } else {
+                    panel.style.display = 'block';
+                }
+            });
         }
 
         function addAnnex() {
@@ -409,42 +590,43 @@
             }
 
             let newAnnexId = 1;
-            while (annexOrder.includes(newAnnexId)) {
+            while (document.getElementById(`annex-accordion-${newAnnexId}`)) {
                 newAnnexId++;
             }
+            
             annexOrder.push(newAnnexId);
-            annexOrder.sort((a, b) => a - b);
-
             fileCounters[newAnnexId] = { fotos: 1, materiais: 1, midia: 1, instrumentos: 1 };
 
-            const annexDiv = document.createElement('div');
-            annexDiv.classList.add('annex-section');
-            annexDiv.id = `annex-${newAnnexId}`;
+            const annexWrapper = document.createElement('div');
+            annexWrapper.classList.add('annex-accordion-item');
+            annexWrapper.id = `annex-accordion-${newAnnexId}`;
 
             let annexFieldsHTML = `
-                <div class="annex-buttons">
-                    <button type="button" class="remove-annex-section-btn" onclick="removeAnnex(${newAnnexId})">Remover Anexo ${newAnnexId}</button>
+                <div class="annex-accordion-header">
+                    <span class="annex-title">Anexo ${newAnnexId}</span>
+                    <button type="button" class="remove-annex-section-btn" onclick="removeAnnex(${newAnnexId}, event)">Remover</button>
                 </div>
-                <h4>Anexo ${newAnnexId}</h4>
-                <div class="input-container">
-                    <label for="nomeProjeto-${newAnnexId}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
-                    <input type="text" id="nomeProjeto-${newAnnexId}" placeholder="Digite o nome do projeto/ação" required>
-                </div>
-                <div class="input-container">
-                    <label for="entidadesParceiras-${newAnnexId}">Entidades Parceiras <span style="color: red;">*</span></label>
-                    <input type="text" id="entidadesParceiras-${newAnnexId}" placeholder="Digite as entidades parceiras" required>
-                </div>
-                <div class="input-container">
-                    <label for="numeroBeneficiados-${newAnnexId}">Número de Beneficiados <span style="color: red;">*</span></label>
-                    <input type="number" id="numeroBeneficiados-${newAnnexId}" placeholder="Digite o número de beneficiados" required min="1">
-                </div>
-                <div class="input-container">
-                    <label for="atividadesDesenvolvidas-${newAnnexId}">Ações/Atividades Desenvolvidas <span style="color: red;">*</span></label>
-                    <textarea id="atividadesDesenvolvidas-${newAnnexId}" placeholder="Descreva as atividades" required></textarea>
-                </div>
+                <div class="annex-accordion-panel">
+                    <div class="form-grid">
+                        <div class="input-container full-width">
+                            <label for="nomeProjeto-${newAnnexId}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
+                            <input type="text" id="nomeProjeto-${newAnnexId}" placeholder="Digite o nome do projeto/ação" required>
+                        </div>
+                        <div class="input-container">
+                            <label for="entidadesParceiras-${newAnnexId}">Entidades Parceiras <span style="color: red;">*</span></label>
+                            <input type="text" id="entidadesParceiras-${newAnnexId}" placeholder="Digite as entidades parceiras" required>
+                        </div>
+                        <div class="input-container">
+                            <label for="numeroBeneficiados-${newAnnexId}">Número de Beneficiados <span style="color: red;">*</span></label>
+                            <input type="number" id="numeroBeneficiados-${newAnnexId}" placeholder="Digite o número de beneficiados" required min="1">
+                        </div>
+                        <div class="input-container full-width">
+                            <label for="atividadesDesenvolvidas-${newAnnexId}">Ações/Atividades Desenvolvidas <span style="color: red;">*</span></label>
+                            <textarea id="atividadesDesenvolvidas-${newAnnexId}" placeholder="Descreva as atividades" required></textarea>
+                        </div>
             `;
 
-            if (tipoAtestado === 'termoFomento') {
+            if (tipoAtestado === 'termoFomento' || tipoAtestado === 'convenio') {
                 annexFieldsHTML += `
                     <div class="input-container">
                         <label for="dataInicio-${newAnnexId}">Data de Início <span style="color: red;">*</span></label>
@@ -454,33 +636,26 @@
                         <label for="dataTermino-${newAnnexId}">Data de Término <span style="color: red;">*</span></label>
                         <input type="date" id="dataTermino-${newAnnexId}" required>
                     </div>
-                    <div class="input-container">
+                `;
+            }
+            if (tipoAtestado === 'termoFomento') {
+                 annexFieldsHTML += `
+                    <div class="input-container full-width">
                         <label for="estruturasFisicas-${newAnnexId}">Estruturas Físicas <span style="color: red;">*</span></label>
                         <input type="text" id="estruturasFisicas-${newAnnexId}" placeholder="Descreva as estruturas físicas" required>
                     </div>
-                    <div class="input-container">
+                    <div class="input-container full-width">
                         <label for="qualificacaoPessoal-${newAnnexId}">Qualificação Profissional <span style="color: red;">*</span></label>
                         <textarea id="qualificacaoPessoal-${newAnnexId}" placeholder="Descreva a qualificação do pessoal" required></textarea>
                     </div>
-                `;
-            } else if (tipoAtestado === 'convenio') {
-                annexFieldsHTML += `
-                    <div class="input-container">
-                        <label for="dataInicio-${newAnnexId}">Data de Início <span style="color: red;">*</span></label>
-                        <input type="date" id="dataInicio-${newAnnexId}" required>
-                    </div>
-                    <div class="input-container">
-                        <label for="dataTermino-${newAnnexId}">Data de Término <span style="color: red;">*</span></label>
-                        <input type="date" id="dataTermino-${newAnnexId}" required>
-                    </div>
-                `;
+                 `;
             }
-
+            
             const fileSections = [
-                { type: 'fotos', label: 'Fotos e PDFs Relacionados <span style="color: red;">*</span>', required: true },
-                { type: 'materiais', label: 'Materiais e PDFs Relacionados (Não se Aplica)', required: false },
-                { type: 'midia', label: 'Mídia e PDFs Relacionados (Não se Aplica)', required: false },
-                { type: 'instrumentos', label: 'Instrumentos e PDFs Relacionados (Não se Aplica)', required: false }
+                { type: 'fotos', label: 'Fotos Comprobatórias <span style="color: red;">*</span>', required: true },
+                { type: 'materiais', label: 'Materiais de Divulgação (Opcional)', required: false },
+                { type: 'midia', label: 'Relatórios de Mídia (Opcional)', required: false },
+                { type: 'instrumentos', label: 'Outros Instrumentos (Opcional)', required: false }
             ];
 
             fileSections.forEach(({ type, label, required }) => {
@@ -489,25 +664,22 @@
                         <label for="${type}-${newAnnexId}-1">${label}</label>
                         <div class="file-input-wrapper" id="wrapper-${type}-${newAnnexId}-1">
                             <input type="file" id="${type}-${newAnnexId}-1" accept="image/png,image/jpeg,application/pdf" multiple ${required ? 'required' : ''} onchange="validateMixedFiles(this)">
-                            <button type="button" class="remove-btn" onclick="removeFile('${type}', ${newAnnexId}, 1)" style="display: none;">Remover</button>
                         </div>
-                        <button type="button" class="add-btn" onclick="addMoreFiles('${type}', ${newAnnexId})">Adicionar Mais</button>
+                        <button type="button" class="add-btn" onclick="addMoreFiles('${type}', ${newAnnexId})">Adicionar Mais Arquivos</button>
                     </div>
                 `;
             });
 
-            annexDiv.innerHTML = annexFieldsHTML;
-            const annexContainer = document.getElementById('annexContainer');
-            const addAnnexBtn = document.getElementById('addAnnexBtn');
-            annexContainer.insertBefore(annexDiv, addAnnexBtn);
-
-            fileSections.forEach(({ type }) => {
-                toggleRemoveButtonVisibility(type, newAnnexId);
-            });
+            annexFieldsHTML += `</div></div>`;
+            annexWrapper.innerHTML = annexFieldsHTML;
+            document.getElementById('annexAccordionContainer').appendChild(annexWrapper);
+            
+            // REMOVED call to setupAccordionListeners() from here.
         }
 
-        function removeAnnex(id) {
-            const annexToRemove = document.getElementById(`annex-${id}`);
+        function removeAnnex(id, event) {
+            event.stopPropagation();
+            const annexToRemove = document.getElementById(`annex-accordion-${id}`);
             if (annexToRemove) {
                 annexToRemove.remove();
                 const index = annexOrder.indexOf(id);
@@ -517,18 +689,40 @@
                 delete fileCounters[id];
             }
         }
+        
+        // All other helper and PDF generation functions remain unchanged.
+        async function getBase64ImageFromUrl(url) {
+             try {
+                 const response = await fetch(url);
+                 if (!response.ok) throw new Error('Falha ao carregar imagem: ' + response.statusText);
+                 const blob = await response.blob();
+                 return new Promise((resolve, reject) => {
+                     const reader = new FileReader();
+                     reader.onloadend = () => resolve(reader.result);
+                     reader.onerror = reject;
+                     reader.readAsDataURL(blob);
+                 });
+             } catch (err) {
+                 console.error("Erro em getBase64ImageFromUrl:", err);
+                 throw new Error("Não foi possível carregar a imagem de fundo.");
+             }
+        }
+
+        function validateLettersOnly(input) {
+            input.value = input.value.replace(/[^a-zA-Z\sÀ-ú]/g, '');
+        }
 
         function addMoreFiles(type, annexId) {
-            const currentCount = fileCounters[annexId][type];
-            if (currentCount >= 5) {
-                alert('Limite de 5 arquivos por campo atingido.');
+            const container = document.getElementById(`${type}-${annexId}-container`);
+            const fileInputs = container.querySelectorAll('input[type="file"]');
+            
+            if (fileInputs.length >= 5) {
+                alert('Limite de 5 campos de arquivo por seção atingido.');
                 return;
             }
 
-            fileCounters[annexId][type]++;
-            const newIndex = fileCounters[annexId][type];
-
-            const container = document.getElementById(`${type}-${annexId}-container`);
+            const newIndex = fileInputs.length + 1;
+            
             const inputWrapper = document.createElement('div');
             inputWrapper.classList.add('file-input-wrapper');
             inputWrapper.id = `wrapper-${type}-${annexId}-${newIndex}`;
@@ -544,64 +738,19 @@
             removeButton.type = 'button';
             removeButton.classList.add('remove-btn');
             removeButton.textContent = 'Remover';
-            removeButton.onclick = () => removeFile(type, annexId, newIndex);
+            removeButton.onclick = () => inputWrapper.remove();
 
             inputWrapper.appendChild(newInput);
             inputWrapper.appendChild(removeButton);
 
             const addButton = container.querySelector('.add-btn');
             container.insertBefore(inputWrapper, addButton);
-
-            toggleRemoveButtonVisibility(type, annexId);
-        }
-
-        function removeFile(type, annexId, index) {
-            const inputWrapperToRemove = document.getElementById(`wrapper-${type}-${annexId}-${index}`);
-            if (inputWrapperToRemove) {
-                inputWrapperToRemove.remove();
-                fileCounters[annexId][type]--;
-
-                const container = document.getElementById(`${type}-${annexId}-container`);
-                const remainingWrappers = container.querySelectorAll(`.file-input-wrapper[id^="wrapper-${type}-${annexId}-"]`);
-
-                const currentElements = Array.from(remainingWrappers);
-
-                currentElements.forEach((wrapper, idx) => {
-                    const newIdx = idx + 1;
-                    wrapper.id = `wrapper-${type}-${annexId}-${newIdx}`;
-                    const input = wrapper.querySelector('input[type="file"]');
-                    if (input) {
-                        input.id = `${type}-${annexId}-${newIdx}`;
-                        input.name = `${type}-${annexId}-${newIdx}`;
-                    }
-                    const removeBtn = wrapper.querySelector('.remove-btn');
-                    if (removeBtn) {
-                        removeBtn.onclick = () => removeFile(type, annexId, newIdx);
-                    }
-                });
-
-                toggleRemoveButtonVisibility(type, annexId);
-            }
-        }
-
-        function toggleRemoveButtonVisibility(type, annexId) {
-            const container = document.getElementById(`${type}-${annexId}-container`);
-            const allRemoveButtons = container.querySelectorAll('.remove-btn');
-
-            if (fileCounters[annexId] && fileCounters[annexId][type] <= 1) {
-                allRemoveButtons.forEach(btn => btn.style.display = 'none');
-            } else {
-                 allRemoveButtons.forEach(btn => btn.style.display = 'inline-block');
-            }
         }
 
         function validateMixedFiles(input) {
             const files = input.files;
-            if (files.length === 0 && input.required) {
-                return;
-            }
             if (files.length > 5) {
-                alert('Você pode enviar no máximo 5 arquivos por campo.');
+                alert('Você pode selecionar no máximo 5 arquivos de uma vez.');
                 input.value = '';
                 return;
             }
@@ -610,17 +759,15 @@
             for (let file of files) {
                 if (!validImageTypes.includes(file.type) && file.type !== validPdfType) {
                     alert('Apenas arquivos PNG, JPEG e PDF são aceitos.');
-                    input.value = '';
-                    return;
+                    input.value = ''; return;
                 }
                 if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
-                    alert('Tamanho do arquivo de imagem excede 5MB.');
-                    input.value = '';
-                    return;
-                } else if (file.type === validPdfType && file.size > 10 * 1024 * 1024) {
-                    alert('Tamanho do arquivo PDF excede 10MB.');
-                    input.value = '';
-                    return;
+                    alert(`O arquivo de imagem "${file.name}" excede 5MB.`);
+                    input.value = ''; return;
+                }
+                if (file.type === validPdfType && file.size > 10 * 1024 * 1024) {
+                    alert(`O arquivo PDF "${file.name}" excede 10MB.`);
+                    input.value = ''; return;
                 }
             }
         }
@@ -628,39 +775,23 @@
         async function fetchEntityData() {
             const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
             const nomeEntidadeInput = document.getElementById('nomeEntidade');
-            nomeEntidadeInput.value = '';
-
-            if (!cnpj || cnpj.length !== 14) {
-                return;
-            }
-
+            if (cnpj.length !== 14) return;
+            
+            nomeEntidadeInput.value = 'Buscando dados...';
             try {
                 const proxyUrl = 'https://corsproxy.io/?';
                 const apiUrl = `https://brasilapi.com.br/api/cnpj/v1/${cnpj}`;
-                
                 const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
                 const data = await response.json();
                 
-                if (!response.ok || data.status === 'ERROR' || !data.razao_social) {
-                    throw new Error(data.message || 'CNPJ inválido ou não encontrado.');
-                }
+                if (!response.ok || !data.razao_social) throw new Error(data.message || 'CNPJ inválido.');
                 
-                const isMunicipio = data.razao_social.toLowerCase().includes('prefeitura') ||
-                                    data.razao_social.toLowerCase().includes('município') ||
-                                    data.razao_social.toLowerCase().includes('municipal');
-                
-                if (isMunicipio) {
-                    let nomeMunicipio = data.razao_social.replace(/(prefeitura municipal de|município de|municipal de)\s*/i, '').trim();
-                    if (data.municipio) {
-                        nomeMunicipio = data.municipio;
-                    }
-                    nomeEntidadeInput.value = nomeMunicipio;
-                } else {
-                    nomeEntidadeInput.value = data.razao_social;
-                }
+                nomeEntidadeInput.value = data.razao_social || 'Não encontrado';
+                document.getElementById('cep').value = data.cep || '';
+                if(data.cep) fetchAddressData();
+
             } catch (err) {
-                alert(`Erro ao consultar CNPJ: ${err.message}. Verifique o CNPJ e sua conexão.`);
-                console.error("Erro no fetchEntityData:", err);
+                alert(`Erro ao consultar CNPJ: ${err.message}`);
                 nomeEntidadeInput.value = '';
             }
         }
@@ -668,26 +799,20 @@
         async function fetchAddressData() {
             const cep = document.getElementById('cep').value.replace(/\D/g, '');
             const enderecoInput = document.getElementById('endereco');
-            enderecoInput.value = '';
-
-            if (!cep || cep.length !== 8) {
-                return;
-            }
-
+            if (cep.length !== 8) return;
+            
+            enderecoInput.value = 'Buscando endereço...';
             try {
                 const proxyUrl = 'https://corsproxy.io/?';
                 const apiUrl = `https://viacep.com.br/ws/${cep}/json/`;
-
                 const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
                 const data = await response.json();
                 
-                if (!response.ok || data.erro) {
-                    throw new Error(data.erro ? 'CEP não encontrado.' : 'Erro na requisição da API.');
-                }
+                if (data.erro) throw new Error('CEP não encontrado.');
+                
                 enderecoInput.value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
             } catch (err) {
-                alert(`Erro ao consultar CEP: ${err.message}. Verifique o CEP e sua conexão.`);
-                console.error("Erro no fetchAddressData:", err);
+                alert(`Erro ao consultar CEP: ${err.message}`);
                 enderecoInput.value = '';
             }
         }
@@ -697,34 +822,18 @@
             const [year, month, day] = dateStr.split('-');
             return `${day}/${month}/${year}`;
         }
-
-        // Função auxiliar para adicionar cabeçalho de anexo em novas páginas
-        function addAnnexHeader(doc, y, margin, pageWidth) {
-            doc.setFontSize(18);
-            doc.setTextColor(0, 0, 255);
-            doc.text('ANEXO', pageWidth / 2, y, { align: 'center' });
-            doc.setTextColor(0, 0, 0);
-            y += 15;
-            doc.setFontSize(14);
-            doc.text('HISTÓRICO', margin, y);
-            y += 10;
-            doc.setFontSize(12);
-            return y;
-        }
-
+        
         async function generatePDF() {
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('generatePdfBtn').disabled = true;
+            document.getElementById('generatePdfBtn').disabled = false;
 
             try {
-                if (typeof window.jspdf === 'undefined' || typeof pdfjsLib === 'undefined') {
+                if (!jspdfLoaded || !pdfjsLoaded) {
                     throw new Error('Bibliotecas jsPDF ou PDF.js não carregadas.');
                 }
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
+                
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
                 const watermarkImageUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
                 let watermarkBase64 = '';
                 try {
@@ -743,6 +852,19 @@
                         doc.addImage(watermarkBase64, 'JPEG', 0, 0, pageWidth, pageHeight, '', 'FAST', 0.2);
                     }
                 };
+                
+                const addAnnexHeader = (doc, y, margin, pageWidth) => {
+                    doc.setFontSize(18);
+                    doc.setTextColor(0, 0, 255);
+                    doc.text('ANEXO', pageWidth / 2, y, { align: 'center' });
+                    doc.setTextColor(0, 0, 0);
+                    y += 15;
+                    doc.setFontSize(14);
+                    doc.text('HISTÓRICO', margin, y);
+                    y += 10;
+                    doc.setFontSize(12);
+                    return y;
+                }
 
                 let yPos = margin;
                 const addNewPdfPage = (isContentPage = true) => {
@@ -766,7 +888,7 @@
                 const complementoValue = document.getElementById('complemento')?.value || '';
                 const numeroPropostaValue = document.getElementById('numeroProposta')?.value || '';
                 const [cidade, uf] = (endereco ? endereco.split(', ').pop().split(' - ') : ['', '']) || ['Brasília', 'DF'];
-                const currentDate = new Date('2025-07-03T10:07:42-03:00');
+                const currentDate = new Date();
                 const day = currentDate.getDate().toString().padStart(2, '0');
                 const monthName = currentDate.toLocaleString('pt-BR', { month: 'long' });
                 const year = currentDate.getFullYear();
@@ -908,16 +1030,17 @@
                                 const renderHeight = viewport.height * scale;
                                 const renderWidth = viewport.width * scale;
 
-                                const renderScale = 3;
+                                const renderScale = 5;
                                 const scaledViewport = page.getViewport({ scale: scale * renderScale });
                                 const canvas = document.createElement('canvas');
                                 canvas.width = scaledViewport.width;
                                 canvas.height = scaledViewport.height;
 
                                 await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaledViewport }).promise;
-                                const imageData = canvas.toDataURL('image/jpeg', 0.95);
                                 
-                                doc.addImage(imageData, 'JPEG', (pageWidth - renderWidth) / 2, yPos, renderWidth, renderHeight);
+                                const imageData = canvas.toDataURL('image/png', 1.0);
+                                doc.addImage(imageData, 'PNG', (pageWidth - renderWidth) / 2, yPos, renderWidth, renderHeight);
+                                
                                 yPos += renderHeight + 5;
                                 doc.setFontSize(9);
                                 doc.setTextColor(100, 100, 100);
