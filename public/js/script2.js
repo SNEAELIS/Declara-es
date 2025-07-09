@@ -1,27 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const imagensInput = document.getElementById('imagens');
-    const descricaoContainer = document.getElementById('descricaoImagens');
+// script2.js
+// Flag para evitar cliques múltiplos
+let isGeneratingPDF = false;
 
-    if (!imagensInput || !descricaoContainer) {
-        console.error("Elemento 'imagens' ou 'descricaoImagens' não encontrado.");
-        return;
+// Função para validar dados obrigatórios
+function validarDadosFormulario(dados) {
+    const camposObrigatorios = [
+        'nome', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade',
+        'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'
+    ];
+    const erros = [];
+
+    for (const campo of camposObrigatorios) {
+        if (!dados[campo] || dados[campo].trim() === '') {
+            erros.push(`O campo ${campo} é obrigatório.`);
+        }
     }
 
-    imagensInput.addEventListener('change', function () {
-        descricaoContainer.innerHTML = ''; // Limpa descrições anteriores
+    if (dados.opcaoSelecao.startsWith('00SL') && (!dados.espacosFisicos || dados.espacosFisicos.length === 0)) {
+        erros.push('Pelo menos um espaço físico deve ser informado para propostas 00SL.');
+    }
 
-        Array.from(this.files).forEach((file, index) => {
-            const div = document.createElement('div');
-            div.innerHTML = `
-                <div class="form-row">
-                    <label for="descricao${index}">Descrição da Imagem ${index + 1}:</label>
-                    <textarea id="descricao${index}" rows="2" style="width: 100%;"></textarea>
-                </div>
-            `;
-            descricaoContainer.appendChild(div);
-        });
-    });
-});
+    return erros;
+}
 
 // Função para converter imagem em Base64
 async function getBase64ImageFromUrl(imageUrl) {
@@ -49,7 +49,7 @@ async function getBase64ImageFromUrl(imageUrl) {
     }
 }
 
-// Captura os dados do formulário, incluindo múltiplos espaços físicos
+// Função para capturar dados do formulário
 function capturarDadosFormulario() {
     const getValue = (id) => document.getElementById(id)?.value || '';
     const imagens = Array.from(document.getElementById('imagens')?.files || []);
@@ -60,52 +60,32 @@ function capturarDadosFormulario() {
     const anoAtual = dataAtual.getFullYear();
 
     // Captura múltiplos espaços físicos dinamicamente
-    const espacoFisicoCount = document.querySelectorAll('[id^="nomeEspacoFisico"]').length;
     const espacosFisicos = [];
-    for (let i = 0; i < espacoFisicoCount; i++) {
+    document.querySelectorAll('[id^="nomeEspacoFisico"]').forEach((_, i) => {
         espacosFisicos.push({
             nome: getValue(`nomeEspacoFisico${i}`) || 'Espaço físico não informado',
             endereco: getValue(`enderecoEspacoFisico${i}`) || 'Endereço do espaço físico não informado'
         });
-    }
+    });
 
     return {
-        nome: getValue('dirigente') || 'Nome não informado',
-        cpf: getValue('cpf') || 'CPF não informado',
-        cargoDirigente: getValue('cargoDirigente') || 'Cargo não informado',
-        entidade: getValue('entidade') || 'Entidade não informada',
-        cep: getValue('cep') || 'CEP não informado',
-        cnpj: getValue('cnpj') || 'CNPJ não informado',
-        endereco: getValue('endereco') || 'Endereço não informado',
-        municipio: getValue('municipio') || 'Município não informado',
-        uf: getValue('uf') || 'UF não informada',
-        proposta: getValue('proposta') || 'Proposta não informada',
-        objeto: getValue('objeto') || 'Objeto não informado',
-        valorContrapartida: getValue('valorContrapartida') || 'Valor não informado',
-        valorContrapartidaExtenso: getValue('valorContrapartidaExtenso') || 'Valor por extenso não informado',
-        leiOrcamentaria: getValue('leiOrcamentaria') || 'Lei não informada',
-        diaLei: getValue('diaLei') || 'Dia não informado',
-        mesLei: getValue('mesLei') || 'Mês não informado',
-        anoLei: getValue('anoLei') || 'Ano não informado',
-        orgao: getValue('orgao') || 'Órgão não informado',
-        unidade: getValue('unidade') || 'Unidade não informada',
-        funcao: getValue('funcao') || 'Função não informada',
-        subfuncao: getValue('subfuncao') || 'Subfunção não informada',
-        programa: getValue('programa') || 'Programa não informado',
-        atividade: getValue('atividade') || 'Atividade não informada',
-        naturezaDespesa: getValue('naturezaDespesa') || 'Natureza não informada',
-        nomeProjeto: getValue('nomeProjeto') || 'Projeto não informado',
-        entidadesParceiras: getValue('entidadesParceiras') || 'Nenhuma entidade parceira',
-        periodoVigencia: getValue('periodoVigencia') || 'Período não informado',
-        numeroBeneficiados: getValue('numeroBeneficiados') || 'Não informado',
-        acoesDesenvolvidas: getValue('acoesDesenvolvidas') || 'Nenhuma ação informada',
-        chefeExecutivo: getValue('chefeExecutivo') || 'Chefe do Poder Executivo',
-        secretarioFinancas: getValue('secretarioFinancas') || 'Secretário de Finanças',
+        nome: getValue('dirigente'),
+        matricula: getValue('matricula'),
+        cargoDirigente: getValue('cargoDirigente'),
+        proposta: getValue('proposta'),
+        cnpj: getValue('cnpj'),
+        entidade: getValue('entidade'),
+        endereco: getValue('endereco'),
+        uf: getValue('uf'),
+        municipio: getValue('municipio'),
+        cep: getValue('cep'),
+        valorContrapartida: getValue('valorContrapartida'),
+        valorContrapartidaExtenso: getValue('valorContrapartidaExtenso'),
+        temAquisicao: document.getElementById('temAquisicao')?.checked || false,
+        opcaoSelecao: getValue('opcaoSelecao'),
+        espacosFisicos,
         imagens,
         descricoes,
-        espacosFisicos,
-        objetoConvenio: getValue('objeto') || 'Objeto do convênio não informado',
-        matricula: getValue('matricula') || 'Matrícula não informada',
         diaAtual,
         mesAtual,
         anoAtual
@@ -115,61 +95,46 @@ function capturarDadosFormulario() {
 // Substitui placeholders no texto com os dados fornecidos
 function substituirPlaceholders(texto, dados) {
     return texto
-        .replace(/\[NOME\]/g, dados.nome)
-        .replace(/\[CPF\]/g, dados.cpf)
-        .replace(/\[UF\]/g, dados.uf)
-        .replace(/\[CARGO_DIRIGENTE\]/g, dados.cargoDirigente)
-        .replace(/\[ENTIDADE\]/g, dados.entidade)
-        .replace(/\[CNPJ\]/g, dados.cnpj)
-        .replace(/\[ENDERECO\]/g, dados.endereco)
-        .replace(/\[CEP\]/g, dados.cep)
-        .replace(/\[MUNICIPIO\]/g, dados.municipio)
-        .replace(/\[PROPOSTA\]/g, dados.proposta)
-        .replace(/\[OBJETO\]/g, dados.objeto)
-        .replace(/\[VALOR_CONTRAPARTIDA\]/g, dados.valorContrapartida)
-        .replace(/\[VALOR_CONTRAPARTIDA_EXTENSO\]/g, dados.valorContrapartidaExtenso)
-        .replace(/\[LEI_ORCAMENTARIA\]/g, dados.leiOrcamentaria)
-        .replace(/\[DIA_LEI\]/g, dados.diaLei)
-        .replace(/\[MES_LEI\]/g, dados.mesLei)
-        .replace(/\[ANO_LEI\]/g, dados.anoLei)
-        .replace(/\[ORGAO\]/g, dados.orgao)
-        .replace(/\[UNIDADE\]/g, dados.unidade)
-        .replace(/\[FUNCAO\]/g, dados.funcao)
-        .replace(/\[SUBFUNCAO\]/g, dados.subfuncao)
-        .replace(/\[PROGRAMA\]/g, dados.programa)
-        .replace(/\[ATIVIDADE\]/g, dados.atividade)
-        .replace(/\[NATUREZA_DESPESA\]/g, dados.naturezaDespesa)
-        .replace(/\[NOME_PROJETO\]/g, dados.nomeProjeto)
-        .replace(/\[ENTIDADES_PARCEIRAS\]/g, dados.entidadesParceiras)
-        .replace(/\[PERIODO_VIGENCIA\]/g, dados.periodoVigencia)
-        .replace(/\[NUMERO_BENEFICIADOS\]/g, dados.numeroBeneficiados)
-        .replace(/\[ACOES_DESENVOLVIDAS\]/g, dados.acoesDesenvolvidas)
-        .replace(/\[CHEFE_EXECUTIVO\]/g, dados.chefeExecutivo)
-        .replace(/\[SECRETARIO_FINANCAS\]/g, dados.secretarioFinancas)
+        .replace(/\[NOME\]/g, dados.nome || 'Nome não informado')
+        .replace(/\[MATRICULA\]/g, dados.matricula || 'Matrícula não informada')
+        .replace(/\[CARGO_DIRIGENTE\]/g, dados.cargoDirigente || 'Cargo não informado')
+        .replace(/\[ENTIDADE\]/g, dados.entidade || 'Entidade não informada')
+        .replace(/\[CNPJ\]/g, dados.cnpj || 'CNPJ não informado')
+        .replace(/\[ENDERECO\]/g, dados.endereco || 'Endereço não informado')
+        .replace(/\[UF\]/g, dados.uf || 'UF não informada')
+        .replace(/\[MUNICIPIO\]/g, dados.municipio || 'Município não informado')
+        .replace(/\[CEP\]/g, dados.cep || 'CEP não informado')
+        .replace(/\[PROPOSTA\]/g, dados.proposta || 'Proposta não informada')
+        .replace(/\[VALOR_CONTRAPARTIDA\]/g, dados.valorContrapartida || 'Valor não informado')
+        .replace(/\[VALOR_CONTRAPARTIDA_EXTENSO\]/g, dados.valorContrapartidaExtenso || 'Valor por extenso não informado')
         .replace(/\[DIA_ATUAL\]/g, dados.diaAtual)
         .replace(/\[MES_ATUAL\]/g, dados.mesAtual)
-        .replace(/\[ANO_ATUAL\]/g, dados.anoAtual)
-        .replace(/\[OBJETO_CONVENIO\]/g, dados.objetoConvenio)
-        .replace(/\[MATRICULA\]/g, dados.matricula);
+        .replace(/\[ANO_ATUAL\]/g, dados.anoAtual);
 }
 
-// Evento para o botão de gerar PDF
-document.addEventListener('DOMContentLoaded', () => {
-    const gerarPDFButton = document.getElementById('gerarPDF');
-    if (!gerarPDFButton) {
-        console.error("Elemento 'gerarPDF' não encontrado.");
+// Função principal para gerar o PDF
+async function gerarPDF(dados) {
+    if (isGeneratingPDF) {
+        console.log('Geração de PDF já em andamento. Ignorando solicitação.');
         return;
     }
-    gerarPDFButton.addEventListener('click', gerarPDF);
-});
+    isGeneratingPDF = true;
 
-async function gerarPDF() {
     try {
-        const dados = capturarDadosFormulario();
-        const opcao = document.getElementById('opcaoSelecao')?.value;
+        console.log('Iniciando geração do PDF com dados:', JSON.stringify(dados, null, 2));
 
+        // Valida os dados
+        const erros = validarDadosFormulario(dados);
+        if (erros.length > 0) {
+            showToast(`Erro: ${erros.join(' ')}`, true);
+            console.error('Validação falhou:', erros);
+            return;
+        }
+
+        const opcao = dados.opcaoSelecao;
         if (!opcao || !declaracoesEspecificas[opcao]) {
-            alert('Selecione uma opção válida antes de gerar o PDF.');
+            showToast('Selecione uma opção válida antes de gerar o PDF.', true);
+            console.error('Opção inválida:', opcao);
             return;
         }
 
@@ -181,7 +146,7 @@ async function gerarPDF() {
 
         // Converte as imagens enviadas para Base64
         const imageBase64Array = await Promise.all(
-            dados.imagens.map(file => new Promise((resolve) => {
+            (dados.imagens || []).map(file => new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onloadend = () => resolve(reader.result);
                 reader.readAsDataURL(file);
@@ -209,7 +174,7 @@ async function gerarPDF() {
             let content = substituirPlaceholders(declaracao.content, dados);
             let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
 
-            // Verifica se é a "DECLARAÇÃO DE TITULARIDADE DO TERRENO" para 00SL_emendas ou 00SL_comissao
+            // Verifica se é a "DECLARAÇÃO DE TITULARIDADE DO TERRENO" para 00SL
             if (['00SL_emendas', '00SL_comissao'].includes(opcao) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO") {
                 const tableData = dados.espacosFisicos.map(espaco => [
                     espaco.nome,
@@ -260,14 +225,28 @@ async function gerarPDF() {
                     alignment: 'center',
                     fontSize: 12,
                     margin: [0, 0, 0, 20],
-                    pageBreak: isLastDeclaration ? undefined : 'after' // Remove pageBreak da última declaração
+                    pageBreak: isLastDeclaration ? undefined : 'after'
                 }
             ];
         };
 
+        // Declarações comuns (exclui "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO" para controle condicional)
+        const declaracoesComuns = declaracoesCompletas.filter(
+            decl => decl.title !== "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO"
+        );
+
+        // Adiciona "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO" condicionalmente
+        const sustentabilidadeDeclaracao = declaracoesCompletas.find(
+            decl => decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO"
+        );
+        let declaracoesParaIncluir = [...declaracoesComuns];
+        if (opcao.startsWith('00SL') || (dados.temAquisicao && opcao.startsWith('20JP'))) {
+            declaracoesParaIncluir.push(sustentabilidadeDeclaracao);
+        }
+
         // Gera o conteúdo comum e específico
-        const conteudoComum = declaracoesCompletas.map((declaracao, index) => 
-            createDeclarationContent(declaracao, index === declaracoesCompletas.length - 1 && !declaracoesEspecificas[opcao].length && !imageBase64Array.length)
+        const conteudoComum = declaracoesParaIncluir.map((declaracao, index) => 
+            createDeclarationContent(declaracao, index === declaracoesParaIncluir.length - 1 && !declaracoesEspecificas[opcao].length && !imageBase64Array.length)
         );
         const conteudoEspecifico = declaracoesEspecificas[opcao].map((declaracao, index) => 
             createDeclarationContent(declaracao, index === declaracoesEspecificas[opcao].length - 1 && !imageBase64Array.length)
@@ -317,18 +296,60 @@ async function gerarPDF() {
                 fillingForms: false,
                 contentAccessibility: false,
                 documentAssembly: false
+            },
+            defaultStyle: {
+                font: 'Roboto'
             }
         };
 
-        console.log('Gerando PDF...');
-        pdfMake.createPdf(docDefinition).download(`${opcao}_${dados.nome}.pdf`);
+        // Gera o PDF com nome baseado em opcaoSelecao e nome
+        const nomeArquivo = `${opcao}_${dados.nome.replace(/\s+/g, '_') || 'documento'}_${dados.proposta.replace('/', '-')}.pdf`;
+        console.log(`Gerando PDF: ${nomeArquivo}`);
+        pdfMake.createPdf(docDefinition).download(nomeArquivo);
         console.log('PDF gerado com sucesso.');
+        showToast('PDF gerado com sucesso!');
     } catch (error) {
         console.error('Erro ao gerar o PDF:', error);
-        alert('Erro ao gerar o PDF. Verifique o console para mais detalhes.');
+        showToast('Erro ao gerar o PDF: ' + error.message, true);
+    } finally {
+        isGeneratingPDF = false;
     }
 }
 
+// Evento para o botão de gerar PDF
+document.addEventListener('DOMContentLoaded', () => {
+    const gerarPDFButton = document.getElementById('gerarPDF');
+    if (!gerarPDFButton) {
+        console.error("Elemento 'gerarPDF' não encontrado.");
+        return;
+    }
+
+    // Handler para o clique
+    const handler = () => {
+        console.log('Botão Gerar PDF clicado.');
+        const dados = capturarDadosFormulario();
+        gerarPDF(dados);
+    };
+
+    // Remove qualquer listener existente e adiciona o novo
+    gerarPDFButton.removeEventListener('click', handler);
+    gerarPDFButton.addEventListener('click', handler);
+});
+
+// Função para exibir toast
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = message;
+        toast.style.backgroundColor = isError ? 'var(--error-color)' : 'var(--success-color)';
+        toast.className = 'toast show';
+        setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+    } else {
+        console.log(`Toast: ${message}`);
+    }
+}
+
+// Declarações completas
 const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
@@ -341,7 +362,7 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE NÃO VÍNCULO",
         content: `
-        Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro,que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.
+        Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro, que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
@@ -414,6 +435,7 @@ const declaracoesCompletas = [
     }
 ];
 
+// Declarações específicas
 const declaracoesEspecificas = {
     '00SL_emendas': [
         {
@@ -430,9 +452,9 @@ const declaracoesEspecificas = {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
-    
+
             DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
-    
+
             Por ser expressão da verdade, firmo a presente declaração.
             `
         },
@@ -447,7 +469,6 @@ const declaracoesEspecificas = {
             `
         }
     ],
-    '20JP_emenda': [],
     '00SL_comissao': [
         {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
@@ -463,9 +484,9 @@ const declaracoesEspecificas = {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
-    
+
             DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
-    
+
             Por ser expressão da verdade, firmo a presente declaração.
             `
         },
@@ -480,16 +501,39 @@ const declaracoesEspecificas = {
             `
         }
     ],
+    '20JP_emenda': [],
     '20JP_comissao': [
         {
             title: "DECLARAÇÃO DE ADIMPLÊNCIA",
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:
-    
+
             Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares).
-    
+
             Por ser expressão da verdade, firmo a presente declaração.
             `
         }
     ]
 };
+
+// Manipulação de imagens (mantida do código original)
+document.addEventListener('DOMContentLoaded', () => {
+    const imagensInput = document.getElementById('imagens');
+    const descricaoContainer = document.getElementById('descricaoImagens');
+
+    if (imagensInput && descricaoContainer) {
+        imagensInput.addEventListener('change', function () {
+            descricaoContainer.innerHTML = ''; // Limpa descrições anteriores
+            Array.from(this.files).forEach((file, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="form-row">
+                        <label for="descricao${index}">Descrição da Imagem ${index + 1}:</label>
+                        <textarea id="descricao${index}" rows="2" style="width: 100%;"></textarea>
+                    </div>
+                `;
+                descricaoContainer.appendChild(div);
+            });
+        });
+    }
+});
