@@ -103,7 +103,7 @@ function capturarDadosFormulario() {
         secretarioFinancas: getValue('secretarioFinancas') || 'Secretário de Finanças',
         imagens,
         descricoes,
-        espacosFisicos, // Array com todos os espaços físicos
+        espacosFisicos,
         objetoConvenio: getValue('objeto') || 'Objeto do convênio não informado',
         matricula: getValue('matricula') || 'Matrícula não informada',
         diaAtual,
@@ -200,12 +200,12 @@ async function gerarPDF() {
                 text: dados.descricoes[index] || `Imagem ${index + 1}`,
                 fontSize: 12,
                 alignment: 'center',
-                margin: [0, 5, 0, 20],
-                pageBreak: 'after'
+                margin: [0, 5, 0, 20]
             }
         ]));
+
         // Função para criar conteúdo de uma declaração
-        const createDeclarationContent = (declaracao) => {
+        const createDeclarationContent = (declaracao, isLastDeclaration = false) => {
             let content = substituirPlaceholders(declaracao.content, dados);
             let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
 
@@ -216,12 +216,16 @@ async function gerarPDF() {
                     espaco.endereco
                 ]);
                 if (tableData.length > 0) {
-                    // Substitui a seção de placeholders por uma tabela
                     contentArray = [
-                        { text: content.replace(
-                            /Nome do Espaço Físico: \[NOME_ESPACO_FISICO\]; Endereço do Espaço Físico: \[ENDERECO_ESPACO_FISICO\]/,
-                            ''
-                        ), alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 0] }, // Remove a seção de placeholders
+                        { 
+                            text: content.replace(
+                                /Nome do Espaço Físico: \[NOME_ESPACO_FISICO\]; Endereço do Espaço Físico: \[ENDERECO_ESPACO_FISICO\]/,
+                                ''
+                            ), 
+                            alignment: 'justify', 
+                            fontSize: 12, 
+                            margin: [0, 20, 0, 0] 
+                        },
                         {
                             table: {
                                 widths: ['*', '*'],
@@ -234,9 +238,6 @@ async function gerarPDF() {
                             margin: [0, 10, 0, 20]
                         }
                     ];
-                } else {
-                    // Se não houver dados, mantém o texto com os valores padrão
-                    contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
                 }
             }
 
@@ -259,16 +260,29 @@ async function gerarPDF() {
                     alignment: 'center',
                     fontSize: 12,
                     margin: [0, 0, 0, 20],
-                    pageBreak: 'after'
+                    pageBreak: isLastDeclaration ? undefined : 'after' // Remove pageBreak da última declaração
                 }
             ];
         };
 
-        // Gera o conteúdo comum
-        const conteudoComum = declaracoesCompletas.map(createDeclarationContent);
+        // Gera o conteúdo comum e específico
+        const conteudoComum = declaracoesCompletas.map((declaracao, index) => 
+            createDeclarationContent(declaracao, index === declaracoesCompletas.length - 1 && !declaracoesEspecificas[opcao].length && !imageBase64Array.length)
+        );
+        const conteudoEspecifico = declaracoesEspecificas[opcao].map((declaracao, index) => 
+            createDeclarationContent(declaracao, index === declaracoesEspecificas[opcao].length - 1 && !imageBase64Array.length)
+        );
 
-        // Gera o conteúdo específico
-        const conteudoEspecifico = declaracoesEspecificas[opcao].map(createDeclarationContent);
+        // Consolida todo o conteúdo
+        const allContent = [...conteudoComum.flat(), ...conteudoEspecifico.flat(), ...imageContent.flat()];
+
+        // Garante que o último elemento não tenha pageBreak
+        if (allContent.length > 0) {
+            const lastElement = allContent[allContent.length - 1];
+            if (lastElement.pageBreak) {
+                delete lastElement.pageBreak;
+            }
+        }
 
         // Definição do documento PDF
         const docDefinition = {
@@ -281,11 +295,7 @@ async function gerarPDF() {
                 absolutePosition: { x: 0, y: 0 },
                 opacity: 0.9
             }] : [],
-            content: [
-                ...conteudoComum.flat(),
-                ...conteudoEspecifico.flat(),
-                ...imageContent.flat()
-            ],
+            content: allContent,
             styles: {
                 header: {
                     fontSize: 16,
@@ -320,7 +330,6 @@ async function gerarPDF() {
 }
 
 const declaracoesCompletas = [
-
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
         content: `
@@ -332,7 +341,7 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE NÃO VÍNCULO",
         content: `
-        Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro, na qualidade de representante legal do Proponente, que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.
+        Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro,que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
@@ -356,7 +365,7 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO NEGATIVA DE DUPLICIDADE DE CONVÊNIO",
         content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração de convênios e na qualidade de representante legal do proponente junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Transferegov sob o nº [PROPOSTA] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, ficando, portanto, sujeito às sanções civis, administrativas e penais cabíveis no caso de comprovada a falsidade ideológica.
+        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Transferegov sob o nº [PROPOSTA] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, ficando, portanto, sujeito às sanções civis, administrativas e penais cabíveis no caso de comprovada a falsidade ideológica.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
@@ -364,7 +373,7 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO NÃO RECEBE RECURSOS DE OUTRA ENTIDADE PARA A MESMA FINALIDADE",
         content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO ao Ministério do Esporte - MESP, que a entidade a qual represento não recebe recursos financeiros de outra entidade para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta Nº [PROPOSTA], cadastrada no Sistema Eletrônico Transferegov, para [OBJETO_CONVENIO], evitando desta forma a sobreposição de recursos.
+        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO ao Ministério do Esporte - MESP, que a entidade a qual represento não recebe recursos financeiros de outra entidade para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta Nº [PROPOSTA], cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
@@ -396,36 +405,15 @@ const declaracoesCompletas = [
         `
     },
     {
-        title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:
-
-        Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares).
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
-    },
-    {
-        title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
-
-        DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
-    },
-    {
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
         content: `
         Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio, que o(a) [ENTIDADE], possui condições orçamentárias para arcar com as despesas dela decorrentes e meios que garantam a sustentabilidade do objeto, por se tratar da aquisição de bens de capital.
 
         Por ser expressão da verdade, firmo a presente declaração.
         `
-    },
+    }
 ];
 
-// Declarações específicas por opção
 const declaracoesEspecificas = {
     '00SL_emendas': [
         {
@@ -437,7 +425,17 @@ const declaracoesEspecificas = {
 
             Por ser expressão da verdade, firmo a presente declaração.
             `
-        }, 
+        },
+        {
+            title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
+    
+            DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
+    
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        },
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
             content: `
@@ -462,6 +460,16 @@ const declaracoesEspecificas = {
             `
         },
         {
+            title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
+    
+            DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
+    
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        },
+        {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
             content: `
             Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
@@ -472,5 +480,16 @@ const declaracoesEspecificas = {
             `
         }
     ],
-    '20JP_comissao': []
+    '20JP_comissao': [
+        {
+            title: "DECLARAÇÃO DE ADIMPLÊNCIA",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:
+    
+            Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares).
+    
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        }
+    ]
 };

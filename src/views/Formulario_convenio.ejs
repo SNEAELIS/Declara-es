@@ -3,51 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador Documentações</title>
+    <title>Gerador de Documentações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333; line-height: 1.6; }
-        header { background-color: #003087; color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; width: 100%; top: 0; z-index: 1000; height: 60px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        :root {
+            --bg-color: #f4f4f9;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --primary-color: #003087;
+            --primary-text-color: #ffffff;
+            --input-border-color: #ccc;
+            --input-bg-color: #fff;
+            --input-focus-border: #003087;
+            --form-row-bg: #f9f9f9;
+            --button-disabled-bg: #ccc;
+            --header-shadow: rgba(0, 0, 0, 0.1);
+            --container-shadow: rgba(0, 0, 0, 0.05);
+        }
+        html.dark {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #5a9bff;
+            --primary-text-color: #000;
+            --input-border-color: #555;
+            --input-bg-color: #2a2a2a;
+            --input-focus-border: #5a9bff;
+            --form-row-bg: #252525;
+            --button-disabled-bg: #444;
+            --header-shadow: rgba(255, 255, 255, 0.1);
+            --container-shadow: rgba(0, 0, 0, 0.2);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: 'Arial', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        header { background-color: var(--primary-color); color: var(--primary-text-color); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; width: 100%; top: 0; z-index: 1000; height: 60px; box-shadow: 0 2px 4px var(--header-shadow); }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        header img { max-width: 200px; height: auto; }
+        header img { max-width: 200px; height: auto; filter: brightness(0) invert(1); }
+        html.dark header img { filter: none; }
         header h1 { font-size: 1.2rem; font-weight: bold; }
         .header-right { display: flex; align-items: center; gap: 10px; }
-        .header-btn { background-color: #fff; color: #003087; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.3s; }
-        .header-btn:hover { background-color: #e0e0e0; }
-        .container { background: #fff; margin: 80px auto 30px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); max-width: 900px; }
+        .theme-switcher { display: flex; align-items: center; cursor: pointer; color: var(--primary-text-color); }
+        .theme-switcher i { font-size: 1.2rem; padding: 5px; }
+        #theme-icon-sun { display: none; }
+        html.dark #theme-icon-sun { display: inline-block; }
+        html.dark #theme-icon-moon { display: none; }
+        .container { background: var(--container-bg); margin: 80px auto 30px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px var(--container-shadow); max-width: 900px; }
         .container-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .container-header h2 { font-size: 1.5rem; font-weight: bold; color: #333; }
+        .container-header h2 { font-size: 1.5rem; font-weight: bold; color: var(--text-color); }
         .status { font-size: 0.9rem; color: #666; }
         .section { margin-bottom: 20px; }
-        .section h3 { font-size: 1.2rem; font-weight: bold; color: #003087; margin-bottom: 10px; }
-        .form-row { display: flex; flex-wrap: wrap; gap: 15px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
-        .form-row .half-width { flex: 1; min-width: 200px; }
-        .form-row .third-width { flex: 1; min-width: 150px; }
-        .form-row .full-width { width: 100%; }
-        label { font-size: 0.9rem; font-weight: bold; color: #333; margin-bottom: 5px; display: block; }
-        input[type="text"], input[type="number"], input[type="file"], textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; background-color: #fff; transition: border-color 0.3s; }
+        .section h3 { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 20px; background-color: var(--form-row-bg); padding: 15px; border-radius: 5px; border: 1px solid var(--input-border-color); margin-bottom: 15px; }
+        .form-row .half-width, .form-row .third-width, .form-row .full-width { flex: 1; min-width: 200px; }
+        .third-width { min-width: 150px; }
+        label { font-size: 0.9rem; font-weight: bold; color: var(--text-color); margin-bottom: 5px; display: block; }
+        input[type="text"], input[type="number"], input[type="file"], textarea, select { width: 100%; padding: 10px; border: 1px solid var(--input-border-color); border-radius: 4px; font-size: 0.9rem; background-color: var(--input-bg-color); color: var(--text-color); }
         input[readonly] { background-color: #f0f0f0; cursor: not-allowed; }
-        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { border-color: #003087; outline: none; }
-        textarea { resize: vertical; height: 80px; }
-        .marker-container { margin: 10px 0; }
-        .marker-container label { margin-left: 5px; font-weight: normal; }
-        button { background-color: #003087; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.3s; }
-        button:hover { background-color: #00205b; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        html.dark input[readonly] { background-color: #333; color: #999; }
+        input:focus, textarea:focus, select:focus { border-color: var(--input-focus-border); outline: none; box-shadow: 0 0 5px rgba(0, 48, 135, 0.3); }
+        html.dark input:focus, html.dark textarea:focus, html.dark select:focus { box-shadow: 0 0 5px rgba(90, 155, 255, 0.4); }
+        button { background-color: var(--primary-color); color: var(--primary-text-color); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        button:hover:not(:disabled) { opacity: 0.9; }
+        button:disabled { background-color: var(--button-disabled-bg); cursor: not-allowed; color: #888; }
         .button-container { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        #loadingMessage { text-align: center; font-weight: bold; color: #003087; margin-top: 10px; }
-        footer { text-align: center; padding: 10px; background-color: #003087; color: #fff; font-size: 0.8rem; margin-top: 20px; }
         .tab-buttons { display: flex; justify-content: center; margin-bottom: 20px; gap: 15px; }
-        .tab-buttons button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #003087; background-color: #fff; cursor: pointer; font-weight: bold; color: #003087; transition: background-color 0.3s, color 0.3s; }
-        .tab-buttons button:hover:not(:disabled) { background-color: #f0f0f0; }
-        .tab-buttons button.active { background-color: #003087; color: white; }
-        .tab-buttons button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .tab-buttons button { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary-color); background-color: var(--container-bg); cursor: pointer; color: var(--primary-color); font-size: 1.2rem; }
+        .tab-buttons button.active { background-color: var(--primary-color); color: var(--primary-text-color); }
         .tab { display: none; }
-        .tab.active { display: block; }
+        .tab.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .error-message { color: red; font-size: 0.8rem; display: none; margin-top: 5px; }
-        .espaco-fisico-container { margin-top: 10px; width: 100%; }
-        .remove-btn { background-color: #dc3545; color: #fff; padding: 5px 10px; margin-left: 10px; }
-        .remove-btn:hover { background-color: #c82333; }
+        .option-group { border: 1px solid var(--input-border-color); border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .option-group-header { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .sub-options { display: none; padding-left: 30px; margin-top: 15px; border-left: 3px solid var(--primary-color); }
+        .radio-container { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 10px; }
+        .espaco-fisico-container { margin-top: 15px; }
+        .remove-btn { background-color: #dc3545; color: #fff; padding: 5px 10px; margin-left: 10px; align-self: center; }
+        #loadingMessage { text-align: center; font-weight: bold; color: var(--primary-color); margin-top: 10px; display: none; }
+        footer { text-align: center; padding: 10px; background-color: var(--primary-color); color: var(--primary-text-color); font-size: 0.8rem; margin-top: 20px; }
         .toast {
             visibility: hidden;
             min-width: 250px;
@@ -67,30 +100,25 @@
             visibility: visible;
             animation: fadein 0.5s, fadeout 0.5s 2.5s;
         }
-        @keyframes fadein {
-            from { bottom: 0; opacity: 0; }
-            to { bottom: 30px; opacity: 1; }
-        }
-        @keyframes fadeout {
-            from { bottom: 30px; opacity: 1; }
-            to { bottom: 0; opacity: 0; }
-        }
+        @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+        @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
         @media (max-width: 600px) {
             .form-row { flex-direction: column; }
             .container { margin: 70px 10px 20px; padding: 15px; }
-            header h1 { font-size: 1rem; }
-            .header-left { flex-direction: column; gap: 5px; }
-            .header-right { flex-direction: column; gap: 5px; }
-            .header-left { padding: 10px; }
-            .logo-header { max-height: 80px; width: auto; }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-left">
-            <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
+            <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
             <h1>Ministério do Esporte</h1>
+        </div>
+        <div class="header-right">
+            <div class="theme-switcher" id="theme-switcher" title="Alterar Tema">
+                <i id="theme-icon-moon" class="fas fa-moon"></i>
+                <i id="theme-icon-sun" class="fas fa-sun"></i>
+            </div>
         </div>
     </header>
     <div class="container">
@@ -99,14 +127,14 @@
             <span class="status">Emissão</span>
         </div>
         <div class="tab-buttons">
-            <button onclick="mostrarAba('aba1')" class="active">1</button>
-            <button onclick="mostrarAba('aba2')" disabled>2</button>
-            <button onclick="mostrarAba('aba3')" disabled>3</button>
+            <button onclick="mostrarAba('aba1')" class="active" title="Dados do Dirigente"><i class="fas fa-user-tie"></i></button>
+            <button onclick="mostrarAba('aba2')" disabled title="Dados da Entidade"><i class="fas fa-building"></i></button>
+            <button onclick="mostrarAba('aba3')" disabled title="Opções de Geração"><i class="fas fa-file-pdf"></i></button>
         </div>
-        <form id="declaracoesForm">
+        <form id="declaracoesForm" onsubmit="return false;">
             <div id="aba1" class="tab active">
                 <section class="section">
-                    <h3>Dados do Dirigente da Entidade</h3>
+                    <h3><i class="fas fa-user-edit"></i> Dados do Dirigente da Entidade</h3>
                     <div class="form-row">
                         <div class="half-width">
                             <label for="dirigente">Nome:</label>
@@ -122,13 +150,13 @@
                     <div class="form-row">
                         <div class="half-width">
                             <label for="cargoDirigente">Cargo do Dirigente:</label>
-                            <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" onkeypress="return validarLetrasApenas(event)" oninput="validarLetras(this)" required>
-                            <span id="erro-cargo" class="error-message">Digite apenas letras e espaços.</span>
+                            <input type="text" id="cargoDirigente" placeholder="Ex: Prefeito(a), Secretário(a)" onkeypress="return validarLetrasApenas(event)" oninput="validarLetras(this)" required>
+                            <span id="erro-cargoDirigente" class="error-message">Digite apenas letras e espaços.</span>
                         </div>
                         <div class="half-width">
-                            <label for="proposta">Proposta (XXXXX/ANO):</label>
-                            <input type="text" id="proposta" oninput="validarProposta(this)" maxlength="10" placeholder="Ex: 00012/2025" required>
-                            <span id="erro-proposta" class="error-message">Digite no formato XXXXX/ANO (5 dígitos/ano).</span>
+                            <label for="proposta">Proposta (XXXXXX/ANO):</label>
+                            <input type="text" id="proposta" oninput="validarProposta(this)" maxlength="11" placeholder="Ex: 000123/2025" required>
+                            <span id="erro-proposta" class="error-message">Digite no formato XXXXXX/ANO (6 dígitos/ano).</span>
                         </div>
                     </div>
                 </section>
@@ -138,22 +166,24 @@
             </div>
             <div id="aba2" class="tab">
                 <section class="section">
-                    <h3>Dados da Entidade</h3>
+                    <h3><i class="fas fa-id-card"></i> Dados da Entidade</h3>
                     <div class="form-row">
-                        <div class="half-width">
-                            <label for="entidade">Nome da Entidade:</label>
-                            <input type="text" id="entidade" readonly required>
-                        </div>
                         <div class="half-width">
                             <label for="cnpj">CNPJ:</label>
                             <input type="text" id="cnpj" maxlength="18" oninput="mascaraCNPJ(this)" placeholder="00.000.000/0000-00" required>
                             <span id="erro-cnpj" class="error-message">Digite apenas números no formato CNPJ.</span>
+                        </div>
+                        <div class="half-width">
+                            <label for="entidade">Nome da Entidade:</label>
+                            <input type="text" id="entidade" readonly required>
+                            <span id="erro-entidade" class="error-message">Nome da entidade não preenchido.</span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="full-width">
                             <label for="endereco">Endereço Completo:</label>
                             <input type="text" id="endereco" readonly required>
+                            <span id="erro-endereco" class="error-message">Endereço não preenchido.</span>
                         </div>
                     </div>
                     <div class="form-row">
@@ -174,15 +204,13 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="full-width">
+                        <div class="half-width">
                             <label for="valorContrapartida">Valor da Contrapartida (R$):</label>
                             <input type="text" id="valorContrapartida" oninput="mascaraMoeda(this); atualizarValorExtenso();" required>
                             <span id="erro-valorContrapartida" class="error-message">Digite um valor válido.</span>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label for="valorContrapartidaExtenso">Valor da Contrapartida por Extenso:</label>
+                        <div class="half-width">
+                            <label for="valorContrapartidaExtenso">Valor por Extenso:</label>
                             <input type="text" id="valorContrapartidaExtenso" readonly required>
                             <span id="erro-valorContrapartidaExtenso" class="error-message">Campo preenchido incorretamente.</span>
                         </div>
@@ -195,44 +223,55 @@
             </div>
             <div id="aba3" class="tab">
                 <section class="section">
-                    <h3>Escolha uma Opção para Gerar o PDF</h3>
-                    <div class="form-row">
-                        <div class="marker-container">
-                            <input type="checkbox" id="marcador00SL" onchange="toggleMarcador00SL()">
-                            <label for="marcador00SL">Marcar como 00SL</label>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <select id="opcaoSelecao" required onchange="mostrarCamposEspacoFisico()">
-                                <option value="" disabled selected>Selecione uma opção</option>
-                                <option value="00SL_emendas" disabled>00SL - Emendas Individual e Bancada</option>
-                                <option value="20JP_emenda">20JP - Emenda Individual e de Bancada</option>
-                                <option value="00SL_comissao" disabled>00SL - Discricionário e Comissão</option>
-                                <option value="20JP_comissao">20JP - Discricionário e Comissão</option>
-                            </select>
-                            <span id="erro-opcaoSelecao" class="error-message">Selecione uma opção válida.</span>
-                        </div>
-                    </div>
-                    <div id="camposEspacoFisico" class="form-row" style="display: none;">
-                        <div class="espaco-fisico-container" id="espacoFisicoFields">
-                            <div class="form-row">
-                                <div class="half-width">
-                                    <label for="nomeEspacoFisico0">Nome do Espaço Físico:</label>
-                                    <input type="text" id="nomeEspacoFisico0" oninput="validarLetras(this)" required>
-                                    <span id="erro-nomeEspacoFisico0" class="error-message">Digite apenas letras e espaços.</span>
+                    <h3><i class="fas fa-cogs"></i> Escolha uma Opção para Gerar o PDF</h3>
+                    <div class="option-group">
+                        <label for="radio_00SL" class="option-group-header">
+                            <input type="radio" id="radio_00SL" name="tipo_proposta" value="00SL" onchange="atualizarOpcao()">Proposta 00SL
+                        </label>
+                        <div id="sub_options_00SL" class="sub-options">
+                            <p><strong>Origem do Recurso:</strong></p>
+                            <div class="radio-container">
+                                <input type="radio" id="radio_00SL_emenda" name="origem_00SL" value="emendas" onchange="atualizarOpcao()">
+                                <label for="radio_00SL_emenda">Emenda Individual e Bancada</label>
+                                <input type="radio" id="radio_00SL_comissao" name="origem_00SL" value="comissao" onchange="atualizarOpcao()">
+                                <label for="radio_00SL_comissao">Discricionário e Comissão</label>
+                            </div>
+                            <div id="camposEspacoFisico" class="espaco-fisico-container">
+                                <h4>Dados do Espaço Físico</h4>
+                                <div id="espacoFisicoFields">
+                                    <div class="form-row" id="espacoFisicoRow0">
+                                        <div class="half-width">
+                                            <label for="nomeEspacoFisico0">Nome do Espaço Físico:</label>
+                                            <input type="text" id="nomeEspacoFisico0" oninput="validarLetras(this)" required>
+                                            <span id="erro-nomeEspacoFisico0" class="error-message">Digite apenas letras e espaços.</span>
+                                        </div>
+                                        <div class="half-width">
+                                            <label for="enderecoEspacoFisico0">Endereço do Espaço Físico:</label>
+                                            <input type="text" id="enderecoEspacoFisico0" required>
+                                            <span id="erro-enderecoEspacoFisico0" class="error-message">Campo obrigatório.</span>
+                                        </div>
+                                        <button type="button" class="remove-btn" onclick="removerEspacoFisico(0)" style="display: none;">Remover</button>
+                                    </div>
                                 </div>
-                                <div class="half-width">
-                                    <label for="enderecoEspacoFisico0">Endereço do Espaço Físico:</label>
-                                    <input type="text" id="enderecoEspacoFisico0" required>
-                                    <span id="erro-enderecoEspacoFisico0" class="error-message">Campo obrigatório.</span>
+                                <div class="button-container">
+                                    <button type="button" onclick="adicionarEspacoFisico()"><i class="fas fa-plus"></i> Adicionar Espaço</button>
+                                    <button type="button" onclick="salvarEspacoFisico()">Salvar</button>
                                 </div>
-                                <button type="button" class="remove-btn" onclick="removerEspacoFisico(0)" style="display: none;">Remover</button>
                             </div>
                         </div>
-                        <div class="button-container" style="width: 100%;">
-                            <button type="button" onclick="adicionarEspacoFisico()">Adicionar Novo Espaço Físico</button>
-                            <button type="button" onclick="salvarEspacoFisico()">Salvar</button>
+                    </div>
+                    <div class="option-group">
+                        <label for="radio_20JP" class="option-group-header">
+                            <input type="radio" id="radio_20JP" name="tipo_proposta" value="20JP" onchange="atualizarOpcao()">Proposta 20JP
+                        </label>
+                        <div id="sub_options_20JP" class="sub-options">
+                            <p><strong>Origem do Recurso:</strong></p>
+                            <div class="radio-container">
+                                <input type="radio" id="radio_20JP_emenda" name="origem_20JP" value="emenda" onchange="atualizarOpcao()">
+                                <label for="radio_20JP_emenda">Emenda Individual e de Bancada</label>
+                                <input type="radio" id="radio_20JP_comissao" name="origem_20JP" value="comissao" onchange="atualizarOpcao()">
+                                <label for="radio_20JP_comissao">Discricionário e Comissão</label>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -242,26 +281,47 @@
                 </div>
             </div>
         </form>
-        <div id="loadingMessage" style="display:none;">Aguarde, gerando PDF...</div>
-        <div id="toast" class="toast">Dados salvos com sucesso!</div>
+        <div id="loadingMessage">Aguarde, gerando PDF...</div>
+        <div id="toast" class="toast"></div>
     </div>
     <footer>
         <p>© 2025 Ministério do Esporte</p>
     </footer>
-    <script src="/forms/declaracoes/public/js/script2.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="/forms/declaracoes/public/js/script2.js"></script>
     <script>
+        // Define Roboto fonts for pdfMake globally
+        pdfMake.fonts = {
+            Roboto: {
+                normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Regular.ttf',
+                bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Medium.ttf',
+                italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Italic.ttf',
+                bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-MediumItalic.ttf'
+            }
+        };
+
         let espacoFisicoCount = 1;
         let is00SLEnabled = false;
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const html = document.documentElement;
+
+        themeSwitcher.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
+            setupAba3Listeners();
+            document.getElementById('gerarPDF').addEventListener('click', gerarPDF); // Assumes gerarPDF is defined in script2.js
+        });
 
         function mostrarAba(abaId) {
-            const abas = document.querySelectorAll('.tab');
-            const botoes = document.querySelectorAll('.tab-buttons button');
-            abas.forEach(aba => aba.classList.remove('active'));
-            botoes.forEach(botao => botao.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(abaId).classList.add('active');
-            document.querySelector(`button[onclick="mostrarAba('${abaId}')"]`).classList.add('active');
+            document.querySelector(`.tab-buttons button[onclick="mostrarAba('${abaId}')"]`).classList.add('active');
         }
 
         function validarLetras(input) {
@@ -274,11 +334,7 @@
 
         function validarLetrasApenas(event) {
             const char = String.fromCharCode(event.which || event.keyCode);
-            if (!/^[A-Za-zÀ-ÿ\s]$/.test(char)) {
-                event.preventDefault();
-                return false;
-            }
-            return true;
+            return /^[A-Za-zÀ-ÿ\s]$/.test(char) || event.preventDefault();
         }
 
         function validarNumeros(input) {
@@ -291,17 +347,11 @@
 
         function validarProposta(input) {
             const erro = document.getElementById('erro-proposta');
-            if (erro) {
-                let value = input.value.replace(/\D/g, '');
-                if (value.length > 9) value = value.slice(0, 9);
-                if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5);
-                input.value = value;
-                if (input.value.length > 0 && !/^\d{5}\/\d{4}$/.test(input.value)) {
-                    erro.style.display = 'block';
-                } else {
-                    erro.style.display = 'none';
-                }
-            }
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            if (value.length > 6) value = value.slice(0, 6) + '/' + value.slice(6);
+            input.value = value;
+            erro.style.display = input.value && !/^\d{6}\/\d{4}$/.test(input.value) ? 'block' : 'none';
         }
 
         function mascaraCNPJ(input) {
@@ -311,13 +361,15 @@
                 erro.style.display = 'none';
                 fetchCNPJData(value);
             } else {
-                erro.style.display = 'block';
                 erro.textContent = 'Digite 14 números.';
+                erro.style.display = 'block';
                 document.getElementById('entidade').value = '';
                 document.getElementById('endereco').value = '';
                 document.getElementById('uf').value = '';
                 document.getElementById('municipio').value = '';
                 document.getElementById('cep').value = '';
+                document.getElementById('erro-entidade').style.display = 'block';
+                document.getElementById('erro-endereco').style.display = 'block';
                 document.getElementById('erro-uf').style.display = 'block';
                 document.getElementById('erro-municipio').style.display = 'block';
                 document.getElementById('erro-cep').style.display = 'block';
@@ -338,24 +390,14 @@
                 if (!response.ok) throw new Error('CNPJ não encontrado');
                 const data = await response.json();
                 document.getElementById('entidade').value = data.razao_social || '';
+                document.getElementById('erro-entidade').style.display = data.razao_social ? 'none' : 'block';
                 const endereco = `${data.logradouro || ''}, ${data.numero || ''}, ${data.bairro || ''}`;
                 document.getElementById('endereco').value = endereco.trim().replace(/^,|,$/g, '') || '';
-                const ufInput = document.getElementById('uf');
-                if (data.uf) {
-                    ufInput.value = data.uf.toUpperCase();
-                    document.getElementById('erro-uf').style.display = 'none';
-                } else {
-                    ufInput.value = '';
-                    document.getElementById('erro-uf').style.display = 'block';
-                }
-                const municipioInput = document.getElementById('municipio');
-                if (data.municipio) {
-                    municipioInput.value = data.municipio.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
-                    document.getElementById('erro-municipio').style.display = 'none';
-                } else {
-                    municipioInput.value = '';
-                    document.getElementById('erro-municipio').style.display = 'block';
-                }
+                document.getElementById('erro-endereco').style.display = endereco.trim() ? 'none' : 'block';
+                document.getElementById('uf').value = data.uf ? data.uf.toUpperCase() : '';
+                document.getElementById('erro-uf').style.display = data.uf ? 'none' : 'block';
+                document.getElementById('municipio').value = data.municipio ? data.municipio.replace(/[^A-Za-zÀ-ÿ\s]/g, '') : '';
+                document.getElementById('erro-municipio').style.display = data.municipio ? 'none' : 'block';
                 const cepInput = document.getElementById('cep');
                 if (data.cep) {
                     const cleanCEP = data.cep.replace(/\D/g, '');
@@ -374,6 +416,8 @@
                 document.getElementById('uf').value = '';
                 document.getElementById('municipio').value = '';
                 document.getElementById('cep').value = '';
+                document.getElementById('erro-entidade').style.display = 'block';
+                document.getElementById('erro-endereco').style.display = 'block';
                 document.getElementById('erro-uf').style.display = 'block';
                 document.getElementById('erro-municipio').style.display = 'block';
                 document.getElementById('erro-cep').style.display = 'block';
@@ -413,12 +457,9 @@
             const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
             const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
             const centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-            
             if (num === 0) return 'zero';
-
             let n = Math.floor(num);
             let centavos = Math.round((num - n) * 100);
-
             function getExtenso(numero) {
                 if (numero === 0) return "";
                 if (numero === 100) return "cem";
@@ -426,7 +467,6 @@
                 let c = Math.floor(numero / 100);
                 let d = Math.floor((numero % 100) / 10);
                 let u = numero % 10;
-
                 if (c > 0) str += centenas[c] + (d > 0 || u > 0 ? " e " : "");
                 if (d > 0) {
                     if (d === 1) {
@@ -439,10 +479,8 @@
                 if (u > 0) str += unidades[u];
                 return str;
             }
-
             let extenso = [];
             if (n === 0) {
-                // Não faz nada
             } else if (n < 1000) {
                 extenso.push(getExtenso(n));
             } else {
@@ -457,18 +495,12 @@
                     extenso.push(getExtenso(resto));
                 }
             }
-
             let resultado = extenso.join(" e ");
-            
-            if (n > 0) {
-              resultado += (n === 1 ? " real" : " reais");
-            }
-
+            if (n > 0) resultado += (n === 1 ? " real" : " reais");
             if (centavos > 0) {
                 if (n > 0) resultado += " e ";
                 resultado += getExtenso(centavos) + (centavos === 1 ? " centavo" : " centavos");
             }
-            
             return resultado.trim();
         }
 
@@ -498,20 +530,16 @@
                 } else if (id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
                     erro.textContent = 'O CNPJ deve conter 14 números.';
                     isInvalid = true;
-                } else if (id === 'proposta' && !/^\d{5}\/\d{4}$/.test(input.value)) {
+                } else if (id === 'proposta' && !/^\d{6}\/\d{4}$/.test(input.value)) {
+                    erro.textContent = 'Digite no formato XXXXXX/ANO (6 dígitos/ano).';
                     isInvalid = true;
                 } else if (id === 'valorContrapartida' && input.value === 'R$ 0,00') {
                     isInvalid = true;
                 } else if (id === 'cep' && input.value.length !== 9) {
                     isInvalid = true;
                 }
-
-                if (isInvalid) {
-                    erro.style.display = 'block';
-                    valido = false;
-                } else {
-                    erro.style.display = 'none';
-                }
+                erro.style.display = isInvalid ? 'block' : 'none';
+                valido = valido && !isInvalid;
             });
             if (valido) {
                 const nextButton = document.querySelector(`button[onclick="mostrarAba('${nextTab}')"]`);
@@ -519,28 +547,35 @@
                     nextButton.disabled = false;
                     mostrarAba(nextTab);
                 }
+            } else {
+                showToast('Preencha todos os campos obrigatórios corretamente.', true);
             }
         }
 
-        function toggleMarcador00SL() {
-            const marcador = document.getElementById('marcador00SL');
-            const camposEspacoFisico = document.getElementById('camposEspacoFisico');
-            const options = document.querySelectorAll('option[value*="00SL"]');
-
-            if (!marcador.checked) {
-                camposEspacoFisico.style.display = 'none';
-                is00SLEnabled = false;
-                options.forEach(option => option.disabled = true);
-                document.getElementById('opcaoSelecao').value = '';
-            } else if (!is00SLEnabled) {
-                camposEspacoFisico.style.display = 'flex';
-            }
-            validarGerarPDF();
+        function setupAba3Listeners() {
+            document.querySelectorAll('input[name="tipo_proposta"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    document.getElementById('sub_options_00SL').style.display = (radio.id === 'radio_00SL' && radio.checked) ? 'block' : 'none';
+                    document.getElementById('sub_options_20JP').style.display = (radio.id === 'radio_20JP' && radio.checked) ? 'block' : 'none';
+                    if (radio.id === 'radio_00SL' && radio.checked) {
+                        document.getElementById('camposEspacoFisico').style.display = 'block';
+                    } else {
+                        document.getElementById('camposEspacoFisico').style.display = 'none';
+                    }
+                    atualizarOpcao();
+                    validarGerarPDF();
+                });
+            });
+            document.querySelectorAll('input[name^="origem_"]').forEach(r => r.addEventListener('change', () => {
+                atualizarOpcao();
+                validarGerarPDF();
+            }));
+            document.querySelectorAll('#espacoFisicoFields input').forEach(input => input.addEventListener('input', validarGerarPDF));
         }
 
         function adicionarEspacoFisico() {
             const container = document.getElementById('espacoFisicoFields');
-            const index = espacoFisicoCount;
+            const index = espacoFisicoCount++;
             const div = document.createElement('div');
             div.className = 'form-row';
             div.id = `espacoFisicoRow${index}`;
@@ -558,30 +593,15 @@
                 <button type="button" class="remove-btn" onclick="removerEspacoFisico(${index})">Remover</button>
             `;
             container.appendChild(div);
-            espacoFisicoCount++;
             document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = 'inline-block');
+            validarGerarPDF();
         }
 
         function removerEspacoFisico(index) {
             const toRemove = document.getElementById(`espacoFisicoRow${index}`);
-            if (toRemove) {
-                toRemove.remove();
-            }
+            if (toRemove) toRemove.remove();
             if (document.querySelectorAll('#espacoFisicoFields .form-row').length <= 1) {
                 document.querySelector('#espacoFisicoFields .remove-btn').style.display = 'none';
-            }
-            validarGerarPDF();
-        }
-        
-        function mostrarCamposEspacoFisico() {
-            const select = document.getElementById('opcaoSelecao');
-            const camposEspacoFisico = document.getElementById('camposEspacoFisico');
-            const marcador = document.getElementById('marcador00SL');
-            
-            if (select.value.includes('00SL') && marcador.checked) {
-                camposEspacoFisico.style.display = 'flex';
-            } else {
-                camposEspacoFisico.style.display = 'none';
             }
             validarGerarPDF();
         }
@@ -589,30 +609,22 @@
         function salvarEspacoFisico() {
             let valido = true;
             const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
-            const opcaoSelecao = document.getElementById('opcaoSelecao').value;
-            const marcador = document.getElementById('marcador00SL').checked;
-
-            // Only validate "Espaço Físico" fields if "00SL" is selected and checkbox is checked
-            if (opcaoSelecao.includes('00SL') && marcador) {
+            const tipoProposta = document.querySelector('input[name="tipo_proposta"]:checked');
+            if (tipoProposta && tipoProposta.value === '00SL') {
                 if (campos.length === 0) {
-                    alert('Adicione pelo menos um espaço físico.');
+                    showToast('Adicione pelo menos um espaço físico.', true);
                     return;
                 }
-
                 campos.forEach(row => {
                     const nomeInput = row.querySelector('input[id^="nomeEspacoFisico"]');
                     const enderecoInput = row.querySelector('input[id^="enderecoEspacoFisico"]');
-                    const erroNome = row.querySelector('span.error-message');
-                    const erroEndereco = row.querySelector('span.error-message:nth-child(4)');
-
+                    const erroNome = row.querySelector('span[id^="erro-nomeEspacoFisico"]');
+                    const erroEndereco = row.querySelector('span[id^="erro-enderecoEspacoFisico"]');
                     if (!nomeInput || !erroNome || !enderecoInput || !erroEndereco) {
                         console.error('Elemento não encontrado no row:', row);
                         valido = false;
                         return;
                     }
-
-                    console.log('Nome:', nomeInput.value.trim(), 'Endereço:', enderecoInput.value.trim());
-
                     if (!nomeInput.value.trim()) {
                         erroNome.style.display = 'block';
                         valido = false;
@@ -627,64 +639,89 @@
                     }
                 });
             } else {
-                // For "20JP" or no "00SL" selection, consider it valid if no "00SL" is required
                 valido = true;
             }
-
             if (valido) {
                 is00SLEnabled = true;
-                const options = document.querySelectorAll('option[value*="00SL"]');
-                options.forEach(option => option.disabled = false);
                 showToast('Dados do espaço físico salvos com sucesso!');
             } else {
-                alert('Preencha todos os campos dos espaços físicos corretamente.');
+                showToast('Preencha todos os campos dos espaços físicos corretamente.', true);
             }
             validarGerarPDF();
         }
 
         function validarGerarPDF() {
-            const gerarPDFBtn = document.getElementById('gerarPDF');
-            const opcaoSelecao = document.getElementById('opcaoSelecao').value;
-            const marcador = document.getElementById('marcador00SL').checked;
-
-            if (!opcaoSelecao) {
-                gerarPDFBtn.disabled = true;
-                return;
-            }
-
-            if (opcaoSelecao.includes('20JP')) {
-                gerarPDFBtn.disabled = false; // Enable for 20JP without further checks
-                return;
-            }
-
-            if (opcaoSelecao.includes('00SL')) {
-                if (marcador && is00SLEnabled) {
-                    let allValid = true;
-                    const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
-                    if (campos.length === 0) {
-                        allValid = false;
-                    }
-                    campos.forEach(row => {
-                        const inputs = row.querySelectorAll('input[type="text"]');
-                        if (!inputs[0].value.trim() || !inputs[1].value.trim()) {
-                            allValid = false;
+            const btn = document.getElementById('gerarPDF');
+            let valido = false;
+            const tipo = document.querySelector('input[name="tipo_proposta"]:checked');
+            console.log('Validando Gerar PDF - Tipo selecionado:', tipo ? tipo.value : 'Nenhum');
+            if (tipo) {
+                if (tipo.value === '00SL') {
+                    const origem = document.querySelector('input[name="origem_00SL"]:checked');
+                    console.log('00SL - Origem selecionada:', origem ? origem.value : 'Nenhuma');
+                    if (origem && is00SLEnabled) {
+                        let espacosOk = true;
+                        const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
+                        console.log('Espaços físicos encontrados:', espacos.length);
+                        if (espacos.length === 0) {
+                            console.log('Nenhum espaço físico adicionado.');
+                            espacosOk = false;
                         }
-                    });
-                    gerarPDFBtn.disabled = !allValid;
-                } else {
-                    gerarPDFBtn.disabled = true;
+                        espacos.forEach(i => {
+                            if (!i.value.trim()) {
+                                console.log(`Campo inválido: ${i.id}`);
+                                espacosOk = false;
+                            }
+                        });
+                        if (espacosOk) {
+                            console.log('Validação de 00SL bem-sucedida.');
+                            valido = true;
+                        } else {
+                            console.log('Validação de espaços físicos falhou.');
+                        }
+                    } else {
+                        console.log('Origem ou 00SL não habilitado.');
+                    }
+                } else if (tipo.value === '20JP') {
+                    const origem = document.querySelector('input[name="origem_20JP"]:checked');
+                    console.log('20JP - Origem selecionada:', origem ? origem.value : 'Nenhuma');
+                    if (origem) {
+                        console.log('Validação de 20JP bem-sucedida.');
+                        valido = true;
+                    } else {
+                        console.log('Nenhuma origem selecionada para 20JP.');
+                    }
                 }
+            } else {
+                console.log('Nenhum tipo de proposta selecionado.');
+            }
+            btn.disabled = !valido;
+            if (!valido) {
+                showToast('Selecione uma opção válida antes de gerar o PDF.', true);
             }
         }
 
-        function showToast(message) {
+        function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
+            toast.style.backgroundColor = isError ? '#dc3545' : '#333';
             toast.className = 'toast show';
-            setTimeout(() => {
-                toast.className = toast.className.replace('show', '');
-            }, 3000);
+            setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+        }
+
+        function atualizarOpcao() {
+            const tipo = document.querySelector('input[name="tipo_proposta"]:checked')?.value;
+            const origem = document.querySelector('input[name="origem_00SL"]:checked')?.value || document.querySelector('input[name="origem_20JP"]:checked')?.value;
+            const opcaoInput = document.getElementById('opcaoSelecao');
+            if (tipo && origem) {
+                opcaoInput.value = `${tipo}_${origem}`;
+                console.log('Opção selecionada:', opcaoInput.value);
+            } else {
+                opcaoInput.value = '';
+                console.log('Nenhuma opção válida selecionada.');
+            }
         }
     </script>
+    <input type="hidden" id="opcaoSelecao" value="">
 </body>
 </html>
