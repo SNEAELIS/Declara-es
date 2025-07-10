@@ -1,4 +1,3 @@
-// script2.js
 // Flag para evitar cliques múltiplos
 let isGeneratingPDF = false;
 
@@ -244,13 +243,52 @@ async function gerarPDF(dados) {
             declaracoesParaIncluir.push(sustentabilidadeDeclaracao);
         }
 
-        // Gera o conteúdo comum e específico
+        // Gera o conteúdo comum
         const conteudoComum = declaracoesParaIncluir.map((declaracao, index) => 
-            createDeclarationContent(declaracao, index === declaracoesParaIncluir.length - 1 && !declaracoesEspecificas[opcao].length && !imageBase64Array.length)
+            createDeclarationContent(declaracao, false)
         );
-        const conteudoEspecifico = declaracoesEspecificas[opcao].map((declaracao, index) => 
-            createDeclarationContent(declaracao, index === declaracoesEspecificas[opcao].length - 1 && !imageBase64Array.length)
-        );
+
+        // Gera o conteúdo específico com posicionamento ajustado
+        let conteudoEspecifico = [];
+        if (opcao === '20JP_emenda') {
+            // Para 20JP_emenda, a nova declaração vai por último
+            const outrasDeclaracoes = declaracoesEspecificas[opcao].filter(
+                decl => decl.title !== "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
+            );
+            const declaracaoRH = declaracoesEspecificas[opcao].find(
+                decl => decl.title === "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
+            );
+            conteudoEspecifico = [
+                ...outrasDeclaracoes.map((declaracao, index) => 
+                    createDeclarationContent(declaracao, false)
+                ),
+                ...(declaracaoRH ? [createDeclarationContent(declaracaoRH, !imageBase64Array.length)] : [])
+            ];
+        } else if (opcao === '20JP_comissao') {
+            // Para 20JP_comissao, a nova declaração vai antes de "DECLARAÇÃO DE ADIMPLÊNCIA"
+            const adimplencia = declaracoesEspecificas[opcao].find(
+                decl => decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA"
+            );
+            const declaracaoRH = declaracoesEspecificas[opcao].find(
+                decl => decl.title === "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
+            );
+            const outrasDeclaracoes = declaracoesEspecificas[opcao].filter(
+                decl => decl.title !== "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH" && 
+                        decl.title !== "DECLARAÇÃO DE ADIMPLÊNCIA"
+            );
+            conteudoEspecifico = [
+                ...outrasDeclaracoes.map((declaracao, index) => 
+                    createDeclarationContent(declaracao, false)
+                ),
+                ...(declaracaoRH ? [createDeclarationContent(declaracaoRH, false)] : []),
+                ...(adimplencia ? [createDeclarationContent(adimplencia, !imageBase64Array.length)] : [])
+            ];
+        } else {
+            // Para outras opções (00SL), mantém como está
+            conteudoEspecifico = declaracoesEspecificas[opcao].map((declaracao, index) => 
+                createDeclarationContent(declaracao, index === declaracoesEspecificas[opcao].length - 1 && !imageBase64Array.length)
+            );
+        }
 
         // Consolida todo o conteúdo
         const allContent = [...conteudoComum.flat(), ...conteudoEspecifico.flat(), ...imageContent.flat()];
@@ -368,22 +406,6 @@ const declaracoesCompletas = [
         `
     },
     {
-        title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS\n(Incluindo a contratação de serviços de recursos humanos)",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:
-
-        1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto à contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.
-
-        2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.
-
-        3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.
-
-        4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
-    },
-    {
         title: "DECLARAÇÃO NEGATIVA DE DUPLICIDADE DE CONVÊNIO",
         content: `
         Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Transferegov sob o nº [PROPOSTA] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, ficando, portanto, sujeito às sanções civis, administrativas e penais cabíveis no caso de comprovada a falsidade ideológica.
@@ -441,7 +463,7 @@ const declaracoesEspecificas = {
         {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
             content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno de domínio público e pertence ao Município [MUNICIPIO], assim como está disponível, apto e compatível para instalação dos equipamentos.
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.
 
             Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
 
@@ -470,10 +492,10 @@ const declaracoesEspecificas = {
         }
     ],
     '00SL_comissao': [
-        {
+       {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
             content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno de domínio público e pertence ao Município [MUNICIPIO], assim como está disponível, apto e compatível para instalação dos equipamentos.
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.
 
             Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
 
@@ -501,8 +523,45 @@ const declaracoesEspecificas = {
             `
         }
     ],
-    '20JP_emenda': [],
+    '20JP_emenda': [
+        {
+            title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:
+
+            1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.
+
+            2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.
+
+            3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:
+
+            · Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e
+
+            · Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.
+
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        }
+    ],
     '20JP_comissao': [
+        {
+            title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
+            content: `
+            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:
+
+            1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.
+
+            2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.
+
+            3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:
+
+            · Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e
+
+            · Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.
+
+            Por ser expressão da verdade, firmo a presente declaração.
+            `
+        },
         {
             title: "DECLARAÇÃO DE ADIMPLÊNCIA",
             content: `

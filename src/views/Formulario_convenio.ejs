@@ -66,7 +66,6 @@
         html.dark input[readonly] { background-color: #333; color: #999; }
         input:focus, textarea:focus, select:focus { border-color: var(--input-focus-border); outline: none; box-shadow: 0 0 5px rgba(0, 48, 135, 0.3); }
         html.dark input:focus, html.dark textarea:focus, html.dark select:focus { box-shadow: 0 0 5px rgba(90, 155, 255, 0.4); }
-        input[type="checkbox"] { margin-right: 8px; }
         button { background-color: var(--primary-color); color: var(--primary-text-color); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
         button:hover:not(:disabled) { opacity: 0.9; }
         button:disabled { background-color: var(--button-disabled-bg); cursor: not-allowed; color: #888; }
@@ -209,27 +208,6 @@
                             <span id="erro-cep" class="error-message">CEP não preenchido.</span>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="half-width">
-                            <label for="valorContrapartida">Valor da Contrapartida (R$):</label>
-                            <input type="text" id="valorContrapartida" oninput="mascaraMoeda(this); atualizarValorExtenso();" required aria-describedby="erro-valorContrapartida">
-                            <span id="erro-valorContrapartida" class="error-message">Digite um valor válido.</span>
-                        </div>
-                        <div class="half-width">
-                            <label for="valorContrapartidaExtenso">Valor por Extenso:</label>
-                            <input type="text" id="valorContrapartidaExtenso" readonly required aria-describedby="erro-valorContrapartidaExtenso">
-                            <span id="erro-valorContrapartidaExtenso" class="error-message">Campo preenchido incorretamente.</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="full-width">
-                            <label>
-                                <input type="checkbox" id="temAquisicao" name="temAquisicao" onchange="validarAba2Extras()">
-                                Declara que o convênio terá aquisição de bens ou serviços?
-                            </label>
-                            <span id="erro-temAquisicao" class="error-message">Selecione uma opção para aquisição.</span>
-                        </div>
-                    </div>
                 </section>
                 <div class="button-container">
                     <button type="button" onclick="mostrarAba('aba1')">Voltar</button>
@@ -348,9 +326,6 @@
                             uf: document.getElementById('uf').value,
                             municipio: document.getElementById('municipio').value,
                             cep: document.getElementById('cep').value,
-                            valorContrapartida: document.getElementById('valorContrapartida').value,
-                            valorContrapartidaExtenso: document.getElementById('valorContrapartidaExtenso').value,
-                            temAquisicao: document.getElementById('temAquisicao').checked,
                             opcaoSelecao: document.getElementById('opcaoSelecao').value,
                             espacosFisicos: []
                         };
@@ -496,87 +471,6 @@
             }
         }
 
-        function mascaraMoeda(input) {
-            const erro = document.getElementById('erro-valorContrapartida');
-            let valor = input.value.replace(/\D/g, '');
-            if (valor) {
-                valor = (parseInt(valor, 10) / 100).toFixed(2).replace('.', ',');
-                valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-                input.value = `R$ ${valor}`;
-                erro.style.display = 'none';
-            } else {
-                input.value = '';
-                erro.style.display = 'block';
-            }
-        }
-
-        function atualizarValorExtenso() {
-            const inputValor = document.getElementById('valorContrapartida').value;
-            const erro = document.getElementById('erro-valorContrapartidaExtenso');
-            const extensoInput = document.getElementById('valorContrapartidaExtenso');
-            let valor = inputValor.replace(/\D/g, '');
-            if (!valor) {
-                extensoInput.value = '';
-                erro.style.display = 'block';
-                return;
-            }
-            valor = parseInt(valor, 10) / 100;
-            extensoInput.value = numeroPorExtenso(valor);
-            erro.style.display = extensoInput.value ? 'none' : 'block';
-        }
-
-        function numeroPorExtenso(num) {
-            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
-            if (num === 0) return 'zero';
-            let n = Math.floor(num);
-            let centavos = Math.round((num - n) * 100);
-            function getExtenso(numero) {
-                if (numero === 0) return '';
-                if (numero === 100) return 'cem';
-                let str = '';
-                let c = Math.floor(numero / 100);
-                let d = Math.floor((numero % 100) / 10);
-                let u = numero % 10;
-                if (c > 0) str += centenas[c] + (d > 0 || u > 0 ? ' e ' : '');
-                if (d > 0) {
-                    if (d === 1 && u > 0) {
-                        str += unidades[10 + u];
-                        u = 0;
-                    } else {
-                        str += dezenas[d] + (u > 0 ? ' e ' : '');
-                    }
-                }
-                if (u > 0 && d !== 1) str += unidades[u];
-                return str;
-            }
-            let extenso = [];
-            if (n === 0) {
-                extenso.push('zero');
-            } else if (n < 1000) {
-                extenso.push(getExtenso(n));
-            } else {
-                let mil = Math.floor(n / 1000);
-                let resto = n % 1000;
-                if (mil === 1) {
-                    extenso.push('mil');
-                } else {
-                    extenso.push(getExtenso(mil) + ' mil');
-                }
-                if (resto > 0) {
-                    extenso.push(getExtenso(resto));
-                }
-            }
-            let resultado = extenso.join(' e ');
-            if (n > 0) resultado += (n === 1 ? ' real' : ' reais');
-            if (centavos > 0) {
-                if (n > 0) resultado += ' e ';
-                resultado += getExtenso(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
-            }
-            return resultado.trim();
-        }
-
         function validarAba(currentTab, nextTab) {
             let campos;
             switch (currentTab) {
@@ -584,7 +478,7 @@
                     campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta'];
                     break;
                 case 'aba2':
-                    campos = ['entidade', 'cnpj', 'endereco', 'uf', 'municipio', 'cep', 'valorContrapartida', 'valorContrapartidaExtenso'];
+                    campos = ['cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep'];
                     break;
                 default:
                     return;
@@ -606,17 +500,12 @@
                 } else if (id === 'proposta' && !/^\d{6}\/\d{4}$/.test(input.value)) {
                     erro.textContent = 'Digite no formato XXXXXX/ANO (6 dígitos/ano).';
                     isInvalid = true;
-                } else if (id === 'valorContrapartida' && input.value === 'R$ 0,00') {
-                    isInvalid = true;
                 } else if (id === 'cep' && input.value.length !== 9) {
                     isInvalid = true;
                 }
                 erro.style.display = isInvalid ? 'block' : 'none';
                 valido = valido && !isInvalid;
             });
-            if (currentTab === 'aba2') {
-                valido = valido && validarAba2Extras();
-            }
             if (valido) {
                 const nextButton = document.querySelector(`button[onclick="mostrarAba('${nextTab}')"]`);
                 if (nextButton) {
@@ -626,12 +515,6 @@
             } else {
                 showToast('Preencha todos os campos obrigatórios corretamente.', true);
             }
-        }
-
-        function validarAba2Extras() {
-            const erroAquisicao = document.getElementById('erro-temAquisicao');
-            erroAquisicao.style.display = 'none';
-            return true;
         }
 
         function setupAba3Listeners() {
@@ -725,45 +608,45 @@
             validarGerarPDF();
         }
 
-            function validarGerarPDF() {
-                const btn = document.getElementById('gerarPDF');
-                let valido = false;
-                const tipo = document.querySelector('input[name="tipo_proposta"]:checked');
-                if (tipo) {
-                    if (tipo.value === '00SL') {
-                        const origem = document.querySelector('input[name="origem_00SL"]:checked');
-                        if (origem && is00SLEnabled) {
-                            let espacosOk = true;
-                            const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
-                            if (espacos.length === 0) {
+        function validarGerarPDF() {
+            const btn = document.getElementById('gerarPDF');
+            let valido = false;
+            const tipo = document.querySelector('input[name="tipo_proposta"]:checked');
+            if (tipo) {
+                if (tipo.value === '00SL') {
+                    const origem = document.querySelector('input[name="origem_00SL"]:checked');
+                    if (origem && is00SLEnabled) {
+                        let espacosOk = true;
+                        const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
+                        if (espacos.length === 0) {
+                            espacosOk = false;
+                            showToast('Adicione pelo menos um espaço físico para a proposta 00SL.', true);
+                        }
+                        espacos.forEach(i => {
+                            if (!i.value.trim()) {
                                 espacosOk = false;
-                                showToast('Adicione pelo menos um espaço físico para a proposta 00SL.', true);
+                                document.getElementById(`erro-${i.id}`).style.display = 'block';
+                            } else {
+                                document.getElementById(`erro-${i.id}`).style.display = 'none';
                             }
-                            espacos.forEach(i => {
-                                if (!i.value.trim()) {
-                                    espacosOk = false;
-                                    document.getElementById(`erro-${i.id}`).style.display = 'block';
-                                } else {
-                                    document.getElementById(`erro-${i.id}`).style.display = 'none';
-                                }
-                            });
-                            valido = espacosOk;
-                        } else {
-                            showToast('Selecione a origem do recurso e salve os espaços físicos.', true);
-                        }
-                    } else if (tipo.value === '20JP') {
-                        const origem = document.querySelector('input[name="origem_20JP"]:checked');
-                        if (origem) {
-                            valido = true;
-                        } else {
-                            showToast('Selecione a origem do recurso para a proposta 20JP.', true);
-                        }
+                        });
+                        valido = espacosOk;
+                    } else {
+                        showToast('Selecione a origem do recurso e salve os espaços físicos.', true);
                     }
-                } else {
-                    showToast('Selecione o tipo de proposta (00SL ou 20JP).', true);
+                } else if (tipo.value === '20JP') {
+                    const origem = document.querySelector('input[name="origem_20JP"]:checked');
+                    if (origem) {
+                        valido = true;
+                    } else {
+                        showToast('Selecione a origem do recurso para a proposta 20JP.', true);
+                    }
                 }
-                btn.disabled = !valido;
+            } else {
+                showToast('Selecione o tipo de proposta (00SL ou 20JP).', true);
             }
+            btn.disabled = !valido;
+        }
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
