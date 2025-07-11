@@ -206,22 +206,46 @@ async function gerarPDF() {
             createDeclarationContent(declaracao, index === declaracoesParaIncluir.length - 1)
         );
 
-        // Cria a página de sumário e assinatura
+        // Cria a página de sumário e assinatura com tabela profissional
         const titulosDeclaracoes = declaracoesParaIncluir.map(d => substituirPlaceholders(d.title, dados));
         const totalDeclaracoes = titulosDeclaracoes.length;
 
         const summaryPage = [
             { text: '', pageBreak: 'before' },
-            { text: 'Por ser verdade, firmo o teor das declarações que compõem este arquivo:', alignment: 'justify', fontSize: 12, margin: [0, 100, 0, 20] },
-            ...titulosDeclaracoes.map((titulo, index) => ({
-                text: [
-                    `${index + 1}. `,
-                    { text: titulo, linkToPage: index + 1, decoration: 'underline', color: 'blue' },
-                    ` - Página ${index + 1}`
-                ],
-                margin: [20, 0, 0, 5], fontSize: 12
-            })),
-            { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 60, 0, 60] },
+            { text: 'Sumário das Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 10] },
+            { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 5, 0, 20] },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: [40, '*', 50],
+                    body: [
+                        [
+                            { text: 'Nº', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Declaração', style: 'tableHeader', alignment: 'left' },
+                            { text: 'Página', style: 'tableHeader', alignment: 'center' }
+                        ],
+                        ...titulosDeclaracoes.map((titulo, index) => [
+                            { text: `${index + 1}`, alignment: 'center', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                            { text: titulo, linkToPage: index + 1, decoration: 'underline', color: 'blue', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                            { text: `${index + 1}`, alignment: 'center', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                        ])
+                    ]
+                },
+                layout: {
+                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                    vLineWidth: () => 1,
+                    hLineColor: () => '#003087',
+                    vLineColor: () => '#003087',
+                    paddingLeft: () => 10,
+                    paddingRight: () => 10,
+                    paddingTop: () => 8,
+                    paddingBottom: () => 8
+                },
+                margin: [20, 10, 20, 30],
+                alignment: 'center'
+            },
+            { text: `Por ser verdade, firmo o teor das declarações referenciais que compõem este arquivo.`, alignment: 'justify', fontSize: 12, margin: [20, 20, 20, 40] },
+            { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 20, 0, 40] },
             { text: `__________________________________________\n${dados.nome}\n(${dados.cargoDirigente})`, alignment: 'center', fontSize: 12 }
         ];
 
@@ -236,7 +260,7 @@ async function gerarPDF() {
             },
             footer: (currentPage, pageCount) => {
                 if (currentPage === pageCount) {
-                    return { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9, margin: [40, 40, 40, 0] };
+                    return { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações referenciais, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9, margin: [40, 40, 40, 0] };
                 }
                 return {
                     stack: [
@@ -248,9 +272,20 @@ async function gerarPDF() {
             },
             content: allContent,
             styles: {
-                header: { fontSize: 16, bold: true, color: '#003087', alignment: 'center' }
+                header: { fontSize: 18, bold: true, color: '#003087', alignment: 'center' },
+                subheader: { fontSize: 11, italic: true, color: '#333333', alignment: 'center' },
+                tableHeader: { fontSize: 12, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'left' }
             },
-            defaultStyle: { font: 'Roboto' }
+            defaultStyle: { font: 'Roboto' },
+            permissions: {
+                printing: 'lowResolution', // Permite impressão em baixa resolução
+                modifying: false, // Impede modificações
+                copying: false, // Impede cópia de conteúdo
+                annotating: false, // Impede anotações
+                fillingForms: false, // Impede preenchimento de formulários
+                contentAccessibility: false, // Impede acessibilidade de conteúdo
+                documentAssembly: false // Impede montagem de documentos
+            }
         };
 
         const nomeArquivo = `${opcao}_${dados.nome.replace(/\s+/g, '_') || 'documento'}_${dados.proposta.replace(/\//g, '-')}.pdf`;
@@ -275,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handler = () => {
         console.log('Botão Gerar PDF clicado.');
-        gerarPDF(); // Chama a função principal sem passar dados, pois ela já chama a captura internamente
+        gerarPDF();
     };
 
     gerarPDFButton.removeEventListener('click', handler);
@@ -295,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 // Função para exibir toast
 function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
@@ -309,7 +343,7 @@ function showToast(message, isError = false) {
     }
 }
 
-// Declarações (com a frase "Por ser expressão da verdade..." removida)
+// Declarações
 const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
