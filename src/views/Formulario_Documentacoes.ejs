@@ -354,8 +354,8 @@
                 <div class="form-row">
                     <div class="half-width">
                         <label for="proposta">Nº da Proposta:</label>
-                        <input type="text" id="proposta" name="Número da Proposta" maxlength="20" required>
-                        <div class="error-message" id="proposta-error">Campo obrigatório</div>
+                        <input type="text" id="proposta" name="Número da Proposta" maxlength="11" placeholder="xxxxxx/ano" oninput="formatProposta(this)" required>
+                        <div class="error-message" id="proposta-error">Formato inválido. Use xxxxxx/ano (6 dígitos/4 dígitos)</div>
                     </div>
                 </div>
             </section>
@@ -399,6 +399,24 @@
             value = value.replace(/(\d{3})(\d)/, '$1/$2');
             value = value.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
             input.value = value;
+        }
+
+        // Função para formatar Nº da Proposta (xxxxxx/ano)
+        function formatProposta(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            if (value.length > 6) {
+                value = value.replace(/(\d{6})(\d{1,4})/, '$1/$2');
+            }
+            input.value = value;
+            const errorMessage = document.getElementById('proposta-error');
+            if (!/^\d{6}\/\d{4}$/.test(input.value) && input.value !== '') {
+                input.classList.add('error');
+                errorMessage.style.display = 'block';
+            } else {
+                input.classList.remove('error');
+                errorMessage.style.display = 'none';
+            }
         }
 
         // Debounce para evitar múltiplas chamadas à API
@@ -546,6 +564,14 @@
                 isValid = false;
                 municipioInput.classList.add('error');
                 municipioError.style.display = 'block';
+            }
+
+            const propostaInput = document.getElementById('proposta');
+            const propostaError = document.getElementById('proposta-error');
+            if (!/^\d{6}\/\d{4}$/.test(propostaInput.value)) {
+                isValid = false;
+                propostaInput.classList.add('error');
+                propostaError.style.display = 'block';
             }
 
             if (!isValid) {
