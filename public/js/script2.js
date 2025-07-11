@@ -58,7 +58,6 @@ function capturarDadosFormulario() {
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' });
     const anoAtual = dataAtual.getFullYear();
 
-    // Captura múltiplos espaços físicos dinamicamente
     const espacosFisicos = [];
     document.querySelectorAll('[id^="nomeEspacoFisico"]').forEach((_, i) => {
         espacosFisicos.push({
@@ -78,8 +77,6 @@ function capturarDadosFormulario() {
         uf: getValue('uf'),
         municipio: getValue('municipio'),
         cep: getValue('cep'),
-        valorContrapartida: getValue('valorContrapartida'),
-        valorContrapartidaExtenso: getValue('valorContrapartidaExtenso'),
         temAquisicao: document.getElementById('temAquisicao')?.checked || false,
         opcaoSelecao: getValue('opcaoSelecao'),
         espacosFisicos,
@@ -91,7 +88,7 @@ function capturarDadosFormulario() {
     };
 }
 
-// Substitui placeholders no texto com os dados fornecidos
+// Substitui placeholders no texto
 function substituirPlaceholders(texto, dados) {
     return texto
         .replace(/\[NOME\]/g, dados.nome || 'Nome não informado')
@@ -104,15 +101,22 @@ function substituirPlaceholders(texto, dados) {
         .replace(/\[MUNICIPIO\]/g, dados.municipio || 'Município não informado')
         .replace(/\[CEP\]/g, dados.cep || 'CEP não informado')
         .replace(/\[PROPOSTA\]/g, dados.proposta || 'Proposta não informada')
-        .replace(/\[VALOR_CONTRAPARTIDA\]/g, dados.valorContrapartida || 'Valor não informado')
-        .replace(/\[VALOR_CONTRAPARTIDA_EXTENSO\]/g, dados.valorContrapartidaExtenso || 'Valor por extenso não informado')
         .replace(/\[DIA_ATUAL\]/g, dados.diaAtual)
         .replace(/\[MES_ATUAL\]/g, dados.mesAtual)
         .replace(/\[ANO_ATUAL\]/g, dados.anoAtual);
 }
 
+// Converte número em texto por extenso
+function numeroParaExtenso(num) {
+    const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+    const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+    if (num < 20) return unidades[num];
+    if (num < 100) return dezenas[Math.floor(num / 10)] + (num % 10 !== 0 ? ' e ' + unidades[num % 10] : '');
+    return num.toString();
+}
+
 // Função principal para gerar o PDF
-async function gerarPDF(dados) {
+async function gerarPDF() {
     if (isGeneratingPDF) {
         console.log('Geração de PDF já em andamento. Ignorando solicitação.');
         return;
@@ -120,13 +124,14 @@ async function gerarPDF(dados) {
     isGeneratingPDF = true;
 
     try {
+        const dados = capturarDadosFormulario();
         console.log('Iniciando geração do PDF com dados:', JSON.stringify(dados, null, 2));
 
-        // Valida os dados
         const erros = validarDadosFormulario(dados);
         if (erros.length > 0) {
             showToast(`Erro: ${erros.join(' ')}`, true);
             console.error('Validação falhou:', erros);
+            isGeneratingPDF = false;
             return;
         }
 
@@ -134,16 +139,15 @@ async function gerarPDF(dados) {
         if (!opcao || !declaracoesEspecificas[opcao]) {
             showToast('Selecione uma opção válida antes de gerar o PDF.', true);
             console.error('Opção inválida:', opcao);
+            isGeneratingPDF = false;
             return;
         }
 
-        // Carrega a imagem de fundo
         const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
         if (!watermarkImage) {
             console.warn('Imagem de fundo não carregada. Prosseguindo sem ela.');
         }
 
-        // Converte as imagens enviadas para Base64
         const imageBase64Array = await Promise.all(
             (dados.imagens || []).map(file => new Promise((resolve) => {
                 const reader = new FileReader();
@@ -152,200 +156,107 @@ async function gerarPDF(dados) {
             }))
         );
 
-        // Cria o conteúdo das imagens com descrições
-        const imageContent = imageBase64Array.map((base64, index) => ([
-            {
-                image: base64,
-                width: 200,
-                margin: [0, 20, 0, 5],
-                alignment: 'center'
-            },
-            {
-                text: dados.descricoes[index] || `Imagem ${index + 1}`,
-                fontSize: 12,
-                alignment: 'center',
-                margin: [0, 5, 0, 20]
-            }
+        const imageContent = imageBase64Array.flatMap((base64, index) => ([
+            { text: '', pageBreak: 'before' },
+            { image: base64, width: 200, margin: [0, 20, 0, 5], alignment: 'center' },
+            { text: dados.descricoes[index] || `Imagem ${index + 1}`, fontSize: 12, alignment: 'center', margin: [0, 5, 0, 20] }
         ]));
-
+        
         // Função para criar conteúdo de uma declaração
         const createDeclarationContent = (declaracao, isLastDeclaration = false) => {
             let content = substituirPlaceholders(declaracao.content, dados);
             let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
 
-            // Verifica se é a "DECLARAÇÃO DE TITULARIDADE DO TERRENO" para 00SL
             if (['00SL_emendas', '00SL_comissao'].includes(opcao) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO") {
-                const tableData = dados.espacosFisicos.map(espaco => [
-                    espaco.nome,
-                    espaco.endereco
-                ]);
+                const tableData = dados.espacosFisicos.map(espaco => [espaco.nome, espaco.endereco]);
                 if (tableData.length > 0) {
                     contentArray = [
-                        { 
-                            text: content.replace(
-                                /Nome do Espaço Físico: \[NOME_ESPACO_FISICO\]; Endereço do Espaço Físico: \[ENDERECO_ESPACO_FISICO\]/,
-                                ''
-                            ), 
-                            alignment: 'justify', 
-                            fontSize: 12, 
-                            margin: [0, 20, 0, 0] 
-                        },
+                        { text: content.replace(/Nome do Espaço Físico:.*?\[ENDERECO_ESPACO_FISICO\]/, '').trim(), alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 0] },
                         {
                             table: {
                                 widths: ['*', '*'],
-                                body: [
-                                    [{ text: 'Nome do Espaço Físico', bold: true }, { text: 'Endereço do Espaço Físico', bold: true }],
-                                    ...tableData
-                                ]
+                                body: [[{ text: 'Nome do Espaço Físico', bold: true }, { text: 'Endereço do Espaço Físico', bold: true }], ...tableData]
                             },
-                            layout: 'lightHorizontalLines',
-                            margin: [0, 10, 0, 20]
+                            layout: 'lightHorizontalLines', margin: [0, 10, 0, 20]
                         }
                     ];
                 }
             }
 
+            // Bloco da declaração sem assinatura individual, mas com quebra de página
             return [
-                {
-                    text: substituirPlaceholders(declaracao.title || '', dados),
-                    style: 'header',
-                    alignment: 'center',
-                    margin: [0, 120, 0, 20]
-                },
+                { text: substituirPlaceholders(declaracao.title, dados), style: 'header', alignment: 'center', margin: [0, 100, 0, 20] },
                 ...contentArray,
-                {
-                    text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`,
-                    alignment: 'center',
-                    fontSize: 12,
-                    margin: [0, 0, 0, 40]
-                },
-                {
-                    text: `__________________________________________\n${dados.nome}\n(${dados.cargoDirigente})`,
-                    alignment: 'center',
-                    fontSize: 12,
-                    margin: [0, 0, 0, 20],
-                    pageBreak: isLastDeclaration ? undefined : 'after'
-                }
+                { text: '', pageBreak: isLastDeclaration ? undefined : 'after' }
             ];
         };
+        
+        // Monta a lista completa de declarações
+        let declaracoesParaIncluir = [
+            ...declaracoesCompletas.filter(decl => {
+                const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
+                const condicaoSustentabilidade = opcao.startsWith('00SL') || (dados.temAquisicao && opcao.startsWith('20JP'));
+                return !ehSustentabilidade || condicaoSustentabilidade;
+            }),
+            ...declaracoesEspecificas[opcao]
+        ];
 
-        // Declarações comuns (exclui "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO" para controle condicional)
-        const declaracoesComuns = declaracoesCompletas.filter(
-            decl => decl.title !== "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO"
+        // Gera o conteúdo de todas as declarações
+        const allDeclarationsContent = declaracoesParaIncluir.flatMap((declaracao, index) =>
+            createDeclarationContent(declaracao, index === declaracoesParaIncluir.length - 1)
         );
 
-        // Adiciona "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO" condicionalmente
-        const sustentabilidadeDeclaracao = declaracoesCompletas.find(
-            decl => decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO"
-        );
-        let declaracoesParaIncluir = [...declaracoesComuns];
-        if (opcao.startsWith('00SL') || (dados.temAquisicao && opcao.startsWith('20JP'))) {
-            declaracoesParaIncluir.push(sustentabilidadeDeclaracao);
-        }
+        // Cria a página de sumário e assinatura
+        const titulosDeclaracoes = declaracoesParaIncluir.map(d => substituirPlaceholders(d.title, dados));
+        const totalDeclaracoes = titulosDeclaracoes.length;
 
-        // Gera o conteúdo comum
-        const conteudoComum = declaracoesParaIncluir.map((declaracao, index) => 
-            createDeclarationContent(declaracao, false)
-        );
+        const summaryPage = [
+            { text: '', pageBreak: 'before' },
+            { text: 'Por ser verdade, firmo o teor das declarações que compõem este arquivo:', alignment: 'justify', fontSize: 12, margin: [0, 100, 0, 20] },
+            ...titulosDeclaracoes.map((titulo, index) => ({
+                text: [
+                    `${index + 1}. `,
+                    { text: titulo, linkToPage: index + 1, decoration: 'underline', color: 'blue' },
+                    ` - Página ${index + 1}`
+                ],
+                margin: [20, 0, 0, 5], fontSize: 12
+            })),
+            { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 60, 0, 60] },
+            { text: `__________________________________________\n${dados.nome}\n(${dados.cargoDirigente})`, alignment: 'center', fontSize: 12 }
+        ];
 
-        // Gera o conteúdo específico com posicionamento ajustado
-        let conteudoEspecifico = [];
-        if (opcao === '20JP_emenda') {
-            // Para 20JP_emenda, a nova declaração vai por último
-            const outrasDeclaracoes = declaracoesEspecificas[opcao].filter(
-                decl => decl.title !== "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
-            );
-            const declaracaoRH = declaracoesEspecificas[opcao].find(
-                decl => decl.title === "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
-            );
-            conteudoEspecifico = [
-                ...outrasDeclaracoes.map((declaracao, index) => 
-                    createDeclarationContent(declaracao, false)
-                ),
-                ...(declaracaoRH ? [createDeclarationContent(declaracaoRH, !imageBase64Array.length)] : [])
-            ];
-        } else if (opcao === '20JP_comissao') {
-            // Para 20JP_comissao, a nova declaração vai antes de "DECLARAÇÃO DE ADIMPLÊNCIA"
-            const adimplencia = declaracoesEspecificas[opcao].find(
-                decl => decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA"
-            );
-            const declaracaoRH = declaracoesEspecificas[opcao].find(
-                decl => decl.title === "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH"
-            );
-            const outrasDeclaracoes = declaracoesEspecificas[opcao].filter(
-                decl => decl.title !== "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RH" && 
-                        decl.title !== "DECLARAÇÃO DE ADIMPLÊNCIA"
-            );
-            conteudoEspecifico = [
-                ...outrasDeclaracoes.map((declaracao, index) => 
-                    createDeclarationContent(declaracao, false)
-                ),
-                ...(declaracaoRH ? [createDeclarationContent(declaracaoRH, false)] : []),
-                ...(adimplencia ? [createDeclarationContent(adimplencia, !imageBase64Array.length)] : [])
-            ];
-        } else {
-            // Para outras opções (00SL), mantém como está
-            conteudoEspecifico = declaracoesEspecificas[opcao].map((declaracao, index) => 
-                createDeclarationContent(declaracao, index === declaracoesEspecificas[opcao].length - 1 && !imageBase64Array.length)
-            );
-        }
+        const allContent = [...allDeclarationsContent, ...imageContent, ...summaryPage];
 
-        // Consolida todo o conteúdo
-        const allContent = [...conteudoComum.flat(), ...conteudoEspecifico.flat(), ...imageContent.flat()];
-
-        // Garante que o último elemento não tenha pageBreak
-        if (allContent.length > 0) {
-            const lastElement = allContent[allContent.length - 1];
-            if (lastElement.pageBreak) {
-                delete lastElement.pageBreak;
-            }
-        }
-
-        // Definição do documento PDF
         const docDefinition = {
             pageSize: 'A4',
-            pageMargins: [35, 60, 25, 60],
-            background: watermarkImage ? [{
-                image: watermarkImage,
-                width: 595,
-                height: 842,
-                absolutePosition: { x: 0, y: 0 },
-                opacity: 0.9
-            }] : [],
+            pageMargins: [40, 60, 40, 80],
+            background: (currentPage, pageCount) => {
+                if (currentPage === pageCount) return null;
+                return watermarkImage ? [{ image: watermarkImage, width: 595, height: 842, absolutePosition: { x: 0, y: 0 }, opacity: 0.9 }] : null;
+            },
+            footer: (currentPage, pageCount) => {
+                if (currentPage === pageCount) {
+                    return { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9, margin: [40, 40, 40, 0] };
+                }
+                return {
+                    stack: [
+                        { text: 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as declarações anteriores.', alignment: 'center', fontSize: 9 },
+                        { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 9, margin: [0, 5, 0, 0] }
+                    ],
+                    margin: [40, 20, 40, 0]
+                };
+            },
             content: allContent,
             styles: {
-                header: {
-                    fontSize: 16,
-                    bold: true,
-                    color: '#003087',
-                    alignment: 'center'
-                },
-                subheader: {
-                    fontSize: 14,
-                    bold: true,
-                    color: '#003087'
-                }
+                header: { fontSize: 16, bold: true, color: '#003087', alignment: 'center' }
             },
-            permissions: {
-                printing: 'highResolution',
-                modifying: false,
-                copying: false,
-                annotating: false,
-                fillingForms: false,
-                contentAccessibility: false,
-                documentAssembly: false
-            },
-            defaultStyle: {
-                font: 'Roboto'
-            }
+            defaultStyle: { font: 'Roboto' }
         };
 
-        // Gera o PDF com nome baseado em opcaoSelecao e nome
-        const nomeArquivo = `${opcao}_${dados.nome.replace(/\s+/g, '_') || 'documento'}_${dados.proposta.replace('/', '-')}.pdf`;
-        console.log(`Gerando PDF: ${nomeArquivo}`);
+        const nomeArquivo = `${opcao}_${dados.nome.replace(/\s+/g, '_') || 'documento'}_${dados.proposta.replace(/\//g, '-')}.pdf`;
         pdfMake.createPdf(docDefinition).download(nomeArquivo);
-        console.log('PDF gerado com sucesso.');
         showToast('PDF gerado com sucesso!');
+
     } catch (error) {
         console.error('Erro ao gerar o PDF:', error);
         showToast('Erro ao gerar o PDF: ' + error.message, true);
@@ -362,17 +273,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Handler para o clique
     const handler = () => {
         console.log('Botão Gerar PDF clicado.');
-        const dados = capturarDadosFormulario();
-        gerarPDF(dados);
+        gerarPDF(); // Chama a função principal sem passar dados, pois ela já chama a captura internamente
     };
 
-    // Remove qualquer listener existente e adiciona o novo
     gerarPDFButton.removeEventListener('click', handler);
     gerarPDFButton.addEventListener('click', handler);
+
+    const imagensInput = document.getElementById('imagens');
+    const descricaoContainer = document.getElementById('descricaoImagens');
+    if (imagensInput && descricaoContainer) {
+        imagensInput.addEventListener('change', function () {
+            descricaoContainer.innerHTML = '';
+            Array.from(this.files).forEach((file, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `<div class="form-row"><label for="descricao${index}">Descrição da Imagem ${index + 1}:</label><textarea id="descricao${index}" rows="2" style="width: 100%;"></textarea></div>`;
+                descricaoContainer.appendChild(div);
+            });
+        });
+    }
 });
+
 
 // Função para exibir toast
 function showToast(message, isError = false) {
@@ -387,212 +309,85 @@ function showToast(message, isError = false) {
     }
 }
 
-// Declarações completas
+// Declarações (com a frase "Por ser expressão da verdade..." removida)
 const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que os recursos do presente convênio não se destinarão para o pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e Municípios, conforme Art. 167, X, CF/88 e Art. 25, § 1º, III, Lei Complementar nº 101/2000.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que os recursos do presente convênio não se destinarão para o pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e Municípios, conforme Art. 167, X, CF/88 e Art. 25, § 1º, III, Lei Complementar nº 101/2000.`
     },
     {
         title: "DECLARAÇÃO DE NÃO VÍNCULO",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro, que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], cargo [CARGO_DIRIGENTE], declaro, sob as penas da lei, em especial a do art. 299 do Código Penal Brasileiro, que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [PROPOSTA], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil.`
     },
     {
         title: "DECLARAÇÃO NEGATIVA DE DUPLICIDADE DE CONVÊNIO",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Transferegov sob o nº [PROPOSTA] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, ficando, portanto, sujeito às sanções civis, administrativas e penais cabíveis no caso de comprovada a falsidade ideológica.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Transferegov sob o nº [PROPOSTA] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, ficando, portanto, sujeito às sanções civis, administrativas e penais cabíveis no caso de comprovada a falsidade ideológica.`
     },
     {
         title: "DECLARAÇÃO NÃO RECEBE RECURSOS DE OUTRA ENTIDADE PARA A MESMA FINALIDADE",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO ao Ministério do Esporte - MESP, que a entidade a qual represento não recebe recursos financeiros de outra entidade para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta Nº [PROPOSTA], cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO ao Ministério do Esporte - MESP, que a entidade a qual represento não recebe recursos financeiros de outra entidade para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta Nº [PROPOSTA], cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.`
     },
     {
         title: "DECLARAÇÃO NÃO CONTRATAÇÃO COM RECURSOS DA PARCERIA",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal da [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração do Termo de Convênio, no âmbito do Ministério do Esporte - MESP, que a presente Entidade não contratará com recursos da presente parceria, empresas que sejam do mesmo grupo econômico; tenham participação societária cruzada; pertençam ou tenham participação societária de parentes de dirigentes ou funcionários da entidade, possuam o mesmo endereço, telefone e CNPJ; bem como, que as cotações relativas aos itens previstos no Plano de Trabalho não apresentarão incompatibilidade, no que se refere a situação cadastral dos fornecedores e a classificação de atividades econômicas - CNAE em relação ao serviço ou fornecimento de material alusivo à respectiva cotação, e ainda, responsabilizar-se-á pela veracidade dos documentos apresentados referentes às pesquisas de preços junto aos fornecedores.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal da [ENTIDADE], CNPJ Nº [CNPJ], declaro para os devidos fins de celebração do Termo de Convênio, no âmbito do Ministério do Esporte - MESP, que a presente Entidade não contratará com recursos da presente parceria, empresas que sejam do mesmo grupo econômico; tenham participação societária cruzada; pertençam ou tenham participação societária de parentes de dirigentes ou funcionários da entidade, possuam o mesmo endereço, telefone e CNPJ; bem como, que as cotações relativas aos itens previstos no Plano de Trabalho não apresentarão incompatibilidade, no que se refere a situação cadastral dos fornecedores e a classificação de atividades econômicas - CNAE em relação ao serviço ou fornecimento de material alusivo à respectiva cotação, e ainda, responsabilizar-se-á pela veracidade dos documentos apresentados referentes às pesquisas de preços junto aos fornecedores.`
     },
     {
         title: "DECLARAÇÃO DE COMPROMISSO",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de dispor dos recursos informatizados necessários ao acesso ao Sistema Eletrônico Transferegov, com o objetivo de alimentar, atualizar e acompanhar de forma permanente o referido sistema, de acordo com a norma vigente, durante todo o período da formalização da parceria até prestação de contas final.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de dispor dos recursos informatizados necessários ao acesso ao Sistema Eletrônico Transferegov, com o objetivo de alimentar, atualizar e acompanhar de forma permanente o referido sistema, de acordo com a norma vigente, durante todo o período da formalização da parceria até prestação de contas final.`
     },
     {
         title: "DECLARAÇÃO DE CUSTOS",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], ATESTO a planilha de custos, bem como as cotações obtidas, conforme Instrução Normativa SEGES/ME n.º 65, de 7 julho de 2021, inseridas no Sistema Eletrônico Transferegov, Proposta n.º [PROPOSTA].
-
-        Ademais, DECLARO que os custos apresentados estão de acordo com os praticados no mercado.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], ATESTO a planilha de custos, bem como as cotações obtidas, conforme Instrução Normativa SEGES/ME n.º 65, de 7 julho de 2021, inseridas no Sistema Eletrônico Transferegov, Proposta n.º [PROPOSTA].\n\nAdemais, DECLARO que os custos apresentados estão de acordo com os praticados no mercado.`
     },
     {
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
-        content: `
-        Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio, que o(a) [ENTIDADE], possui condições orçamentárias para arcar com as despesas dela decorrentes e meios que garantam a sustentabilidade do objeto, por se tratar da aquisição de bens de capital.
-
-        Por ser expressão da verdade, firmo a presente declaração.
-        `
+        content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio, que o(a) [ENTIDADE], possui condições orçamentárias para arcar com as despesas dela decorrentes e meios que garantam a sustentabilidade do objeto, por se tratar da aquisição de bens de capital.`
     }
 ];
 
-// Declarações específicas
 const declaracoesEspecificas = {
     '00SL_emendas': [
         {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.
-
-            Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.\n\nNome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]`
         },
         {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
-
-            DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.\n\nDECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.`
         },
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
-
-            Dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:\n\nDispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].`
         }
     ],
     '00SL_comissao': [
        {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.
-
-            Nome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro que o terreno é de domínio público e pertence ao Município de [MUNICIPIO]/[UF], assim como está disponível, apto e compatível para instalação dos equipamentos.\n\nNome do Espaço Físico: [NOME_ESPACO_FISICO]; Endereço do Espaço Físico: [ENDERECO_ESPACO_FISICO]`
         },
         {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.
-
-            DECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, e dá outras providências ao projeto, nos termos da Lei nº 10.098, de 19 de dezembro de 2000 e demais legislações e normativas aplicáveis.\n\nDECLARO, outrossim, sob as penas da lei, estar plenamente ciente do teor e da extensão desta declaração e deter plenos poderes e informações para firmá-la.`
         },
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:
-
-            Dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], declaro o compromisso de:\n\nDispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [PROPOSTA].`
         }
     ],
     '20JP_emenda': [
         {
             title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:
-
-            1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.
-
-            2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.
-
-            3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:
-
-            · Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e
-
-            · Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:\n\n1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.\n\n2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.\n\n3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:\n\n· Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e\n\n· Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.`
         }
     ],
     '20JP_comissao': [
         {
             title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:
-
-            1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.
-
-            2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.
-
-            3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:
-
-            · Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e
-
-            · Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que:\n\n1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, a qual deverá observar as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário, Portaria Conjunta MGI/MF/AGU n.º 33, de 30 de agosto de 2023 e demais legislações pertinentes.\n\n2. O repasse de recursos financeiros para custeio desta ação, no que tange ao pagamento dos profissionais e encargos sociais e trabalhistas, seguirá os valores e os percentuais aprovados no Plano de Trabalho da Proposta n.º [PROPOSTA]. Assim, caso os encargos sociais e/ou trabalhistas ultrapassem o limite estabelecido, a Entidade arcará com esta despesa.\n\n3. O valor total do recurso, destinado ao pagamento dos profissionais, encargos sociais e/ou trabalhistas, será obrigatoriamente pago mensalmente, conforme pactuado no Plano de Trabalho e em observância ao que segue:\n\n· Pagamento dos Profissionais: no mês seguinte da prestação dos serviços; e\n\n· Pagamento dos Encargos Sociais e/ou Trabalhistas: deverá acompanhar periodicidade dos pagamentos realizados aos recursos humanos vinculados.`
         },
         {
             title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-            content: `
-            Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:
-
-            Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares).
-
-            Por ser expressão da verdade, firmo a presente declaração.
-            `
+            content: `Eu, [NOME], matrícula [MATRICULA], na condição de representante legal do(a) [ENTIDADE], CNPJ Nº [CNPJ], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade:\n\nNão está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares).`
         }
     ]
 };
-
-// Manipulação de imagens (mantida do código original)
-document.addEventListener('DOMContentLoaded', () => {
-    const imagensInput = document.getElementById('imagens');
-    const descricaoContainer = document.getElementById('descricaoImagens');
-
-    if (imagensInput && descricaoContainer) {
-        imagensInput.addEventListener('change', function () {
-            descricaoContainer.innerHTML = ''; // Limpa descrições anteriores
-            Array.from(this.files).forEach((file, index) => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <div class="form-row">
-                        <label for="descricao${index}">Descrição da Imagem ${index + 1}:</label>
-                        <textarea id="descricao${index}" rows="2" style="width: 100%;"></textarea>
-                    </div>
-                `;
-                descricaoContainer.appendChild(div);
-            });
-        });
-    }
-});
