@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Documentações - Ministério do Esporte</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #f4f4f9;
@@ -21,6 +24,11 @@
             --container-shadow: rgba(0, 0, 0, 0.05);
             --success-color: #28a745;
             --error-color: #dc3545;
+            --light-blue: #e6f0ff;
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         html.dark {
             --bg-color: #121212;
@@ -39,7 +47,7 @@
             --error-color: #dc3545;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        body { font-family: 'Arial', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        body { font-family: var(--font-body); background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; padding-bottom: 80px; }
         header { background-color: var(--primary-color); color: var(--primary-text-color); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; width: 100%; top: 0; z-index: 1000; height: 60px; box-shadow: 0 2px 4px var(--header-shadow); }
         .header-left { display: flex; align-items: center; gap: 15px; }
         header img { max-width: 200px; height: auto; filter: brightness(0) invert(1); }
@@ -51,17 +59,17 @@
         #theme-icon-sun { display: none; }
         html.dark #theme-icon-sun { display: inline-block; }
         html.dark #theme-icon-moon { display: none; }
-        .container { background: var(--container-bg); margin: 80px auto 30px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px var(--container-shadow); max-width: 900px; }
+        .container { background: var(--container-bg); margin: 80px auto 100px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px var(--container-shadow); max-width: 900px; }
         .container-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .container-header h2 { font-size: 1.5rem; font-weight: bold; color: var(--text-color); }
-        .status { font-size: 0.9rem; color: #666; }
+        .container-header h2 { font-family: var(--font-heading); font-size: 1.5rem; font-weight: bold; color: var(--text-color); }
+        .status { font-size: 0.9rem; color: #666; background-color: #e9ecef; padding: 0.25rem 0.75rem; border-radius: 1rem; }
         .section { margin-bottom: 20px; }
-        .section h3 { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
+        .section h3 { font-family: var(--font-heading); font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
         .form-row { display: flex; flex-wrap: wrap; gap: 20px; background-color: var(--form-row-bg); padding: 15px; border-radius: 5px; border: 1px solid var(--input-border-color); margin-bottom: 15px; }
         .form-row .half-width, .form-row .third-width, .form-row .full-width { flex: 1; min-width: 200px; }
         .third-width { min-width: 150px; }
         label { font-size: 0.9rem; font-weight: bold; color: var(--text-color); margin-bottom: 5px; display: block; }
-        input[type="text"], input[type="number"], input[type="file"], textarea, select { width: 100%; padding: 10px; border: 1px solid var(--input-border-color); border-radius: 4px; font-size: 0.9rem; background-color: var(--input-bg-color); color: var(--text-color); }
+        input[type="text"], input[type="number"], input[type="file"], textarea, select, input[type="checkbox"] { width: 100%; padding: 10px; border: 1px solid var(--input-border-color); border-radius: 4px; font-size: 0.9rem; background-color: var(--input-bg-color); color: var(--text-color); }
         input[readonly] { background-color: #f0f0f0; cursor: not-allowed; }
         html.dark input[readonly] { background-color: #333; color: #999; }
         input:focus, textarea:focus, select:focus { border-color: var(--input-focus-border); outline: none; box-shadow: 0 0 5px rgba(0, 48, 135, 0.3); }
@@ -83,33 +91,77 @@
         .radio-container { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 10px; }
         .espaco-fisico-container { margin-top: 15px; }
         .remove-btn { background-color: var(--error-color); color: #fff; padding: 5px 10px; margin-left: 10px; align-self: center; border-radius: 4px; }
-        #loadingMessage { text-align: center; font-weight: bold; color: var(--primary-color); margin-top: 10px; display: none; }
-        footer { text-align: center; padding: 10px; background-color: var(--primary-color); color: var(--primary-text-color); font-size: 0.8rem; margin-top: 20px; }
+        #loadingMessage { display: none; justify-content: center; align-items: center; gap: 1rem; font-weight: 500; color: var(--primary-color); margin-top: 1.5rem; }
+        .spinner { width: 24px; height: 24px; border: 3px solid var(--light-blue); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        footer { 
+            text-align: center; 
+            padding: 15px 20px; 
+            background-color: var(--primary-color); 
+            color: var(--primary-text-color); 
+            font-size: 0.8rem; 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            box-shadow: 0 -2px 4px var(--header-shadow); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        footer img { max-width: 150px; height: auto; filter: brightness(0) invert(1); }
+        html.dark footer img { filter: none; }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center;
+            z-index: 2000; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--container-bg); padding: 1.5rem; border-radius: 12px;
+            box-shadow: var(--shadow-lg); width: 95%; max-width: 1100px;
+            display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; max-height: 90vh;
+        }
+        .layout-controls { display: flex; flex-direction: column; gap: 1rem; }
+        .control-panel { background: var(--container-bg); padding: 1rem; border-radius: 8px; overflow-y: auto; }
+        .control-panel h4 { font-family: var(--font-heading); color: var(--primary-color); margin-bottom: 1rem; }
+        .control-group { margin-bottom: 1rem; }
+        .control-group label { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; }
+        .control-group input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid var(--input-border-color); border-radius: 4px; }
+        .preview-area { display: flex; flex-direction: column; }
+        #previewIframe { width: 100%; height: 100%; border: 1px solid var(--input-border-color); border-radius: 4px; box-shadow: var(--shadow); }
+        .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 1rem; padding-top: 1rem; }
+        .pagination-controls button { background: none; border: 1px solid var(--input-border-color); padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; }
+        .pagination-controls button:hover:not(:disabled) { background: #e9ecef; }
+        .pagination-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #pageIndicator { font-size: 0.9rem; font-weight: 500; }
+        .modal-actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--input-border-color); }
+        .modal-actions button { width: 100%; font-family: var(--font-heading); font-weight: 600; font-size: 1rem; border: none; padding: 0.7rem 1.5rem; border-radius: 6px; cursor: pointer; }
+        .btn-primary { background-color: var(--primary-color); color: var(--primary-text-color); }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-secondary { background-color: #e9ecef; color: var(--text-color); }
+        .btn-secondary:hover { background-color: #dee2e6; }
+        .upload-container { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--input-border-color); display: none; }
+        .checkbox-wrapper { display: flex; align-items: center; background-color: var(--form-row-bg); padding: 1rem; border-radius: 6px; }
+        .checkbox-wrapper label { margin: 0 0 0 0.75rem; font-weight: 500; color: var(--text-color); cursor: pointer; }
+        input[type="checkbox"] { appearance: none; min-width: 1.25rem; width: 1.25rem; height: 1.25rem; border: 2px solid var(--input-border-color); border-radius: 4px; cursor: pointer; position: relative; }
+        input[type="checkbox"]:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
+        input[type="checkbox"]:checked::before { content: '✔'; font-size: 0.8rem; color: var(--primary-text-color); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1001;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 0.9rem;
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 1001;
+            left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 0.9rem;
         }
-        .toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
         @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+        @media (max-width: 1024px) {
+            .modal-content { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+            .preview-area { min-height: 500px; }
+        }
         @media (max-width: 600px) {
             .form-row { flex-direction: column; }
-            .container { margin: 70px 10px 20px; padding: 15px; }
+            .container { margin: 70px 10px 100px; padding: 15px; }
             .tab-buttons button { width: 40px; height: 40px; font-size: 1rem; }
+            footer { flex-direction: column; gap: 10px; padding: 10px; }
         }
     </style>
 </head>
@@ -267,6 +319,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="full-width">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="usarPapelTimbrado" name="usarPapelTimbrado" onchange="toggleLetterheadUpload()">
+                                <label for="usarPapelTimbrado">Usar Papel Timbrado Personalizado</label>
+                            </div>
+                            <div id="letterheadUploadContainer" class="upload-container">
+                                <label for="letterheadFile">Carregar Papel Timbrado (PDF, JPEG, PNG):</label>
+                                <input type="file" id="letterheadFile" name="letterheadFile" accept=".pdf,.jpeg,.jpg,.png" aria-describedby="erro-letterheadFile">
+                                <span id="erro-letterheadFile" class="error-message">Por favor, selecione um arquivo de papel timbrado.</span>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 <div class="button-container">
                     <button type="button" onclick="mostrarAba('aba2')">Voltar</button>
@@ -274,12 +339,47 @@
                 </div>
             </div>
         </form>
-        <div id="loadingMessage">Aguarde, gerando PDF...</div>
+        <div id="loadingMessage" class="loading-message">
+            <div class="spinner"></div>
+            Processando PDF...
+        </div>
         <div id="toast" class="toast"></div>
+        <div id="layoutEditorModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="layout-controls">
+                    <div class="control-panel">
+                        <h4>Pré-visualização e Ajuste Fino</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 1.5rem;">Ajuste as margens para o seu papel timbrado. As alterações serão aplicadas em todas as páginas e refletidas na visualização ao lado. Limite: Margem Superior até 7 cm, Margem Inferior do Rodapé até 6,5 cm.</p>
+                        <div class="control-group">
+                            <label for="marginTopCm">Margem Superior (cm):</label>
+                            <input type="number" id="marginTopCm" value="2.5" step="0.1" min="0" max="7">
+                        </div>
+                        <div class="control-group">
+                            <label for="footerMarginBottomCm">Margem Inferior do Rodapé (cm):</label>
+                            <input type="number" id="footerMarginBottomCm" value="5.5" step="0.1" min="0" max="6.5">
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="confirmAndGenerate" class="btn-primary">Salvar e Gerar PDF</button>
+                        <button id="cancelLayout" class="btn-secondary">Cancelar</button>
+                    </div>
+                </div>
+                <div class="preview-area">
+                    <iframe id="previewIframe" title="Pré-visualização do PDF"></iframe>
+                    <div class="pagination-controls">
+                        <button id="prevPageBtn">&lt; Anterior</button>
+                        <span id="pageIndicator">Página 1</span>
+                        <button id="nextPageBtn">Próxima &gt;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <footer>
+        <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
         <p>© 2025 Ministério do Esporte</p>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="/forms/declaracoes/public/js/script2.js"></script>
@@ -296,8 +396,17 @@
 
         let espacoFisicoCount = 1;
         let is00SLEnabled = false;
+        let currentPreviewPage = 1;
+        let fullPdfBlobUrl = null;
+        let letterheadBackground = null;
+        let debounceTimer;
 
-        // Tema claro/escuro
+        // Initialize pdf.js worker
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+        }
+
+        // Theme switcher
         const themeSwitcher = document.getElementById('theme-switcher');
         const html = document.documentElement;
         themeSwitcher.addEventListener('click', () => {
@@ -305,52 +414,325 @@
             localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
         });
 
-        // Inicialização
+        // Toggle letterhead upload field
+        function toggleLetterheadUpload() {
+            const checkbox = document.getElementById('usarPapelTimbrado');
+            const uploadContainer = document.getElementById('letterheadUploadContainer');
+            const fileInput = document.getElementById('letterheadFile');
+            uploadContainer.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                fileInput.value = '';
+                document.getElementById('erro-letterheadFile').style.display = 'none';
+            }
+            atualizarOpcao();
+            validarGerarPDF();
+        }
+
+        // Convert file to base64
+        async function getBase64FromFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Convert PDF page to image
+        async function convertPdfPageToImage(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const page = await pdf.getPage(1);
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport }).promise;
+            return canvas.toDataURL('image/png');
+        }
+
+        // Open modal for PDF preview
+        async function openModal() {
+            const fileInput = document.getElementById('letterheadFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                showToast('Por favor, selecione um arquivo de papel timbrado.', true);
+                return;
+            }
+            document.getElementById('loadingMessage').style.display = 'flex';
+            try {
+                if (file.type.startsWith('image/')) {
+                    letterheadBackground = await getBase64FromFile(file);
+                } else if (file.type === 'application/pdf') {
+                    letterheadBackground = await convertPdfPageToImage(file);
+                } else {
+                    showToast('Tipo de arquivo inválido! Use PDF, JPEG ou PNG.', true);
+                    return;
+                }
+                document.getElementById('layoutEditorModal').style.display = 'flex';
+                currentPreviewPage = 1;
+                await updatePreview();
+            } catch (error) {
+                showToast('Erro ao processar papel timbrado: ' + error.message, true);
+            } finally {
+                document.getElementById('loadingMessage').style.display = 'none';
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('layoutEditorModal').style.display = 'none';
+            document.getElementById('previewIframe').src = 'about:blank';
+            letterheadBackground = null;
+            if (fullPdfBlobUrl) {
+                URL.revokeObjectURL(fullPdfBlobUrl);
+                fullPdfBlobUrl = null;
+            }
+        }
+
+        // Update PDF preview
+        async function updatePreview() {
+            const modal = document.getElementById('layoutEditorModal');
+            if (!modal || modal.style.display === 'none') return;
+
+            const formData = {
+                dirigente: document.getElementById('dirigente').value,
+                matricula: document.getElementById('matricula').value,
+                cargoDirigente: document.getElementById('cargoDirigente').value,
+                proposta: document.getElementById('proposta').value,
+                cnpj: document.getElementById('cnpj').value,
+                entidade: document.getElementById('entidade').value,
+                endereco: document.getElementById('endereco').value,
+                uf: document.getElementById('uf').value,
+                municipio: document.getElementById('municipio').value,
+                cep: document.getElementById('cep').value,
+                opcaoSelecao: document.getElementById('opcaoSelecao').value,
+                usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
+                letterheadFile: document.getElementById('letterheadFile').files[0],
+                espacosFisicos: []
+            };
+            document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+                const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
+                const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
+                if (nome && endereco) {
+                    formData.espacosFisicos.push({ nome, endereco });
+                }
+            });
+
+            const marginTopCm = document.getElementById('marginTopCm');
+            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+            const cmToPoints = cm => cm * 28.3465;
+            const PAGE_HEIGHT_POINTS = 841.89;
+            const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
+            const layoutOptions = {
+                topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+                footerPosition: footerPosition
+            };
+
+            if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
+                showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
+                return;
+            }
+
+            if (typeof gerarPDF !== 'function') {
+                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
+                return;
+            }
+
+            try {
+                const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
+                if (!docDefinition || !docDefinition.content) {
+                    throw new Error('DocDefinition inválido ou vazio.');
+                }
+
+                const printer = pdfMake.createPdf(docDefinition);
+                printer.getBlob(blob => {
+                    if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
+                    fullPdfBlobUrl = URL.createObjectURL(blob);
+                    renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
+                });
+            } catch (error) {
+                document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
+                console.error('Erro no updatePreview:', error);
+                return;
+            }
+
+            const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
+            document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
+        }
+
+        // Render PDF page to iframe
+        async function renderPdfPageToIframe(pdfUrl, pageNum) {
+            try {
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdf = await loadingTask.promise;
+                if (pageNum > pdf.numPages || pageNum < 1) {
+                    document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: orange;'>Página não encontrada.</p>";
+                    return;
+                }
+                const page = await pdf.getPage(pageNum);
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: context, viewport }).promise;
+                document.getElementById('previewIframe').src = canvas.toDataURL('image/png');
+            } catch (error) {
+                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao carregar página: " + error.message + "</p>";
+            }
+        }
+
+        // Initialization
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
             setupAba3Listeners();
             const gerarPDFBtn = document.getElementById('gerarPDF');
-            gerarPDFBtn.addEventListener('click', () => {
-                document.getElementById('loadingMessage').style.display = 'block';
+            const marginTopCm = document.getElementById('marginTopCm');
+            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
+            const cancelLayoutBtn = document.getElementById('cancelLayout');
+
+            gerarPDFBtn.addEventListener('click', async () => {
+                document.getElementById('loadingMessage').style.display = 'flex';
                 try {
+                    const usarPapelTimbrado = document.getElementById('usarPapelTimbrado').checked;
+                    const fileInput = document.getElementById('letterheadFile');
+                    if (usarPapelTimbrado && !fileInput.files[0]) {
+                        document.getElementById('erro-letterheadFile').style.display = 'block';
+                        showToast('Por favor, selecione um arquivo de papel timbrado.', true);
+                        return;
+                    }
+                    const formData = {
+                        dirigente: document.getElementById('dirigente').value,
+                        matricula: document.getElementById('matricula').value,
+                        cargoDirigente: document.getElementById('cargoDirigente').value,
+                        proposta: document.getElementById('proposta').value,
+                        cnpj: document.getElementById('cnpj').value,
+                        entidade: document.getElementById('entidade').value,
+                        endereco: document.getElementById('endereco').value,
+                        uf: document.getElementById('uf').value,
+                        municipio: document.getElementById('municipio').value,
+                        cep: document.getElementById('cep').value,
+                        opcaoSelecao: document.getElementById('opcaoSelecao').value,
+                        usarPapelTimbrado: usarPapelTimbrado,
+                        letterheadFile: fileInput.files[0],
+                        espacosFisicos: []
+                    };
+                    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+                        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
+                        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
+                        if (nome && endereco) {
+                            formData.espacosFisicos.push({ nome, endereco });
+                        }
+                    });
+                    if (usarPapelTimbrado) {
+                        await openModal();
+                    } else {
+                        if (typeof gerarPDF === 'function') {
+                            await gerarPDF(formData);
+                            showToast('PDF gerado com sucesso!');
+                        } else {
+                            throw new Error('Função de geração de PDF não encontrada.');
+                        }
+                    }
+                } catch (error) {
+                    showToast('Erro ao gerar PDF: ' + error.message, true);
+                } finally {
+                    document.getElementById('loadingMessage').style.display = 'none';
+                }
+            });
+
+            marginTopCm.addEventListener('input', () => {
+                if (parseFloat(marginTopCm.value) > 7) {
+                    marginTopCm.value = 7;
+                    showToast('Limite máximo de Margem Superior é 7 cm.', true);
+                }
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 300);
+            });
+
+            footerMarginBottomCm.addEventListener('input', () => {
+                if (parseFloat(footerMarginBottomCm.value) > 6.5) {
+                    footerMarginBottomCm.value = 6.5;
+                    showToast('Limite máximo de Margem Inferior do Rodapé é 6,5 cm.', true);
+                }
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 300);
+            });
+
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPreviewPage > 1) {
+                    currentPreviewPage--;
+                    updatePreview();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', () => {
+                const totalPages = document.getElementById('opcaoSelecao').value.includes('00SL') ? 
+                    document.querySelectorAll('#espacoFisicoFields .form-row').length + 1 : 2;
+                if (currentPreviewPage < totalPages) {
+                    currentPreviewPage++;
+                    updatePreview();
+                }
+            });
+
+            confirmAndGenerateBtn.addEventListener('click', async () => {
+                document.getElementById('loadingMessage').style.display = 'flex';
+                try {
+                    const formData = {
+                        dirigente: document.getElementById('dirigente').value,
+                        matricula: document.getElementById('matricula').value,
+                        cargoDirigente: document.getElementById('cargoDirigente').value,
+                        proposta: document.getElementById('proposta').value,
+                        cnpj: document.getElementById('cnpj').value,
+                        entidade: document.getElementById('entidade').value,
+                        endereco: document.getElementById('endereco').value,
+                        uf: document.getElementById('uf').value,
+                        municipio: document.getElementById('municipio').value,
+                        cep: document.getElementById('cep').value,
+                        opcaoSelecao: document.getElementById('opcaoSelecao').value,
+                        usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
+                        letterheadFile: document.getElementById('letterheadFile').files[0],
+                        espacosFisicos: []
+                    };
+                    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+                        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
+                        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
+                        if (nome && endereco) {
+                            formData.espacosFisicos.push({ nome, endereco });
+                        }
+                    });
+                    const cmToPoints = cm => cm * 28.3465;
+                    const PAGE_HEIGHT_POINTS = 841.89;
+                    const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
+                    const layoutOptions = {
+                        isCustom: true,
+                        topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+                        footerPosition: footerPosition
+                    };
                     if (typeof gerarPDF === 'function') {
-                        // Coleta dados para passar ao script2.js
-                        const dados = {
-                            dirigente: document.getElementById('dirigente').value,
-                            matricula: document.getElementById('matricula').value,
-                            cargoDirigente: document.getElementById('cargoDirigente').value,
-                            proposta: document.getElementById('proposta').value,
-                            cnpj: document.getElementById('cnpj').value,
-                            entidade: document.getElementById('entidade').value,
-                            endereco: document.getElementById('endereco').value,
-                            uf: document.getElementById('uf').value,
-                            municipio: document.getElementById('municipio').value,
-                            cep: document.getElementById('cep').value,
-                            opcaoSelecao: document.getElementById('opcaoSelecao').value,
-                            espacosFisicos: []
-                        };
-                        document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-                            const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-                            const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-                            if (nome && endereco) {
-                                dados.espacosFisicos.push({ nome, endereco });
-                            }
-                        });
-                        gerarPDF(dados); // Chama a função do script2.js
-                        document.getElementById('loadingMessage').style.display = 'none';
+                        await gerarPDF(formData, false, letterheadBackground, layoutOptions);
                         showToast('PDF gerado com sucesso!');
-                    } else if (typeof generateDeclarationPDF === 'function') {
-                        generateDeclarationPDF(); // Tenta chamar uma função alternativa
-                        document.getElementById('loadingMessage').style.display = 'none';
-                        showToast('PDF gerado com sucesso!');
+                        closeModal();
                     } else {
                         throw new Error('Função de geração de PDF não encontrada.');
                     }
                 } catch (error) {
-                    document.getElementById('loadingMessage').style.display = 'none';
                     showToast('Erro ao gerar PDF: ' + error.message, true);
+                } finally {
+                    document.getElementById('loadingMessage').style.display = 'none';
                 }
             });
+
+            cancelLayoutBtn.addEventListener('click', closeModal);
         });
 
         function mostrarAba(abaId) {
@@ -536,6 +918,11 @@
             document.querySelectorAll('#espacoFisicoFields input').forEach(input => {
                 input.addEventListener('input', validarGerarPDF);
             });
+            document.getElementById('usarPapelTimbrado').addEventListener('change', toggleLetterheadUpload);
+            document.getElementById('letterheadFile').addEventListener('change', () => {
+                document.getElementById('erro-letterheadFile').style.display = 'none';
+                validarGerarPDF();
+            });
         }
 
         function adicionarEspacoFisico() {
@@ -659,15 +1046,16 @@
         function atualizarOpcao() {
             const tipo = document.querySelector('input[name="tipo_proposta"]:checked')?.value;
             const origem = document.querySelector('input[name="origem_00SL"]:checked')?.value || document.querySelector('input[name="origem_20JP"]:checked')?.value;
+            const usarPapelTimbrado = document.getElementById('usarPapelTimbrado').checked;
             const opcaoInput = document.getElementById('opcaoSelecao');
             if (tipo && origem) {
-                opcaoInput.value = `${tipo}_${origem}`;
+                opcaoInput.value = `${tipo}_${origem}${usarPapelTimbrado ? '_timbrado' : ''}`;
             } else {
                 opcaoInput.value = '';
             }
         }
 
-        // Inicializar campo oculto
+        // Initialize hidden field
         document.body.insertAdjacentHTML('beforeend', '<input type="hidden" id="opcaoSelecao" value="">');
     </script>
 </body>
