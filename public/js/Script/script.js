@@ -1,304 +1,291 @@
-let isGeneratingPDF = false;
-
-function validarDadosFormulario(dados) {
-    const camposObrigatorios = ['dirigente', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'];
-    const erros = camposObrigatorios.filter(campo => !dados[campo] || dados[campo].trim() === '').map(campo => `O campo ${campo} é obrigatório.`);
-    if (dados.opcaoSelecao.startsWith('00SL') && (!dados.espacosFisicos || dados.espacosFisicos.length === 0)) {
-        erros.push('Pelo menos um espaço físico deve ser informado para propostas 00SL.');
-    }
-    return erros;
-}
+// ---------------------------------------------------------------------------------
+// AUXILIARY FUNCTIONS FOR BASE64 CONVERSION
+// ---------------------------------------------------------------------------------
 
 async function getBase64ImageFromUrl(imageUrl) {
+    if (!imageUrl) return null;
     try {
-        console.log(`Tentando carregar imagem de: ${imageUrl}`);
-        const response = await fetch(imageUrl, { cache: 'force-cache' });
-        if (!response.ok) throw new Error(`Falha ao carregar imagem: ${response.status} - ${response.statusText}`);
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to load image: ${response.statusText}`);
         const blob = await response.blob();
-        console.log('Imagem baixada como blob.');
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                console.log('Imagem convertida para Base64 com sucesso.');
-                resolve(reader.result);
-            };
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
     } catch (error) {
-        console.error('Erro ao carregar imagem padrão:', error.message);
+        console.error("Error in getBase64ImageFromUrl:", error);
         return null;
     }
 }
 
-function capturarDadosFormulario() {
-    const getValue = (id) => document.getElementById(id)?.value || '';
-    const dataAtual = new Date();
+function getBase64FromFile(file) {
+    if (!file) throw new Error('No file provided');
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Error reading file as DataURL'));
+        reader.readAsDataURL(file);
+    });
+}
+
+async function convertPdfPageToImage(file) {
+    if (!file || !window.pdfjsLib) throw new Error('PDF.js not loaded or no file provided');
+    const fileAsArrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument(fileAsArrayBuffer);
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({ canvasContext: context, viewport }).promise;
+    return canvas.toDataURL('image/png');
+}
+
+// Global declaration list
+const declarations = [
+    'NÃO UTILIZAÇÃO DE RECURSOS PARA FINALIDADE ALHEIA AO OBJETO DA PARCERIA',
+    'AUSÊNCIA DE DESTINAÇÃO DE RECURSOS',
+    'CUMPRIMENTO DO ART 89 DA LEI Nº 15.080, DE 30 DE DEZEMBRO DE 2024',
+    'NÃO CONTRATAÇÃO COM RECURSOS DA PARCERIA',
+    'ART. 299 CÓDIGO PENAL E AUTONOMIA FINANCEIRA',
+    'NÃO OCORRÊNCIA DE IMPEDIMENTOS',
+    'NÃO RECEBE RECURSOS PARA A MESMA FINALIDADE DE OUTRA ENTIDADE OU ÓRGÃO',
+    'COMPROVAÇÃO DE EXISTÊNCIA, EXPERIÊNCIA, INSTALAÇÕES E OUTRAS CONDIÇÕES MATERIAIS',
+    'COMPROMISSO',
+    'CUSTOS',
+    'ADIMPLÊNCIA',
+    'CIÊNCIA DO ART. 42, INCISO XIX, DA LEI Nº 13.019/2014'
+];
+
+// ---------------------------------------------------------------------------------
+// MAIN PDF GENERATION LOGIC
+// ---------------------------------------------------------------------------------
+
+async function generatePdfDocDefinition(orderedDeclarationsList = null, letterheadImageBase64 = null, layoutOptions = {}, formData = {}) {
+    if (!window.pdfMake) return null;
+
+    const finalDeclarations = orderedDeclarationsList || declarations;
+    if (!finalDeclarations?.length) return null;
+
+    const dataExtenso = new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    let finalLetterheadImage = layoutOptions.isCustom && letterheadImageBase64 
+        ? letterheadImageBase64 
+        : formData.useLetterheadChecked && formData.letterheadFile 
+            ? await (formData.letterheadFile.type.startsWith('image/') 
+                ? getBase64FromFile(formData.letterheadFile) 
+                : formData.letterheadFile.type === 'application/pdf' 
+                    ? convertPdfPageToImage(formData.letterheadFile) 
+                    : null) 
+            : await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+
+    const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
+    const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY, isCustom } = { ...defaults, ...layoutOptions };
+    const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
+
+    const allPagesContent = finalDeclarations.map((title, index) => {
+        const pageStack = [];
+        const headerStack = [];
+
+        // ✅ LÓGICA REFINADA: Cria um cabeçalho mais profissional quando o papel timbrado não é usado.
+        if (!formData.useLetterheadChecked) {
+            headerStack.push(
+                // 1. Nome da Entidade
+                { text: formData.entidade || 'SWMUSIC LTDA', bold: true, alignment: 'center', margin: [0, 0, 0, 2] },
+                // 2. Endereço
+                { text: formData.endereco || 'PORTUGAL, 316 - SAO JOAO', fontSize: 10, alignment: 'center' },
+                // 3. Linha horizontal para separação visual (com margem inferior de 25)
+                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
+            );
+        }
+
+        // Adiciona o cabeçalho (se existir) e o resto do conteúdo
+        pageStack.push(
+            ...headerStack,
+            // Título da Declaração com mais espaço abaixo (margem de 30)
+            { text: `DECLARAÇÃO\n${title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+            // Corpo do texto com melhor espaçamento entre linhas (lineHeight)
+            { text: getDeclarationContent(title, formData), alignment: 'justify', fontSize: 12, lineHeight: 1.15 }
+        );
+
+        return {
+            pageBreak: index < finalDeclarations.length - 1 ? 'after' : undefined,
+            margin: [defaults.leftRightMargin, topMargin, defaults.leftRightMargin, bottomMargin],
+            stack: pageStack
+        };
+    }).concat({
+    pageBreak: 'before',
+    margin: [40, 100.249, 40, 184.249],
+    stack: [
+        { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
+        { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 5, 0, 5] },
+        {
+            table: {
+                headerRows: 1,
+                widths: [40, '*'], // Removed 30 for the 'Nº' column
+                body: [
+                    [{ text: 'Página', style: 'tableHeader' }, { text: 'Declaração', style: 'tableHeader' }], // Removed 'Nº' header
+                    ...finalDeclarations.map((titulo, idx) => [
+                        { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                        { text: titulo, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                        // Removed the third element for 'Nº'
+                    ])
+                ]
+            },
+            layout: {
+                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                vLineWidth: () => 1,
+                hLineColor: () => '#003087',
+                vLineColor: () => '#003087',
+                paddingLeft: () => 5, paddingRight: () => 5,
+                paddingTop: () => 2, paddingBottom: () => 2
+            },
+            margin: [0, 5, 0, 5],
+            alignment: 'center'
+        },
+        { text: `Por ser verdade, firmo o teor das declarações que compõem este arquivo:`, alignment: 'center', fontSize: 11, margin: [0, 10, 0, 10] },
+        { text: `${(formData.municipio || 'São Domingos do Prata').toUpperCase()}/${(formData.uf || 'MG').toUpperCase()}, ${dataExtenso}.`, alignment: 'center', fontSize: 11, margin: [0, 10, 0, 10] },
+        { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
+        { text: formData.dirigente || 'Pedro Dias Pereira Neto', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 5] },
+        { text: `(${formData.cargoDirigente || 'Presidente'})`, alignment: 'center', italic: true, fontSize: 11 },
+        {
+            text: `Documento composto por ${finalDeclarations.length} (${numToWords(finalDeclarations.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`,
+            alignment: 'center',
+            fontSize: 9,
+            margin: [0, 15, 0, 0],
+            color: '#333333'
+        }
+    ]
+});
+
     return {
-        dirigente: getValue('dirigente'),
-        matricula: getValue('matricula'),
-        cargoDirigente: getValue('cargoDirigente'),
-        proposta: getValue('proposta'),
-        cnpj: getValue('cnpj'),
-        entidade: getValue('entidade'),
-        endereco: getValue('endereco'),
-        uf: getValue('uf'),
-        municipio: getValue('municipio'),
-        cep: getValue('cep'),
-        opcaoSelecao: getValue('opcaoSelecao'),
-        usarPapelTimbrado: document.getElementById('usarPapelTimbrado')?.checked || false,
-        espacosFisicos: [],
-        diaAtual: String(dataAtual.getDate()).padStart(2, '0'),
-        mesAtual: dataAtual.toLocaleString('pt-BR', { month: 'long' }),
-        anoAtual: dataAtual.getFullYear()
+        pageSize: 'A4',
+        pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
+        background: (currentPage, pageCount) => 
+            finalLetterheadImage && (!isCustom && currentPage === pageCount 
+                ? null 
+                : { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 }),
+        footer: (currentPage, pageCount) => {
+            if (currentPage === pageCount) return null;
+            return {
+                margin: [40, 0, 40, 0],
+                stack: [
+                    {
+                        columns: [
+                            { text: 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as declarações anteriores.', fontSize: 8.5, color: '#555555', alignment: 'left' },
+                            { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                        ]
+                    },
+                    { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                ]
+            };
+        },
+        content: allPagesContent,
+        styles: {
+            header: { fontSize: 18, bold: true, color: '#003087', alignment: 'center' },
+            subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'center' },
+            tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
+        },
+        defaultStyle: { font: 'Roboto' }
     };
 }
 
-function substituirPlaceholders(texto, dados) {
-    return texto
-        .replace(/\[dirigente]/g, dados.dirigente || 'Nome não informado')
-        .replace(/\[matricula]/g, dados.matricula || 'Matrícula não informada')
-        .replace(/\[cargoDirigente]/g, dados.cargoDirigente || 'Cargo não informado')
-        .replace(/\[entidade]/g, dados.entidade || 'Entidade não informada')
-        .replace(/\[cnpj]/g, dados.cnpj || 'CNPJ não informado')
-        .replace(/\[endereco]/g, dados.endereco || 'Endereço não informado')
-        .replace(/\[uf]/g, dados.uf || 'UF não informada')
-        .replace(/\[municipio]/g, dados.municipio || 'Município não informado')
-        .replace(/\[cep]/g, dados.cep || 'CEP não informado')
-        .replace(/\[proposta]/g, dados.proposta || 'Proposta não informada')
-        .replace(/\[diaAtual]/g, dados.diaAtual)
-        .replace(/\[mesAtual]/g, dados.mesAtual)
-        .replace(/\[anoAtual]/g, dados.anoAtual);
-}
 
-function numeroParaExtenso(num) {
-    const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-    const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-    if (num < 20) return unidades[num];
-    if (num < 100) return dezenas[Math.floor(num / 10)] + (num % 10 !== 0 ? ' e ' + unidades[num % 10] : '');
-    return num.toString();
-}
+// ✅ FUNÇÃO REFEITA E CORRIGIDA
+async function generateAllDeclarationsPDF(orderedDeclarationsList = null, customLetterheadImage = null, customLayoutOptions = {}, programmaticFormData = {}) {
+    if (!window.pdfMake) {
+        console.error("pdfMake is not loaded. Cannot generate PDF.");
+        alert("Erro: A biblioteca pdfMake não foi carregada. Verifique as dependências.");
+        return;
+    }
 
-async function gerarPDF(formData = null, isPreview = false, letterheadBackground = null, layoutOptions = {}) {
-    if (isGeneratingPDF) return isPreview ? {} : undefined;
-    isGeneratingPDF = true;
+    // Funções auxiliares para ler os valores atuais do formulário
+    const getInputValue = id => document.getElementById(id)?.value || '';
+    const getFileInput = id => document.getElementById(id)?.files[0] || null;
+    const getCheckboxValue = id => document.getElementById(id)?.checked || false;
+
+    // Objeto que captura os dados DO FORMULÁRIO no momento do clique.
+    // Isso garante que o valor do checkbox `useLetterhead` seja sempre o mais recente.
+    const formDataFromDom = {
+        dirigente: getInputValue('dirigente') || 'Pedro Dias',
+        cargoDirigente: getInputValue('cargoDirigente') || 'Presidente',
+        entidade: getInputValue('entidade') || 'BANCO DO BRASIL S.A.',
+        cnpj: getInputValue('cnpj') || '00.000.000/0001-91',
+        endereco: getInputValue('endereco') || 'Rua Getúlio Vargas, 224 - Centro, São Domingos do Prata - MG',
+        uf: getInputValue('uf') || 'MG',
+        municipio: getInputValue('municipio') || 'São Domingos do Prata',
+        proposta: getInputValue('proposta') || '',
+        useLetterheadChecked: getCheckboxValue('useLetterhead'), // Ponto CRÍTICO da correção
+        letterheadFile: getFileInput('letterheadFile')
+    };
+    
+    // Mescla os dados do formulário com quaisquer dados passados programaticamente.
+    // Isso permite flexibilidade, mas para o clique do usuário, os dados do DOM são a base.
+    const finalFormData = { ...formDataFromDom, ...programmaticFormData };
 
     try {
-        const dados = formData || capturarDadosFormulario();
-        console.log('Iniciando geração do PDF com dados:', JSON.stringify(dados, null, 2));
+        // Passa o objeto de dados final e correto para a função de definição do documento.
+        const docDefinition = await generatePdfDocDefinition(orderedDeclarationsList, customLetterheadImage, customLayoutOptions, finalFormData);
+        if (!docDefinition) throw new Error("Failed to generate document definition.");
 
-        const erros = validarDadosFormulario(dados);
-        if (erros.length > 0) {
-            showToast(`Erro: ${erros.join(' ')}`, true);
-            console.error('Validação falhou:', erros);
-            isGeneratingPDF = false;
-            return isPreview ? {} : undefined;
-        }
-
-        document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-            const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-            const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-            if (nome && endereco) {
-                dados.espacosFisicos.push({ nome, endereco });
-            }
-        });
-
-        let finalLetterheadImage = null;
-        if (dados.usarPapelTimbrado && letterheadBackground && letterheadBackground.startsWith('data:')) {
-            finalLetterheadImage = letterheadBackground;
-            console.log('Usando papel timbrado personalizado fornecido.');
-        } else {
-            finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            if (!finalLetterheadImage) {
-                console.warn('Imagem padrão não carregada. Prosseguindo sem fundo.');
-            }
-        }
-
-        const { topMargin = 60, footerPosition = 761.89, isCustom = false } = { ...{ leftRightMargin: 40, topMargin: 60, footerPosition: 761.89 }, ...layoutOptions };
-        const bottomMargin = Math.max(80, 841.89 - footerPosition);
-
-        let declaracoesParaIncluir = [
-            ...declaracoesCompletas.filter(decl => {
-                const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
-                const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || (dados.temAquisicao && dados.opcaoSelecao.startsWith('20JP'));
-                return !ehSustentabilidade || condicaoSustentabilidade;
-            }),
-            ...declaracoesEspecificas[dados.opcaoSelecao] || []
-        ];
-
-        const createDeclarationContent = (declaracao, isLastDeclaration = false) => {
-            let content = substituirPlaceholders(declaracao.content, dados);
-            let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 40] }];
-
-            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO") {
-                if (dados.espacosFisicos.length > 0) {
-                    contentArray = [
-                        { text: content.replace(/Nome do Espaço Físico:.*?(Endereço do Espaço Físico:.*?)(?=\n|$)/, '').trim(), alignment: 'justify', fontSize: 12, margin: [0, 20, 0, 0] },
-                        {
-                            table: {
-                                widths: ['*', '*'],
-                                body: [['Nome do Espaço Físico', 'Endereço do Espaço Físico'], ...dados.espacosFisicos.map(espaco => [espaco.nome, espaco.endereco])]
-                            },
-                            layout: 'lightHorizontalLines',
-                            margin: [0, 10, 0, 20]
-                        }
-                    ];
-                }
-            }
-
-            const headerStack = !dados.usarPapelTimbrado || !finalLetterheadImage ? [
-                { text: dados.entidade || 'Entidade não informada', bold: true, alignment: 'center', margin: [0, 0, 0, 2] },
-                { text: dados.endereco || 'Endereço não informado', fontSize: 10, alignment: 'center' },
-                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-            ] : [];
-
-            return [
-                ...headerStack,
-                { text: substituirPlaceholders(declaracao.title, dados), style: 'header', alignment: 'center', margin: [0, topMargin || 100, 0, 20] },
-                ...contentArray,
-                { text: '', pageBreak: isLastDeclaration ? undefined : 'after' }
-            ];
+        docDefinition.permissions = {
+            printing: 'highResolution', modifying: false, copying: false,
+            annotating: false, fillingForms: false, contentAccessibility: false, documentAssembly: false
         };
 
-        const allDeclarationsContent = declaracoesParaIncluir.flatMap((decl, index) =>
-            createDeclarationContent(decl, index === declaracoesParaIncluir.length - 1)
-        );
-
-        const titulosDeclaracoes = declaracoesParaIncluir.map(d => substituirPlaceholders(d.title, dados));
-        const totalDeclaracoes = titulosDeclaracoes.length;
-
-        const summaryPage = [
-            { text: '', pageBreak: 'before' },
-            { text: 'Sumário das Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 10] },
-            { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 5, 0, 20] },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [40, '*', 50],
-                    body: [
-                        [{ text: 'Nº', style: 'tableHeader', alignment: 'center' }, { text: 'Declaração', style: 'tableHeader', alignment: 'left' }, { text: 'Página', style: 'tableHeader', alignment: 'center' }],
-                        ...titulosDeclaracoes.map((titulo, index) => [
-                            { text: `${index + 1}`, alignment: 'center', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                            { text: titulo, linkToPage: index + 1, decoration: 'underline', color: 'blue', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                            { text: `${index + 1}`, alignment: 'center', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
-                        ])
-                    ]
-                },
-                layout: {
-                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-                    vLineWidth: () => 1,
-                    hLineColor: () => '#003087',
-                    vLineColor: () => '#003087',
-                    paddingLeft: () => 10,
-                    paddingRight: () => 10,
-                    paddingTop: () => 8,
-                    paddingBottom: () => 8
-                },
-                margin: [20, 10, 20, 30],
-                alignment: 'center'
-            },
-            { text: `Por ser verdade, firmo o teor das declarações referenciais que compõem este arquivo.`, alignment: 'justify', fontSize: 12, margin: [20, 20, 20, 40] },
-            { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 20, 0, 40] },
-            { text: `__________________________________________\n${dados.dirigente}\n(${dados.cargoDirigente})`, alignment: 'center', fontSize: 12 }
-        ];
-
-        const docDefinition = {
-            pageSize: 'A4',
-            pageMargins: [40, topMargin, 40, bottomMargin],
-            background: finalLetterheadImage ? [{ image: finalLetterheadImage, width: 595, height: 842, absolutePosition: { x: 0, y: 0 }, opacity: 0.9 }] : null,
-            footer: (currentPage, pageCount) => {
-                if (currentPage === pageCount) {
-                    return { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações referenciais, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9, margin: [40, 40, 40, 0] };
-                }
-                return {
-                    stack: [
-                        { text: 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as declarações anteriores.', alignment: 'center', fontSize: 9 },
-                        { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 9, margin: [0, 5, 0, 0] }
-                    ],
-                    margin: [40, 20, 40, 0]
-                };
-            },
-            content: [...allDeclarationsContent, ...summaryPage],
-            styles: {
-                header: { fontSize: 18, bold: true, color: '#003087', alignment: 'center' },
-                subheader: { fontSize: 11, italic: true, color: '#333333', alignment: 'center' },
-                tableHeader: { fontSize: 12, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'left' }
-            },
-            defaultStyle: { font: 'Roboto' },
-            permissions: {
-                printing: 'lowResolution',
-                modifying: false,
-                copying: false,
-                annotating: false,
-                fillingForms: false,
-                contentAccessibility: false,
-                documentAssembly: false
-            }
-        };
-
-        if (isPreview) {
-            isGeneratingPDF = false;
-            return docDefinition;
-        }
-
-        const nomeArquivo = `declaracao_${dados.proposta.replace(/\//g, '-')}.pdf`;
-        pdfMake.createPdf(docDefinition).download(nomeArquivo);
-        showToast('PDF gerado com sucesso!');
+        pdfMake.createPdf(docDefinition).download(`Todas_Declaracoes_${(finalFormData.dirigente || 'Unnamed').replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR')}.pdf`);
     } catch (error) {
-        console.error('Erro ao gerar o PDF:', error);
-        showToast('Erro ao gerar PDF: ' + error.message, true);
-    } finally {
-        isGeneratingPDF = false;
+        console.error("Error in generateAllDeclarationsPDF:", error);
+        alert("Erro ao gerar o PDF: " + error.message);
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const gerarPDFButton = document.getElementById('gerarPDF');
-    if (gerarPDFButton) {
-        gerarPDFButton.addEventListener('click', () => gerarPDF());
-    } else {
-        console.error("Elemento 'gerarPDF' não encontrado.");
-    }
-});
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById('toast');
-    if (toast) {
-        toast.textContent = message;
-        toast.style.backgroundColor = isError ? 'var(--error-color)' : 'var(--success-color)';
-        toast.className = 'toast show';
-        setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
-    } else {
-        console.log(`Toast: ${message}`);
-    }
+function getDeclarationContent(title, { dirigente = '', cargoDirigente = '', entidade = '', cnpj = '', endereco = '', proposta = '' } = {}) {
+    const contents = {
+        'NÃO UTILIZAÇÃO DE RECURSOS PARA FINALIDADE ALHEIA AO OBJETO DA PARCERIA': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, que a presente Entidade não utilizará os recursos para finalidade alheia ao objeto da parceria.`,
+        'AUSÊNCIA DE DESTINAÇÃO DE RECURSOS': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro que os recursos do presente Termo de Fomento não se destinarão ao pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e Municípios, conforme art. 167, inciso X, da Constituição Federal de 1988 e art. 25, § 1º, inciso III, da Lei Complementar nº 101/2000.`,
+        'CUMPRIMENTO DO ART 89 DA LEI Nº 15.080, DE 30 DE DEZEMBRO DE 2024': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro para os devidos fins, que a presente Entidade cumprirá com o disposto no art. 89, incisos IV e VIII, da Lei nº 15.080, de 30 de dezembro de 2024: \n\n• Compromisso da entidade beneficiada de disponibilizar ao cidadão, em seu sítio eletrônico ou, na falta deste, em sua sede, consulta ao extrato do convênio ou instrumento congênere, que conterá, no mínimo, o objeto, a finalidade e o detalhamento da aplicação dos recursos; \n• Inclusão de cláusula de reversão patrimonial no convênio ou instrumento congênere, válida até a depreciação integral do bem ou a amortização do investimento, que constituirá garantia real em favor do concedente em montante equivalente aos recursos de capital destinados à entidade, cuja execução ocorrerá caso se verifique desvio de finalidade ou aplicação irregular dos recursos.`,
+        'NÃO CONTRATAÇÃO COM RECURSOS DA PARCERIA': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento, no âmbito do Ministério do Esporte - MESP, que a presente Entidade não contratará com recursos da presente parceria, empresas que sejam do mesmo grupo econômico; tenham participação societária cruzada; pertençam ou tenham participação societária de parentes de dirigentes ou funcionários da entidade, possuam o mesmo endereço, telefone e CNPJ; bem como, que as cotações relativas aos itens previstos no Plano de Trabalho não apresentarão incompatibilidade, no que se refere a situação cadastral dos fornecedores e a classificação de atividades econômicas – CNAE em relação ao serviço ou fornecimento de material alusivo à respectiva cotação, e ainda, responsabilizar-se-á pela veracidade dos documentos apresentados referentes às pesquisas de preços junto aos fornecedores.`,
+        'ART. 299 CÓDIGO PENAL E AUTONOMIA FINANCEIRA': 
+            `A ${entidade}, pessoa jurídica de direito privado, na forma de associação sem fins lucrativos, com sede na ${endereco}, inscrita no CNPJ nº ${cnpj}, neste ato representada por ${dirigente}, ${cargoDirigente}, declara para fins de cadastramento de celebração do presente Termo de Fomento junto ao Ministério do Esporte - MESP, que a ${entidade} é uma entidade viável e autônoma financeiramente, e que, de acordo com as demonstrações contábeis regularmente escrituradas, sob pena do art. 299 do Código Penal: \n\n• Compromete-se em manter a escrituração completa de suas receitas e despesas em livros revestidos das formalidades que assegurem a respectiva exatidão, de acordo com a legislação e normas editadas pelo Conselho Federal de Contabilidade; \n• Compromete-se a conservar em boa ordem, pelo prazo de cinco anos, contado da data da emissão, os documentos que comprovem a origem de suas receitas e a efetivação de suas despesas, bem como a realização de quaisquer outros atos ou operações que venham modificar a sua situação patrimonial; \n• Apresentar à Secretaria da Receita Federal do Brasil, anualmente, Declaração de Rendimentos, em conformidade com o disposto em ato daquele órgão, sem prejuízo da exigência de apresentação da cópia do respectivo recibo de entrega da referida Declaração de Rendimentos.`,
+        'NÃO OCORRÊNCIA DE IMPEDIMENTOS': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro para os devidos fins, nos termos do art. 26, caput, inciso IX, do Decreto nº 8.726, de 2016, que a presente Entidade e seus dirigentes não incorrem em quaisquer das vedações previstas no art. 39 da Lei nº 13.019, de 2014. Nesse sentido: \n\n• Está regularmente constituída ou, se estrangeira, está autorizada a funcionar no território nacional; \n• Não está omissa no dever de prestar contas de parceria anteriormente celebrada; e \n• Não teve contas de parceria julgadas irregulares ou rejeitadas por Tribunal ou Conselho de Contas de qualquer esfera da Federação, em decisão irrecorrível, nos últimos 8 (oito) anos.`,
+        'NÃO RECEBE RECURSOS PARA A MESMA FINALIDADE DE OUTRA ENTIDADE OU ÓRGÃO': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro ao Ministério do Esporte - MESP, que a entidade a qual represento apresentou informações para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública, bem como não recebe recursos financeiros de outra entidade ou órgão (incluindo a Lei de Incentivo ao Esporte, a Lei Agnelo-Piva e/ou patrocínio de empresas estatais) para a mesma finalidade na execução das ações apresentadas e especificadas na Proposta nº ${proposta}, cadastrada no Sistema Eletrônico Transferegov, evitando desta forma a sobreposição de recursos.`,
+        'COMPROVAÇÃO DE EXISTÊNCIA, EXPERIÊNCIA, INSTALAÇÕES E OUTRAS CONDIÇÕES MATERIAIS': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, atesto que a presente entidade existe há, no mínimo, 3 (três) anos e possui o cadastro ativo, bem como experiência prévia na realização, com efetividade, no desenvolvimento do objeto proposto de natureza semelhante, assim como instalações, condições materiais e capacidade técnica e operacional para o desenvolvimento do objeto apresentado na Proposta nº ${proposta} e para o cumprimento das metas estabelecidas, em atendimento aos dispostos no art. 89, inciso XI, da Lei nº 15.080/2024 (LDO 2025), no art. 33, incisoV, da Lei nº 13.019/2014 e no art. 26, incisos I, II e III, do Decreto nº 8.726/2016.`,
+        'COMPROMISSO': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, CNPJ nº ${cnpj}, declaro o compromisso de: \n\n• Dispor dos recursos informatizados necessários ao acesso ao Sistema Eletrônico Transferegov, com o objetivo de alimentar, atualizar e acompanhar de forma permanente o referido sistema, de acordo com a norma vigente, durante todo o período da formalização da parceria até a prestação de contas final; \n• Dar publicidade ao Projeto/Programa durante toda a execução, em observância à aplicação dos selos e marcas adotadas pelo Ministério do Esporte - MESP e Governo Federal, de acordo com o estipulado no Manual de Selos e Marcas do Governo Federal, inclusive, em ações de Patrocínio; \n• Previamente à confecção dos materiais, encaminhar para aprovação os layouts, juntamente com o número do instrumento, processo e nome do programa/projeto/evento, para o e-mail: ascom.pdlie@esporte.gov.br.`,
+        'CUSTOS': 
+            `Eu, ${dirigente}, na qualidade de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob o nº ${cnpj}, atesto a veracidade da planilha de custos, bem como das cotações obtidas, conforme disposto no art. 25, § 1º, do Decreto nº 8.726, de 27 de abril de 2016, inseridas no Sistema Eletrônico Transferegov, Proposta nº ${proposta}. Declaro que os custos apresentados estão compatíveis com os valores praticados no mercado.`,
+        'ADIMPLÊNCIA': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob o nº ${cnpj}, declaro, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade: Não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS), com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares.`,
+        'CIÊNCIA DO ART. 42, INCISO XIX, DA LEI Nº 13.019/2014': 
+            `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob o nº ${cnpj}, declaro estar ciente da responsabilidade exclusiva pelo gerenciamento administrativo e financeiro dos recursos recebidos, inclusive no que diz respeito às despesas de custeio, de investimento e de pessoal, em atendimento ao disposto no art. 42, inciso XIX, da Lei nº 13.019, de 31 de julho de 2014.`
+    };
+    return contents[title] || 'Conteúdo da declaração não encontrado.';
 }
 
-const declaracoesCompletas = [
-    { title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro que os recursos do presente convênio não se destinarão para o pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e Municípios, conforme Art. 167, X, CF/88 e Art. 25, § 1º, III, Lei Complementar nº 101/2000." },
-    { title: "DECLARAÇÃO DE NÃO VÍNCULO", content: "Eu, [dirigente], matrícula [matricula], cargo [cargoDirigente], declaro, sob as penas da lei, que as Empresas a serem contratadas no âmbito do Convênio a ser celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [proposta], não possuem em seu quadro societário, cônjuge ou companheiro, bem como, vínculo de parentesco, colateral ou por afinidade, até o terceiro grau, ou de natureza técnica, comercial, econômica, financeira, trabalhista e civil." },
-    { title: "DECLARAÇÃO NEGATIVA DE DUPLICIDADE DE CONVÊNIO", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro que a proposta inserida no Sistema Transferegov sob o nº [proposta] e demais informações foram apresentados para apreciação SOMENTE junto a esse órgão e em nenhum outro ente da administração pública." },
-    { title: "DECLARAÇÃO NÃO RECEBE RECURSOS DE OUTRA ENTIDADE PARA A MESMA FINALIDADE", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], DECLARO ao Ministério do Esporte - MESP, que a entidade a qual represento não recebe recursos financeiros de outra entidade para a mesma finalidade na execução das ações apresentadas na Proposta Nº [proposta]." },
-    { title: "DECLARAÇÃO NÃO CONTRATAÇÃO COM RECURSOS DA PARCERIA", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal da [entidade], CNPJ Nº [cnpj], declaro que a presente Entidade não contratará com recursos da presente parceria, empresas que sejam do mesmo grupo econômico ou tenham participação societária de parentes de dirigentes." },
-    { title: "DECLARAÇÃO DE COMPROMISSO", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro o compromisso de dispor dos recursos informatizados necessários ao acesso ao Sistema Eletrônico Transferegov." },
-    { title: "DECLARAÇÃO DE CUSTOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], ATESTO a planilha de custos inseridas na Proposta n.º [proposta]." },
-    { title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], DECLARO perante o Ministério do Esporte que o(a) [entidade] possui condições orçamentárias para arcar com as despesas decorrentes." }
-];
+function numToWords(num) {
+    const units = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze'];
+    const teens = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+    const tens = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
 
-const declaracoesEspecificas = {
-    '00SL_emendas': [
-        { title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro que o terreno é de domínio público e pertence ao Município de [municipio]/[uf], assim como está disponível, apto e compatível para instalação dos equipamentos.\nNome do Espaço Físico: [nomeEspacoFisico]; Endereço do Espaço Físico: [enderecoEspacoFisico]" },
-        { title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, nos termos da Lei nº 10.098, de 19 de dezembro de 2000." },
-        { title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro o compromisso de dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [proposta]." }
-    ],
-    '00SL_comissao': [
-        { title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro que o terreno é de domínio público e pertence ao Município de [municipio]/[uf], assim como está disponível, apto e compatível para instalação dos equipamentos.\nNome do Espaço Físico: [nomeEspacoFisico]; Endereço do Espaço Físico: [enderecoEspacoFisico]" },
-        { title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], DECLARO, que serão garantidos os meios necessários para acessibilidade de pessoas com deficiência ou com mobilidade reduzida, nos termos da Lei nº 10.098, de 19 de dezembro de 2000." },
-        { title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro o compromisso de dispor de recursos financeiros para custear a instalação dos equipamentos pactuados na proposta n.º [proposta]." }
-    ],
-    '20JP_emenda': [
-        { title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], no que diz respeito à contratação de recursos humanos, declaro ter ciência de que: 1. A forma de contratação necessitará de análise da Consultoria Jurídica da Entidade Convenente, conforme Acórdão n.º 2588/2017 – TCU – Plenário; 2. O repasse de recursos seguirá os valores aprovados no Plano de Trabalho da Proposta n.º [proposta]; 3. O pagamento será realizado mensalmente conforme pactuado." }
-    ],
-    '20JP_comissao': [
-        { title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], declaro ter ciência dos requisitos para contratação de recursos humanos conforme legislação vigente." },
-        { title: "DECLARAÇÃO DE ADIMPLÊNCIA", content: "Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ Nº [cnpj], DECLARO que a presente Entidade não está inadimplente com a União." }
-    ]
-};
+    if (num === 0) return 'zero';
+    if (num < 13) return units[num];
+    if (num >= 10 && num < 20) return teens[num - 10];
+    if (num >= 20 && num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' e ' + units[num % 10] : '');
+    return String(num);
+}

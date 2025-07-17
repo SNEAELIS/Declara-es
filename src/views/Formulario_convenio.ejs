@@ -352,7 +352,7 @@
                         <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 1.5rem;">Ajuste as margens para o seu papel timbrado. As alterações serão aplicadas em todas as páginas e refletidas na visualização ao lado. Limite: Margem Superior até 7 cm, Margem Inferior do Rodapé até 6,5 cm.</p>
                         <div class="control-group">
                             <label for="marginTopCm">Margem Superior (cm):</label>
-                            <input type="number" id="marginTopCm" value="2.5" step="0.1" min="0" max="7">
+                            <input type="number" id="marginTopCm" value="3.5" step="0.1" min="0" max="7">
                         </div>
                         <div class="control-group">
                             <label for="footerMarginBottomCm">Margem Inferior do Rodapé (cm):</label>
@@ -493,77 +493,77 @@
         }
 
         // Update PDF preview
-        async function updatePreview() {
-            const modal = document.getElementById('layoutEditorModal');
-            if (!modal || modal.style.display === 'none') return;
+async function updatePreview() {
+    const modal = document.getElementById('layoutEditorModal');
+    if (!modal || modal.style.display === 'none') return;
 
-            const formData = {
-                dirigente: document.getElementById('dirigente').value,
-                matricula: document.getElementById('matricula').value,
-                cargoDirigente: document.getElementById('cargoDirigente').value,
-                proposta: document.getElementById('proposta').value,
-                cnpj: document.getElementById('cnpj').value,
-                entidade: document.getElementById('entidade').value,
-                endereco: document.getElementById('endereco').value,
-                uf: document.getElementById('uf').value,
-                municipio: document.getElementById('municipio').value,
-                cep: document.getElementById('cep').value,
-                opcaoSelecao: document.getElementById('opcaoSelecao').value,
-                usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
-                letterheadFile: document.getElementById('letterheadFile').files[0],
-                espacosFisicos: []
-            };
-            document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-                const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-                const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-                if (nome && endereco) {
-                    formData.espacosFisicos.push({ nome, endereco });
-                }
-            });
-
-            const marginTopCm = document.getElementById('marginTopCm');
-            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
-            const cmToPoints = cm => cm * 28.3465;
-            const PAGE_HEIGHT_POINTS = 841.89;
-            const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
-            const layoutOptions = {
-                topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-                footerPosition: footerPosition
-            };
-
-            if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
-                showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
-                return;
-            }
-
-            if (typeof gerarPDF !== 'function') {
-                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
-                return;
-            }
-
-            try {
-                const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
-                if (!docDefinition || !docDefinition.content) {
-                    throw new Error('DocDefinition inválido ou vazio.');
-                }
-
-                const printer = pdfMake.createPdf(docDefinition);
-                printer.getBlob(blob => {
-                    if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
-                    fullPdfBlobUrl = URL.createObjectURL(blob);
-                    renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
-                });
-            } catch (error) {
-                document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
-                console.error('Erro no updatePreview:', error);
-                return;
-            }
-
-            const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
-            document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
-            document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
-            document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
+    const formData = {
+        dirigente: document.getElementById('dirigente').value,
+        matricula: document.getElementById('matricula').value,
+        cargoDirigente: document.getElementById('cargoDirigente').value,
+        proposta: document.getElementById('proposta').value,
+        cnpj: document.getElementById('cnpj').value,
+        entidade: document.getElementById('entidade').value,
+        endereco: document.getElementById('endereco').value,
+        uf: document.getElementById('uf').value,
+        municipio: document.getElementById('municipio').value,
+        cep: document.getElementById('cep').value,
+        opcaoSelecao: document.getElementById('opcaoSelecao').value,
+        usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
+        letterheadFile: document.getElementById('letterheadFile').files[0],
+        espacosFisicos: []
+    };
+    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
+        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
+        if (nome && endereco) {
+            formData.espacosFisicos.push({ nome, endereco });
         }
+    });
+
+    const marginTopCm = document.getElementById('marginTopCm');
+    const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+    const cmToPoints = cm => cm * 28.3465;
+    const PAGE_HEIGHT_POINTS = 841.89;
+    const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
+    const layoutOptions = {
+        topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+        footerPosition: footerPosition
+    };
+
+    if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
+        showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
+        return;
+    }
+
+    if (typeof gerarPDF !== 'function') {
+        document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
+        return;
+    }
+
+    try {
+        const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
+        if (!docDefinition || !docDefinition.content) {
+            throw new Error('DocDefinition inválido ou vazio.');
+        }
+
+        const printer = pdfMake.createPdf(docDefinition);
+        printer.getBlob(blob => {
+            if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
+            fullPdfBlobUrl = URL.createObjectURL(blob);
+            renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
+        });
+    } catch (error) {
+        document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
+        console.error('Erro no updatePreview:', error);
+        return;
+    }
+
+    const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
+    document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
+    document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
+    document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
+}
 
         // Render PDF page to iframe
         async function renderPdfPageToIframe(pdfUrl, pageNum) {
