@@ -271,7 +271,7 @@
                     <h3><i class="fas fa-cogs"></i> Escolha uma Opção para Gerar o PDF</h3>
                     <div class="option-group">
                         <label for="radio_00SL" class="option-group-header">
-                            <input type="radio" id="radio_00SL" name="tipo_proposta" value="00SL" onchange="atualizarOpcao()"> Proposta 00SL
+                            <input type="radio" id="radio_00SL" name="tipo_proposta" value="00SL" onchange="atualizarOpcao()"> Ação 00SL
                         </label>
                         <div id="sub_options_00SL" class="sub-options">
                             <p><strong>Origem do Recurso:</strong></p>
@@ -280,6 +280,14 @@
                                 <label for="radio_00SL_emenda">Emenda Individual e Bancada</label>
                                 <input type="radio" id="radio_00SL_comissao" name="origem_00SL" value="comissao" onchange="atualizarOpcao()">
                                 <label for="radio_00SL_comissao">Discricionário e Comissão</label>
+                            </div>
+                            <div class="form-row">
+                                <div class="full-width">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" id="municipioMais65mil" name="municipioMais65mil">
+                                        <label for="municipioMais65mil">Município tem mais de 65 mil habitantes</label>
+                                    </div>
+                                </div>
                             </div>
                             <div id="camposEspacoFisico" class="espaco-fisico-container">
                                 <h4>Dados do Espaço Físico</h4>
@@ -307,7 +315,7 @@
                     </div>
                     <div class="option-group">
                         <label for="radio_20JP" class="option-group-header">
-                            <input type="radio" id="radio_20JP" name="tipo_proposta" value="20JP" onchange="atualizarOpcao()"> Proposta 20JP
+                            <input type="radio" id="radio_20JP" name="tipo_proposta" value="20JP" onchange="atualizarOpcao()"> Ação 20JP
                         </label>
                         <div id="sub_options_20JP" class="sub-options">
                             <p><strong>Origem do Recurso:</strong></p>
@@ -367,9 +375,9 @@
                 <div class="preview-area">
                     <iframe id="previewIframe" title="Pré-visualização do PDF"></iframe>
                     <div class="pagination-controls">
-                        <button id="prevPageBtn">&lt; Anterior</button>
+                        <button id="prevPageBtn">< Anterior</button>
                         <span id="pageIndicator">Página 1</span>
-                        <button id="nextPageBtn">Próxima &gt;</button>
+                        <button id="nextPageBtn">Próxima ></button>
                     </div>
                 </div>
             </div>
@@ -493,77 +501,78 @@
         }
 
         // Update PDF preview
-async function updatePreview() {
-    const modal = document.getElementById('layoutEditorModal');
-    if (!modal || modal.style.display === 'none') return;
+        async function updatePreview() {
+            const modal = document.getElementById('layoutEditorModal');
+            if (!modal || modal.style.display === 'none') return;
 
-    const formData = {
-        dirigente: document.getElementById('dirigente').value,
-        matricula: document.getElementById('matricula').value,
-        cargoDirigente: document.getElementById('cargoDirigente').value,
-        proposta: document.getElementById('proposta').value,
-        cnpj: document.getElementById('cnpj').value,
-        entidade: document.getElementById('entidade').value,
-        endereco: document.getElementById('endereco').value,
-        uf: document.getElementById('uf').value,
-        municipio: document.getElementById('municipio').value,
-        cep: document.getElementById('cep').value,
-        opcaoSelecao: document.getElementById('opcaoSelecao').value,
-        usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
-        letterheadFile: document.getElementById('letterheadFile').files[0],
-        espacosFisicos: []
-    };
-    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-        if (nome && endereco) {
-            formData.espacosFisicos.push({ nome, endereco });
+            const formData = {
+                dirigente: document.getElementById('dirigente').value,
+                matricula: document.getElementById('matricula').value,
+                cargoDirigente: document.getElementById('cargoDirigente').value,
+                proposta: document.getElementById('proposta').value,
+                cnpj: document.getElementById('cnpj').value,
+                entidade: document.getElementById('entidade').value,
+                endereco: document.getElementById('endereco').value,
+                uf: document.getElementById('uf').value,
+                municipio: document.getElementById('municipio').value,
+                cep: document.getElementById('cep').value,
+                opcaoSelecao: document.getElementById('opcaoSelecao').value,
+                usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
+                letterheadFile: document.getElementById('letterheadFile').files[0],
+                municipioMais65mil: document.getElementById('municipioMais65mil').checked,
+                espacosFisicos: []
+            };
+            document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+                const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
+                const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
+                if (nome && endereco) {
+                    formData.espacosFisicos.push({ nome, endereco });
+                }
+            });
+
+            const marginTopCm = document.getElementById('marginTopCm');
+            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+            const cmToPoints = cm => cm * 28.3465;
+            const PAGE_HEIGHT_POINTS = 841.89;
+            const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
+            const layoutOptions = {
+                topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+                footerPosition: footerPosition
+            };
+
+            if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
+                showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
+                return;
+            }
+
+            if (typeof gerarPDF !== 'function') {
+                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
+                return;
+            }
+
+            try {
+                const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
+                if (!docDefinition || !docDefinition.content) {
+                    throw new Error('DocDefinition inválido ou vazio.');
+                }
+
+                const printer = pdfMake.createPdf(docDefinition);
+                printer.getBlob(blob => {
+                    if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
+                    fullPdfBlobUrl = URL.createObjectURL(blob);
+                    renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
+                });
+            } catch (error) {
+                document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
+                console.error('Erro no updatePreview:', error);
+                return;
+            }
+
+            const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
+            document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
         }
-    });
-
-    const marginTopCm = document.getElementById('marginTopCm');
-    const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
-    const cmToPoints = cm => cm * 28.3465;
-    const PAGE_HEIGHT_POINTS = 841.89;
-    const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
-    const layoutOptions = {
-        topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-        footerPosition: footerPosition
-    };
-
-    if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
-        showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
-        return;
-    }
-
-    if (typeof gerarPDF !== 'function') {
-        document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
-        return;
-    }
-
-    try {
-        const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
-        if (!docDefinition || !docDefinition.content) {
-            throw new Error('DocDefinition inválido ou vazio.');
-        }
-
-        const printer = pdfMake.createPdf(docDefinition);
-        printer.getBlob(blob => {
-            if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
-            fullPdfBlobUrl = URL.createObjectURL(blob);
-            renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
-        });
-    } catch (error) {
-        document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
-        console.error('Erro no updatePreview:', error);
-        return;
-    }
-
-    const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
-    document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
-    document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
-    document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
-}
 
         // Render PDF page to iframe
         async function renderPdfPageToIframe(pdfUrl, pageNum) {
@@ -624,6 +633,7 @@ async function updatePreview() {
                         opcaoSelecao: document.getElementById('opcaoSelecao').value,
                         usarPapelTimbrado: usarPapelTimbrado,
                         letterheadFile: fileInput.files[0],
+                        municipioMais65mil: document.getElementById('municipioMais65mil').checked,
                         espacosFisicos: []
                     };
                     document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
@@ -701,6 +711,7 @@ async function updatePreview() {
                         opcaoSelecao: document.getElementById('opcaoSelecao').value,
                         usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
                         letterheadFile: document.getElementById('letterheadFile').files[0],
+                        municipioMais65mil: document.getElementById('municipioMais65mil').checked,
                         espacosFisicos: []
                     };
                     document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
@@ -923,6 +934,10 @@ async function updatePreview() {
                 document.getElementById('erro-letterheadFile').style.display = 'none';
                 validarGerarPDF();
             });
+            document.getElementById('municipioMais65mil').addEventListener('change', () => {
+                atualizarOpcao();
+                validarGerarPDF();
+            });
         }
 
         function adicionarEspacoFisico() {
@@ -962,10 +977,11 @@ async function updatePreview() {
             let valido = true;
             const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
             const tipoProposta = document.querySelector('input[name="tipo_proposta"]:checked');
+            const municipioMais65mil = document.getElementById('municipioMais65mil');
             if (tipoProposta && tipoProposta.value === '00SL') {
                 if (campos.length === 0) {
                     showToast('Adicione pelo menos um espaço físico.', true);
-                    return;
+                    valido = false;
                 }
                 campos.forEach(row => {
                     const nomeInput = row.querySelector('input[id^="nomeEspacoFisico"]');
@@ -1002,6 +1018,7 @@ async function updatePreview() {
             if (tipo) {
                 if (tipo.value === '00SL') {
                     const origem = document.querySelector('input[name="origem_00SL"]:checked');
+                    const municipioMais65mil = document.getElementById('municipioMais65mil').checked;
                     if (origem && is00SLEnabled) {
                         let espacosOk = true;
                         const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
@@ -1047,9 +1064,10 @@ async function updatePreview() {
             const tipo = document.querySelector('input[name="tipo_proposta"]:checked')?.value;
             const origem = document.querySelector('input[name="origem_00SL"]:checked')?.value || document.querySelector('input[name="origem_20JP"]:checked')?.value;
             const usarPapelTimbrado = document.getElementById('usarPapelTimbrado').checked;
+            const municipioMais65mil = document.getElementById('municipioMais65mil').checked;
             const opcaoInput = document.getElementById('opcaoSelecao');
             if (tipo && origem) {
-                opcaoInput.value = `${tipo}_${origem}${usarPapelTimbrado ? '_timbrado' : ''}`;
+                opcaoInput.value = `${tipo}_${origem}${usarPapelTimbrado ? '_timbrado' : ''}${tipo === '00SL' && municipioMais65mil ? '_mais65mil' : ''}`;
             } else {
                 opcaoInput.value = '';
             }

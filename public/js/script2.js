@@ -1,10 +1,10 @@
 let isGeneratingPDF = false;
-let letterheadImage = null; // Changed to let to allow reassignment
+let letterheadImage = null;
 
-let declaracoesCompletas = [
+const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro, sob as penas da lei, que os recursos oriundos do presente convênio, celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [proposta], não se destinarão para o pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e dos Municípios, conforme disposto no Art. 167, inciso X, da Constituição Federal de 1988 (CF/88) e no Art. 25, § 1º, inciso III, da Lei Complementar nº 101/2000 (Lei de Responsabilidade Fiscal). Ressalto que esta declaração visa assegurar a correta aplicação dos recursos públicos, estando ciente das sanções administrativas, civis e penais aplicáveis em caso de descumprimento.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro, sob as penas da lei, que os recursos oriundos do presente convênio, celebrado com o Ministério do Esporte - MESP, sob o número da Proposta nº [proposta], não se destinarão para o pagamento de despesas com pessoal ativo, inativo ou pensionista, dos Estados, do Distrito Federal e dos Municípios, conforme disposto no Art. 167, inciso X, da Constituição Federal de 1988 (CF/88) e no Art. 25, § 1º, inciso III, da Lei Complementar nº 101/2000 (Lei de Responsabilidade Fiscal). Ressalto que esta declaração visa assegurar a correta aplicação dos recursos públicos, estando ciente das sanções administrativas, civis e penais aplicáveis em caso de descumprimento.`
     },
     {
         title: "DECLARAÇÃO DE NÃO VÍNCULO",
@@ -12,73 +12,85 @@ let declaracoesCompletas = [
     },
     {
         title: "DECLARAÇÃO NEGATIVA DE DUPLICIDADE DE CONVÊNIO",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro, para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Eletrônico Transferegov sob o nº [proposta], juntamente com todas as informações e documentações anexas, foi apresentada para apreciação exclusivamente junto a esse órgão e em nenhum outro ente da administração pública federal, estadual ou municipal. Esta declaração visa evitar duplicidade de financiamentos e está sujeita às sanções civis, administrativas e penais cabíveis, nos termos da Lei nº 8.666/1993 e da Lei nº 14.133/2021 (Nova Lei de Licitações), caso seja comprovada falsidade ideológica ou omissão de informações.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro, para os devidos fins de celebração de convênios junto ao Ministério do Esporte - MESP, que a proposta inserida no Sistema Eletrônico Transferegov sob o nº [proposta], juntamente com todas as informações e documentações anexas, foi apresentada para apreciação exclusivamente junto a esse órgão e em nenhum outro ente da administração pública federal, estadual ou municipal. Esta declaração visa evitar duplicidade de financiamentos e está sujeita às sanções civis, administrativas e penais cabíveis, nos termos da Lei nº 8.666/1993 e da Lei nº 14.133/2021 (Nova Lei de Licitações), caso seja comprovada falsidade ideológica ou omissão de informações.`
     },
     {
         title: "DECLARAÇÃO NÃO RECEBE RECURSOS DE OUTRA ENTIDADE PARA A MESMA FINALIDADE",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], DECLARO ao Ministério do Esporte - MESP que a entidade a qual represento não recebe, atualmente ou no período de vigência da Proposta nº [proposta], recursos financeiros de outra entidade pública ou privada para a mesma finalidade das ações apresentadas e especificadas no Plano de Trabalho cadastrado no Sistema Eletrônico Transferegov. Esta afirmação tem como objetivo evitar sobreposição de recursos e garantir a economicidade dos fundos públicos, estando ciente das penalidades previstas em caso de descumprimento, conforme a legislação aplicável.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO ao Ministério do Esporte - MESP que a entidade a qual represento não recebe, atualmente ou no período de vigência da Proposta nº [proposta], recursos financeiros de outra entidade pública ou privada para a mesma finalidade das ações apresentadas e especificadas no Plano de Trabalho cadastrado no Sistema Eletrônico Transferegov. Esta afirmação tem como objetivo evitar sobreposição de recursos e garantir a economicidade dos fundos públicos, estando ciente das penalidades previstas em caso de descumprimento, conforme a legislação aplicável.`
     },
     {
         title: "DECLARAÇÃO NÃO CONTRATAÇÃO COM RECURSOS DA PARCERIA",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal da [entidade], CNPJ № [cnpj], declaro, para os devidos fins de celebração do Termo de Convênio com o Ministério do Esporte - MESP, que a presente Entidade não contratará, com os recursos provenientes desta parceria sob a Proposta nº [proposta], empresas que: (i) integrem o mesmo grupo econômico; (ii) possuam participação societária cruzada; (iii) pertençam ou tenham participação societária de parentes de dirigentes ou funcionários da [entidade]; (iv) compartilhem o mesmo endereço, telefone ou CNPJ; (v) apresentem incompatibilidade entre a classificação de atividades econômicas (CNAE) e o objeto contratado. Além disso, asseguro que as cotações dos itens previstos no Plano de Trabalho foram obtidas de forma transparente, com documentos comprobatórios arquivados, e que me responsabilizo pela veracidade e conformidade das pesquisas de preços junto aos fornecedores, nos termos da Instrução Normativa SEGES/ME nº 65/2021.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal da [entidade], CNPJ nº [cnpj], declaro, para os devidos fins de celebração do Termo de Convênio com o Ministério do Esporte - MESP, que a presente Entidade não contratará, com os recursos provenientes desta parceria sob a Proposta nº [proposta], empresas que: (i) integrem o mesmo grupo econômico; (ii) possuam participação societária cruzada; (iii) pertençam ou tenham participação societária de parentes de dirigentes ou funcionários da [entidade]; (iv) compartilhem o mesmo endereço, telefone ou CNPJ; (v) apresentem incompatibilidade entre a classificação de atividades econômicas (CNAE) e o objeto contratado. Além disso, asseguro que as cotações dos itens previstos no Plano de Trabalho foram obtidas de forma transparente, com documentos comprobatórios arquivados, e que me responsabilizo pela veracidade e conformidade das pesquisas de preços junto aos fornecedores, nos termos da Instrução Normativa SEGES/ME nº 65/2021.`
     },
     {
         title: "DECLARAÇÃO DE COMPROMISSO",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro o compromisso de disponibilizar e manter atualizados os recursos informatizados necessários ao acesso contínuo ao Sistema Eletrônico Transferegov, incluindo hardware, software e conexão à internet, para alimentar, atualizar e acompanhar de forma permanente o sistema durante todo o período de formalização da parceria, execução do objeto e prestação de contas final. Este compromisso está alinhado às exigências da Portaria Interministerial nº 424/2016 e demais normativas vigentes, sendo de minha responsabilidade garantir o cumprimento dessas obrigações.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro o compromisso de dispor dos recursos informatizados necessários ao acesso ao Sistema Eletrônico Transferegov, com o objetivo de alimentar, atualizar e acompanhar de forma permanente o referido sistema, de acordo com a norma vigente, durante todo o período da formalização da parceria até prestação de contas final;`
     },
     {
         title: "DECLARAÇÃO DE CUSTOS",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], ATESTO a planilha de custos e as cotações de preços obtidas, elaboradas em conformidade com a Instrução Normativa SEGES/ME nº 65, de 7 de julho de 2021, e inseridas no Sistema Eletrônico Transferegov sob a Proposta nº [proposta]. Declaro que os valores apresentados foram apurados com base em pesquisa de mercado realizada junto a, no mínimo, três fornecedores, refletindo preços praticados no setor e compatíveis com a natureza dos bens e serviços contratados. Ressalto que os documentos comprobatórios, incluindo orçamentos e cotações, estão arquivados e disponíveis para fiscalização, e que me responsabilizo pela veracidade e adequação dos dados apresentados, sob pena de sanções administrativas e legais aplicáveis.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], ATESTO a planilha de custos e as cotações de preços obtidas, elaboradas em conformidade com a Instrução Normativa SEGES/ME nº 65, de 7 de julho de 2021, e inseridas no Sistema Eletrônico Transferegov sob a Proposta nº [proposta]. Declaro que os valores apresentados foram apurados com base em pesquisa de mercado realizada junto a, no mínimo, três fornecedores, refletindo preços praticados no setor e compatíveis com a natureza dos bens e serviços contratados. Ressalto que os documentos comprobatórios, incluindo orçamentos e cotações, estão arquivados e disponíveis para fiscalização, e que me responsabilizo pela veracidade e adequação dos dados apresentados, sob pena de sanções administrativas e legais aplicáveis.`
     },
     {
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio sob a Proposta nº [proposta], que o(a) [entidade] possui condições orçamentárias e financeiras para arcar com as despesas decorrentes da execução do objeto, incluindo custos de manutenção, operação e eventuais contingências, garantindo a sustentabilidade do projeto ao longo de sua vigência. Esta declaração considera a aquisição de bens de capital e está respaldada por planejamento orçamentário documentado, estando ciente das responsabilidades previstas na Lei nº 4.320/1964 e na Lei Complementar nº 101/2000.`
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio sob a Proposta nº [proposta], que o(a) [entidade] possui condições orçamentárias e financeiras para arcar com as despesas decorrentes da execução do objeto, incluindo custos de manutenção, operação e eventuais contingências, garantindo a sustentabilidade do projeto ao longo de sua vigência. Esta declaração considera a aquisição de bens de capital e está respaldada por planejamento orçamentário documentado, estando ciente das responsabilidades previstas na Lei nº 4.320/1964 e na Lei Complementar nº 101/2000.`
+    },
+    {
+        title: "DECLARAÇÃO DE ADIMPLÊNCIA",
+        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares). Por ser expressão da verdade, firmo a presente declaração.`
     }
 ];
 
-let declaracoesEspecificas = {
+const declaracoesEspecificas = {
     '00SL_emendas': [
         {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico];\n- Área total: [areaTotal] m² (se aplicável).\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico].\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
         },
         {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], DECLARO que serão garantidos os meios necessários para assegurar a acessibilidade de pessoas com deficiência ou com mobilidade reduzida ao projeto objeto da Proposta nº [proposta], em conformidade com a Lei nº 10.098, de 19 de dezembro de 2000, o Decreto nº 5.296/2004 e a Norma Brasileira de Acessibilidade (NBR 9050). Comprometo-me a implementar rampas, sinalizações táteis, banheiros adaptados e demais adaptações exigidas, estando ciente de que a não conformidade sujeitará a [entidade] às sanções previstas na legislação. Declaro, outrossim, sob as penas da lei, deter plenos poderes e informações para firmar esta declaração.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO que serão garantidos os meios necessários para assegurar a acessibilidade de pessoas com deficiência ou com mobilidade reduzida ao projeto objeto da Proposta nº [proposta], em conformidade com a Lei nº 10.098, de 19 de dezembro de 2000, o Decreto nº 5.296/2004 e a Norma Brasileira de Acessibilidade (NBR 9050). Comprometo-me a implementar rampas, sinalizações táteis, banheiros adaptados e demais adaptações exigidas, estando ciente de que a não conformidade sujeitará a [entidade] às sanções previstas na legislação. Declaro, outrossim, sob as penas da lei, deter plenos poderes e informações para firmar esta declaração.`
         },
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
+        },
+        {
+            title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS",
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:\n1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto a contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.\n2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.\n3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.\n4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.\n\nPor ser expressão da verdade, firmo a presente declaração.`
         }
     ],
     '00SL_comissao': [
         {
             title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico];\n- Área total: [areaTotal] m² (se aplicável).\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico].\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
         },
         {
             title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], DECLARO que serão garantidos os meios necessários para assegurar a acessibilidade de pessoas com deficiência ou com mobilidade reduzida ao projeto objeto da Proposta nº [proposta], em conformidade com a Lei nº 10.098, de 19 de dezembro de 2000, o Decreto nº 5.296/2004 e a Norma Brasileira de Acessibilidade (NBR 9050). Comprometo-me a implementar rampas, sinalizações táteis, banheiros adaptados e demais adaptações exigidas, estando ciente de que a não conformidade sujeitará a [entidade] às sanções previstas na legislação. Declaro, outrossim, sob as penas da lei, deter plenos poderes e informações para firmar esta declaração.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO que serão garantidos os meios necessários para assegurar a acessibilidade de pessoas com deficiência ou com mobilidade reduzida ao projeto objeto da Proposta nº [proposta], em conformidade com a Lei nº 10.098, de 19 de dezembro de 2000, o Decreto nº 5.296/2004 e a Norma Brasileira de Acessibilidade (NBR 9050). Comprometo-me a implementar rampas, sinalizações táteis, banheiros adaptados e demais adaptações exigidas, estando ciente de que a não conformidade sujeitará a [entidade] às sanções previstas na legislação. Declaro, outrossim, sob as penas da lei, deter plenos poderes e informações para firmar esta declaração.`
         },
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
+        },
+        {
+            title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS",
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:\n1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto a contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.\n2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.\n3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.\n4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.\n\nPor ser expressão da verdade, firmo a presente declaração.`
         }
     ],
     '20JP_emenda': [
         {
             title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], no que diz respeito à contratação de recursos humanos para a execução da Proposta nº [proposta], declaro ter ciência de que:\n\n1. A forma de contratação deverá ser analisada e aprovada pela Consultoria Jurídica da Entidade Convenente, observando as orientações contidas no Acórdão nº 2588/2017 – TCU – Plenário, na Portaria Conjunta MGI/MF/AGU nº 33, de 30 de agosto de 2023, e na Lei nº 14.133/2021 (Nova Lei de Licitações).\n\n2. O repasse de recursos financeiros para custeio desta ação, incluindo pagamento de profissionais e encargos sociais/trabalhistas, seguirá os valores e percentuais aprovados no Plano de Trabalho da Proposta nº [proposta]. Caso os encargos sociais ou trabalhistas excedam o limite estipulado, a [entidade] arcará com o diferencial, sem ônus para o convenente.\n\n3. O pagamento será realizado mensalmente, conforme pactuado, observadas as seguintes condições:\n   - Pagamento dos Profissionais: efetuado no mês subsequente à prestação dos serviços, mediante comprovação documental;\n   - Pagamento dos Encargos Sociais e/ou Trabalhistas: acompanhará a periodicidade dos pagamentos aos recursos humanos vinculados, com recolhimento tempestivo aos órgãos competentes.\n\nDeclaro estar ciente de que o descumprimento destas condições poderá acarretar a suspensão do repasse de recursos e a aplicação de sanções administrativas.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que diz respeito à contratação de recursos humanos para a execução da Proposta nº [proposta], declaro ter ciência de que:\n\n1. A forma de contratação deverá ser analisada e aprovada pela Consultoria Jurídica da Entidade Convenente, observando as orientações contidas no Acórdão nº 2588/2017 – TCU – Plenário, na Portaria Conjunta MGI/MF/AGU nº 33, de 30 de agosto de 2023, e na Lei nº 14.133/2021 (Nova Lei de Licitações).\n\n2. O repasse de recursos financeiros para custeio desta ação, incluindo pagamento de profissionais e encargos sociais/trabalhistas, seguirá os valores e percentuais aprovados no Plano de Trabalho da Proposta nº [proposta]. Caso os encargos sociais ou trabalhistas excedam o limite estipulado, a [entidade] arcará com o diferencial, sem ônus para o convenente.\n\n3. O pagamento será realizado mensalmente, conforme pactuado, observadas as seguintes condições:\n   - Pagamento dos Profissionais: efetuado no mês subsequente à prestação dos serviços, mediante comprovação documental;\n   - Pagamento dos Encargos Sociais e/ou Trabalhistas: acompanhará a periodicidade dos pagamentos aos recursos humanos vinculados, com recolhimento tempestivo aos órgãos competentes.\n\nDeclaro estar ciente de que o descumprimento destas condições poderá acarretar a suspensão do repasse de recursos e a aplicação de sanções administrativas.`
         }
     ],
     '20JP_comissao': [
         {
             title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], no que diz respeito à contratação de recursos humanos para a execução da Proposta nº [proposta], declaro ter ciência de que:\n\n1. A forma de contratação deverá ser analisada e aprovada pela Consultoria Jurídica da Entidade Convenente, observando as orientações contidas no Acórdão nº 2588/2017 – TCU – Plenário, na Portaria Conjunta MGI/MF/AGU nº 33, de 30 de agosto de 2023, e na Lei nº 14.133/2021 (Nova Lei de Licitações).\n\n2. O repasse de recursos financeiros para custeio desta ação, incluindo pagamento de profissionais e encargos sociais/trabailistas, seguirá os valores e percentuais aprovados no Plano de Trabalho da Proposta nº [proposta]. Caso os encargos sociais ou trabalhistas excedam o limite estipulado, a [entidade] arcará com o diferencial, sem ônus para o convenente.\n\n3. O pagamento será realizado mensalmente, conforme pactuado, observadas as seguintes condições:\n   - Pagamento dos Profissionais: efetuado no mês subsequente à prestação dos serviços, mediante comprovação documental;\n   - Pagamento dos Encargos Sociais e/ou Trabalhistas: acompanhará a periodicidade dos pagamentos aos recursos humanos vinculados, com recolhimento tempestivo aos órgãos competentes.\n\nDeclaro estar ciente de que o descumprimento destas condições poderá acarretar a suspensão do repasse de recursos e a aplicação de sanções administrativas.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que diz respeito à contratação de recursos humanos para a execução da Proposta nº [proposta], declaro ter ciência de que:\n\n1. A forma de contratação deverá ser analisada e aprovada pela Consultoria Jurídica da Entidade Convenente, observando as orientações contidas no Acórdão nº 2588/2017 – TCU – Plenário, na Portaria Conjunta MGI/MF/AGU nº 33, de 30 de agosto de 2023, e na Lei nº 14.133/2021 (Nova Lei de Licitações).\n\n2. O repasse de recursos financeiros para custeio desta ação, incluindo pagamento de profissionais e encargos sociais/trabalhistas, seguirá os valores e percentuais aprovados no Plano de Trabalho da Proposta nº [proposta]. Caso os encargos sociais ou trabalhistas excedam o limite estipulado, a [entidade] arcará com o diferencial, sem ônus para o convenente.\n\n3. O pagamento será realizado mensalmente, conforme pactuado, observadas as seguintes condições:\n   - Pagamento dos Profissionais: efetuado no mês subsequente à prestação dos serviços, mediante comprovação documental;\n   - Pagamento dos Encargos Sociais e/ou Trabalhistas: acompanhará a periodicidade dos pagamentos aos recursos humanos vinculados, com recolhimento tempestivo aos órgãos competentes.\n\nDeclaro estar ciente de que o descumprimento destas condições poderá acarretar a suspensão do repasse de recursos e a aplicação de sanções administrativas.`
         },
         {
             title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ № [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
         }
     ]
 };
@@ -106,8 +118,7 @@ function substituirPlaceholders(texto, dados) {
         .replace(/\[mesAtual]/g, dataAtual.toLocaleString('pt-BR', { month: 'long' }))
         .replace(/\[anoAtual]/g, dataAtual.getFullYear())
         .replace(/\[nomeEspacoFisico]/g, dados.espacosFisicos[0]?.nome || 'Nome não informado')
-        .replace(/\[enderecoEspacoFisico]/g, dados.espacosFisicos[0]?.endereco || 'Endereço não informado')
-        .replace(/\[areaTotal]/g, dados.espacosFisicos[0]?.areaTotal || 'Área não informada');
+        .replace(/\[enderecoEspacoFisico]/g, dados.espacosFisicos[0]?.endereco || 'Endereço não informado');
 }
 
 /**
@@ -124,27 +135,58 @@ function numeroParaExtenso(num) {
 }
 
 /**
- * Carrega uma imagem externa ou um arquivo local e retorna como dataURL.
+ * Carrega uma imagem externa ou um arquivo local (incluindo PDF) e retorna como dataURL.
  * @param {string|File} source - URL da imagem ou um objeto File.
  * @returns {Promise<string>} DataURL da imagem.
  */
 async function carregarImagemComoDataURL(source) {
     return new Promise((resolve, reject) => {
+        console.log('Carregando imagem:', source);
         if (source instanceof File) {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = () => reject(new Error('Erro ao carregar o arquivo de imagem.'));
-            reader.readAsDataURL(source);
+            if (source.type === 'application/pdf') {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const pdfData = new Uint8Array(e.target.result);
+                        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                        const page = await pdf.getPage(1);
+                        const viewport = page.getViewport({ scale: 1.0 });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        const context = canvas.getContext('2d');
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        const dataURL = canvas.toDataURL('image/jpeg');
+                        console.log('PDF convertido para imagem com sucesso');
+                        resolve(dataURL);
+                    } catch (error) {
+                        console.error('Erro ao converter PDF para imagem:', error);
+                        reject(new Error('Erro ao converter PDF para imagem: ' + error.message));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Erro ao ler o arquivo PDF.'));
+                reader.readAsArrayBuffer(source);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    console.log('Imagem carregada com sucesso como DataURL');
+                    resolve(e.target.result);
+                };
+                reader.onerror = () => reject(new Error('Erro ao carregar o arquivo de imagem.'));
+                reader.readAsDataURL(source);
+            }
         } else if (typeof source === 'string') {
             const img = new Image();
-            img.crossOrigin = 'Anonymous'; // Crucial for loading images from different origins onto canvas
+            img.crossOrigin = 'Anonymous';
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
-                resolve(canvas.toDataURL('image/jpeg')); // Use jpeg for potentially smaller size
+                const dataURL = canvas.toDataURL('image/jpeg');
+                console.log('Imagem carregada com sucesso da URL:', dataURL.substring(0, 50));
+                resolve(dataURL);
             };
             img.onerror = () => reject(new Error('Falha ao carregar a imagem da URL: ' + source));
             img.src = source;
@@ -163,11 +205,14 @@ async function carregarImagemComoDataURL(source) {
  * @returns {object|undefined} DocDefinition para preview ou undefined para download.
  */
 async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = null, layoutOptions = {}) {
-    if (isGeneratingPDF && !isPreview) return; // Prevent multiple download attempts
+    if (isGeneratingPDF && !isPreview) {
+        console.warn('Geração de PDF já em andamento. Aguardando conclusão.');
+        return;
+    }
 
     isGeneratingPDF = true;
-    // Show loading indicator
-    document.getElementById('loadingMessage').style.display = 'flex';
+    const loadingMessage = document.getElementById('loadingMessage');
+    if (loadingMessage) loadingMessage.style.display = 'flex';
 
     const dados = {
         ...formData,
@@ -177,72 +222,73 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
     };
 
     try {
+        console.log('Validando dados do formulário:', dados);
         const erros = validarDadosFormulario(dados);
         if (erros.length > 0) {
+            console.error('Erros de validação:', erros);
             exibirMensagemErro(`Erro: ${erros.join(' ')}`);
             return isPreview ? {} : undefined;
         }
 
         let finalLetterheadImage = letterheadImageBase64;
-        // If no letterhead is selected by user AND no image is provided (e.g., for initial preview), load default.
-        if (!dados.usarPapelTimbrado && !finalLetterheadImage) {
+        if (dados.usarPapelTimbrado && !finalLetterheadImage && dados.letterheadFile) {
+            console.log('Carregando papel timbrado personalizado');
+            try {
+                finalLetterheadImage = await carregarImagemComoDataURL(dados.letterheadFile);
+            } catch (error) {
+                console.error('Erro ao carregar papel timbrado:', error.message);
+                exibirMensagemErro('Erro ao carregar papel timbrado: ' + error.message);
+                return isPreview ? {} : undefined;
+            }
+        } else if (!dados.usarPapelTimbrado && !finalLetterheadImage) {
+            console.log('Carregando imagem padrão de papel timbrado');
             try {
                 finalLetterheadImage = await carregarImagemComoDataURL('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
             } catch (error) {
+                console.error('Erro ao carregar imagem padrão:', error.message);
                 exibirMensagemErro('Erro ao carregar a imagem padrão: ' + error.message);
-                return undefined;
+                return isPreview ? {} : undefined;
             }
         }
-        // If user wants custom letterhead but hasn't uploaded one yet (and it's not a preview using an existing one)
-        else if (dados.usarPapelTimbrado && !finalLetterheadImage && !isPreview) {
-            exibirMensagemErro('Por favor, selecione um arquivo de papel timbrado.');
-            return undefined;
-        }
 
-        // Default layout values in POINTS (for pdfmake)
         const defaultLayoutPoints = {
             leftRightMargin: 40,
             topMargin: 60,
-            // footerHeight here defines the 'bottom' page margin in PDFMake.
-            // A common design is to have the footer content appear, say, 1.5 cm from the physical bottom edge.
-            // If the footer content itself takes ~0.5 cm, then the total bottom margin (footerHeight) should be ~2 cm.
-            // Let's use the input 'footerMarginBottomCm' to directly set this pageMargins[3] value.
-            footerAreaFromBottom: 60 // Roughly 2.12 cm from bottom edge.
+            footerAreaFromBottom: 60
         };
-        
-        // Calculate actual layout options. layoutOptions are expected in points.
-        const actualLayout = { ...defaultLayoutPoints, ...layoutOptions };
 
-        // Ensure margins are within allowed ranges (values are already in points from updatePreview)
-        actualLayout.topMargin = Math.min(actualLayout.topMargin, 198.425); // Max 7cm in points
-        actualLayout.footerAreaFromBottom = Math.max(actualLayout.footerAreaFromBottom, 28.3465); // Min 1cm in points
+        const actualLayout = { ...defaultLayoutPoints, ...layoutOptions };
+        actualLayout.topMargin = Math.min(actualLayout.topMargin, 198.425);
+        actualLayout.footerAreaFromBottom = Math.max(actualLayout.footerAreaFromBottom, 28.3465);
 
         let declaracoesParaIncluir = [
             ...declaracoesCompletas.filter(decl => {
                 const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
                 const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
-                return !ehSustentabilidade || condicaoSustentabilidade;
+                const ehAdimplencia = decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA";
+                const condicaoAdimplencia = !dados.opcaoSelecao.startsWith('00SL') || dados.municipioMais65mil;
+                return (!ehSustentabilidade || condicaoSustentabilidade) && (!ehAdimplencia || condicaoAdimplencia);
             }),
-            ...(declaracoesEspecificas[dados.opcaoSelecao.replace(/_timbrado$/, '')] || [])
+            ...(declaracoesEspecificas[dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')] || [])
         ];
+
+        console.log('Declarações incluídas:', declaracoesParaIncluir.map(d => d.title));
 
         const createDeclarationContent = (declaracao, isLastDeclaration = false) => {
             let content = substituirPlaceholders(declaracao.content, dados);
             let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 10, 0, 20] }];
 
-            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao.replace(/_timbrado$/, '')) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
+            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
                 contentArray = [
-                    // Remove the old inline placeholder part before adding the table
-                    { text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?:- Área total:.*?(?=\n|$))?/s, '').trim(), alignment: 'justify', fontSize: 12, margin: [0, 10, 0, 5] },
+                    { text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(), alignment: 'justify', fontSize: 12, margin: [0, 10, 0, 5] },
                     {
                         table: {
-                            widths: ['*', '*', '*'],
+                            widths: ['*', '*'],
                             body: [
-                                [{ text: 'Nome do Espaço Físico', bold: true, fontSize: 10 }, { text: 'Endereço do Espaço Físico', bold: true, fontSize: 10 }, { text: 'Área Total (m²)', bold: true, fontSize: 10 }],
+                                [{ text: 'Nome do Espaço Físico', bold: true, fontSize: 10 }, { text: 'Endereço do Espaço Físico', bold: true, fontSize: 10 }],
                                 ...dados.espacosFisicos.map(espaco => [
                                     { text: espaco.nome, fontSize: 10 },
-                                    { text: espaco.endereco, fontSize: 10 },
-                                    { text: espaco.areaTotal || 'Não informada', fontSize: 10 }
+                                    { text: espaco.endereco, fontSize: 10 }
                                 ])
                             ]
                         },
@@ -251,10 +297,10 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                             vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 1 : 0.5,
                             hLineColor: (i, node) => (i === 0 || i === node.table.body.length) ? '#003087' : '#cccccc',
                             vLineColor: (i, node) => (i === 0 || i === node.table.widths.length) ? '#003087' : '#cccccc',
-                            paddingLeft: (i, node) => 5,
-                            paddingRight: (i, node) => 5,
-                            paddingTop: (i, node) => 5,
-                            paddingBottom: (i, node) => 5
+                            paddingLeft: () => 5,
+                            paddingRight: () => 5,
+                            paddingTop: () => 5,
+                            paddingBottom: () => 5
                         },
                         margin: [0, 5, 0, 10]
                     }
@@ -283,7 +329,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
         const totalDeclaracoes = titulosDeclaracoes.length;
 
         const summaryPage = [
-            { text: '', pageBreak: 'before' }, // Ensure summary starts on a new page
+            { text: '', pageBreak: 'before' },
             { text: 'Sumário das Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 20, 0, 5] },
             { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 2, 0, 10] },
             {
@@ -313,7 +359,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             },
             { text: `Por ser verdade, firmo o teor das declarações referenciais que compõem este arquivo.`, alignment: 'justify', fontSize: 12, margin: [20, 10, 20, 20] },
             { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 10, 0, 20] },
-            { text: `__________________________________________\n${dados.dirigente}\n(${dados.cargoDirigente})`, alignment: 'center', fontSize: 12 }
+            { text: `__________________________________________\n${dados.dirigente}\n${dados.cargoDirigente}`, alignment: 'center', fontSize: 12 }
         ];
 
         const docDefinition = {
@@ -322,31 +368,19 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                 actualLayout.leftRightMargin,
                 actualLayout.topMargin,
                 actualLayout.leftRightMargin,
-                actualLayout.footerAreaFromBottom // Use the input value directly for the bottom margin
+                actualLayout.footerAreaFromBottom
             ],
             background: finalLetterheadImage ? [{ image: finalLetterheadImage, width: 595, height: 842, absolutePosition: { x: 0, y: 0 }, opacity: 0.9 }] : null,
             footer: (currentPage, pageCount) => {
-                // The footer content should be positioned within the pageMargins.bottom area.
-                // A fixed distance from the bottom edge of the page.
-                // A4 height is 842 points. If you want footer content 1.5cm (~42.5 points) from bottom,
-                // the `absolutePosition.y` would be 842 - 42.5.
-                // However, pdfmake's footer function `margin` is relative to the *top of the footer area*.
-                // To position content accurately within the reserved footerAreaFromBottom,
-                // we calculate a `marginTop` for the footer stack.
-                // Let's assume footer content height is approx 20 points for now.
-                const footerContentHeightEstimate = 20; // Estimate height of the footer text lines
-                const desiredDistanceFromBottom = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 5.5) * 28.3465; // User's desired distance in points
+                const footerContentHeightEstimate = 20;
+                const desiredDistanceFromBottom = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 5.5) * 28.3465;
                 const marginTopForFooterContent = actualLayout.footerAreaFromBottom - desiredDistanceFromBottom;
-
 
                 const footerContent = currentPage === pageCount ? {
                     stack: [
                         { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações referenciais, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9 },
                         { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 9, margin: [0, 5, 0, 0] }
                     ],
-                    // Margin for footer content relative to the top of the footer area (pageMargins[3])
-                    // [left, top, right, bottom]
-                    // This moves the footer content *down* within the bottom margin area.
                     margin: [actualLayout.leftRightMargin, marginTopForFooterContent, actualLayout.leftRightMargin, 0]
                 } : {
                     stack: [
@@ -375,30 +409,29 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             }
         };
 
+        console.log('Definição do documento PDF:', docDefinition);
+
         if (isPreview) {
-            return docDefinition; // Return docDefinition for preview
+            console.log('Retornando docDefinition para pré-visualização');
+            return docDefinition;
         }
 
+        console.log('Gerando PDF para download');
         const nomeArquivo = `declaracao_${dados.proposta.replace(/\//g, '-')}.pdf`;
         const pdfDoc = pdfMake.createPdf(docDefinition);
-        pdfDoc.getBlob((blob) => {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = nomeArquivo;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
+        pdfDoc.download(nomeArquivo, () => {
+            console.log('Download do PDF concluído:', nomeArquivo);
             exibirMensagemSucesso('PDF gerado e baixado com sucesso!');
         }, (error) => {
+            console.error('Erro ao baixar o PDF:', error);
             exibirMensagemErro('Erro ao baixar o PDF: ' + error.message);
         });
     } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
         exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
     } finally {
         isGeneratingPDF = false;
-        // Always hide loading indicator
-        document.getElementById('loadingMessage').style.display = 'none';
+        if (loadingMessage) loadingMessage.style.display = 'none';
     }
 }
 
@@ -411,7 +444,7 @@ function validarDadosFormulario(dados) {
     const camposObrigatorios = ['dirigente', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'];
     const erros = camposObrigatorios.filter(campo => !dados[campo] || dados[campo].trim() === '').map(campo => `O campo ${campo} é obrigatório.`);
 
-    if (!['00SL_emendas', '00SL_comissao', '20JP_emenda', '20JP_comissao', '00SL_emendas_timbrado', '00SL_comissao_timbrado', '20JP_emenda_timbrado', '20JP_comissao_timbrado'].includes(dados.opcaoSelecao)) {
+    if (!['00SL_emendas', '00SL_comissao', '20JP_emenda', '20JP_comissao', '00SL_emendas_timbrado', '00SL_comissao_timbrado', '20JP_emenda_timbrado', '20JP_comissao_timbrado', '00SL_emendas_mais65mil', '00SL_comissao_mais65mil', '00SL_emendas_timbrado_mais65mil', '00SL_comissao_timbrado_mais65mil'].includes(dados.opcaoSelecao)) {
         erros.push('A opção selecionada é inválida.');
     }
 
@@ -419,6 +452,7 @@ function validarDadosFormulario(dados) {
         erros.push('Pelo menos um espaço físico deve ser informado para propostas 00SL.');
     }
 
+    console.log('Resultado da validação do formulário:', erros);
     return erros;
 }
 
@@ -428,6 +462,7 @@ function validarDadosFormulario(dados) {
  */
 function exibirMensagemErro(mensagem) {
     const toast = document.getElementById('toast');
+    console.error('Exibindo mensagem de erro:', mensagem);
     if (toast) {
         toast.textContent = mensagem;
         toast.style.backgroundColor = 'var(--error-color)';
@@ -444,6 +479,7 @@ function exibirMensagemErro(mensagem) {
  */
 function exibirMensagemSucesso(mensagem) {
     const toast = document.getElementById('toast');
+    console.log('Exibindo mensagem de sucesso:', mensagem);
     if (toast) {
         toast.textContent = mensagem;
         toast.style.backgroundColor = 'var(--success-color)';
@@ -458,6 +494,7 @@ function exibirMensagemSucesso(mensagem) {
  * Fecha o modal de pré-visualização.
  */
 function fecharModal() {
+    console.log('Fechando modal de pré-visualização');
     const modal = document.getElementById('layoutEditorModal');
     if (modal) {
         modal.style.display = 'none';
@@ -470,38 +507,101 @@ function fecharModal() {
  * Atualiza a pré-visualização do PDF no iframe.
  */
 async function updatePreview() {
+    console.log('Atualizando pré-visualização');
+    const modal = document.getElementById('layoutEditorModal');
+    if (!modal || modal.style.display === 'none') {
+        console.log('Modal não está visível, ignorando atualização');
+        return;
+    }
+
     const dados = await capturarDadosFormulario();
-    // Default values if inputs are empty or not found.
-    // Ensure these align with your desired initial UI state or common usage.
     const marginTopCm = parseFloat(document.getElementById('marginTopCm')?.value || 3.5);
     const footerMarginBottomCm = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 5.5);
 
     const cmToPoints = cm => cm * 28.3465;
-
-    // Apply validation/clamping directly to the values used for layout options
-    const validatedTopMarginCm = Math.min(Math.max(marginTopCm, 0), 7); // Clamped between 0 and 7 cm
-    const validatedFooterMarginBottomCm = Math.min(Math.max(footerMarginBottomCm, 0), 6.5); // Clamped between 0 and 6.5 cm
+    const validatedTopMarginCm = Math.min(Math.max(marginTopCm, 0), 7);
+    const validatedFooterMarginBottomCm = Math.min(Math.max(footerMarginBottomCm, 0), 6.5);
 
     const layoutOptions = {
         topMargin: cmToPoints(validatedTopMarginCm),
-        // This is the actual pageMargins[3] value. It defines the space reserved from the bottom.
-        footerHeight: cmToPoints(validatedFooterMarginBottomCm)
+        footerAreaFromBottom: cmToPoints(validatedFooterMarginBottomCm)
     };
 
-    const docDefinition = await gerarPDF(dados, true, letterheadImage, layoutOptions);
-    if (docDefinition) {
+    console.log('Opções de layout:', layoutOptions);
+
+    try {
+        const docDefinition = await gerarPDF(dados, true, letterheadImage, layoutOptions);
+        if (!docDefinition || !docDefinition.content) {
+            console.error('DocDefinition inválido ou vazio');
+            exibirMensagemErro('Erro ao gerar pré-visualização: Documento inválido.');
+            return;
+        }
+
         const pdfDoc = pdfMake.createPdf(docDefinition);
         pdfDoc.getDataUrl((dataUrl) => {
+            console.log('Pré-visualização gerada com sucesso:', dataUrl.substring(0, 50));
             const iframe = document.getElementById('previewIframe');
             if (iframe) {
                 iframe.src = dataUrl;
+            } else {
+                console.error('Iframe de pré-visualização não encontrado');
+                exibirMensagemErro('Erro ao exibir pré-visualização: Iframe não encontrado.');
             }
+        }, (error) => {
+            console.error('Erro ao gerar DataURL para pré-visualização:', error);
+            exibirMensagemErro('Erro ao gerar pré-visualização: ' + error.message);
         });
+    } catch (error) {
+        console.error('Erro ao atualizar pré-visualização:', error);
+        exibirMensagemErro('Erro ao atualizar pré-visualização: ' + error.message);
     }
+}
+
+/**
+ * Captura os dados do formulário.
+ * @returns {Promise<object>} Dados do formulário.
+ */
+async function capturarDadosFormulario() {
+    console.log('Capturando dados do formulário');
+    const getValue = (id) => {
+        const element = document.getElementById(id);
+        const value = element?.value || '';
+        console.log(`Campo ${id}:`, value);
+        return value;
+    };
+    const dados = {
+        dirigente: getValue('dirigente'),
+        matricula: getValue('matricula'),
+        cargoDirigente: getValue('cargoDirigente'),
+        proposta: getValue('proposta'),
+        cnpj: getValue('cnpj'),
+        entidade: getValue('entidade'),
+        endereco: getValue('endereco'),
+        uf: getValue('uf'),
+        municipio: getValue('municipio'),
+        cep: getValue('cep'),
+        opcaoSelecao: getValue('opcaoSelecao'),
+        usarPapelTimbrado: !!document.getElementById('usarPapelTimbrado') && document.getElementById('usarPapelTimbrado').checked,
+        municipioMais65mil: !!document.getElementById('municipioMais65mil') && document.getElementById('municipioMais65mil').checked,
+        letterheadFile: document.getElementById('letterheadFile')?.files[0] || null,
+        espacosFisicos: []
+    };
+
+    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
+        const nome = row.querySelector('input[id^="nomeEspacoFisico"]')?.value;
+        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]')?.value;
+        if (nome && endereco) {
+            console.log('Espaço físico adicionado:', { nome, endereco });
+            dados.espacosFisicos.push({ nome, endereco });
+        }
+    });
+
+    return dados;
 }
 
 // Integração com o HTML
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Inicializando eventos do DOM');
     const gerarPDFBtn = document.getElementById('gerarPDF');
     const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
     const usarPapelTimbradoCheckbox = document.getElementById('usarPapelTimbrado');
@@ -510,141 +610,97 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerMarginInput = document.getElementById('footerMarginBottomCm');
     const cancelLayoutBtn = document.getElementById('cancelLayout');
 
-    // --- Set initial input values on load ---
-    if (marginTopInput) {
-        // You can set your preferred default here, e.g., 3.5cm
-        marginTopInput.value = 3.5;
-    }
-    if (footerMarginInput) {
-        // You can set your preferred default here, e.g., 5.5cm
-        footerMarginInput.value = 5.5;
+    if (!gerarPDFBtn || !confirmAndGenerateBtn || !usarPapelTimbradoCheckbox || !letterheadFileInput || !marginTopInput || !footerMarginInput || !cancelLayoutBtn) {
+        console.error('Um ou mais elementos HTML não foram encontrados');
+        exibirMensagemErro('Erro interno: Elementos do formulário não encontrados.');
+        return;
     }
 
-    // --- Helper function to initiate PDF generation ---
+    marginTopInput.value = 3.5;
+    footerMarginInput.value = 5.5;
+
     async function initiatePDFGeneration(closeModalAfter = false) {
-        // isGeneratingPDF check is now inside gerarPDF to manage loading state globally
-        // and prevent multiple parallel generations.
-        
+        console.log('Iniciando geração de PDF, fechar modal:', closeModalAfter);
         const dados = await capturarDadosFormulario();
         
-        // Specific check for letterhead requirement before proceeding
-        if (dados.usarPapelTimbrado && !letterheadImage) {
+        if (dados.usarPapelTimbrado && !letterheadImage && !dados.letterheadFile) {
+            console.error('Papel timbrado selecionado, mas nenhum arquivo foi fornecido');
             exibirMensagemErro('Por favor, selecione um arquivo de papel timbrado.');
-            return; // Stop if letterhead is required but not provided
+            return;
         }
 
-        const marginTopCm = parseFloat(marginTopInput?.value || 3.5);
-        const footerMarginBottomCm = parseFloat(footerMarginInput?.value || 5.5);
+        const marginTopCm = parseFloat(marginTopInput.value || 3.5);
+        const footerMarginBottomCm = parseFloat(footerMarginInput.value || 5.5);
         const cmToPoints = cm => cm * 28.3465;
 
-        // Pass validated and converted values to gerarPDF
         const layoutOptions = {
             topMargin: cmToPoints(Math.min(Math.max(marginTopCm, 0), 7)),
-            footerHeight: cmToPoints(Math.min(Math.max(footerMarginBottomCm, 0), 6.5))
+            footerAreaFromBottom: cmToPoints(Math.min(Math.max(footerMarginBottomCm, 0), 6.5))
         };
 
-        await gerarPDF(dados, false, letterheadImage, layoutOptions);
-
-        if (closeModalAfter) {
-            fecharModal();
+        try {
+            await gerarPDF(dados, false, letterheadImage, layoutOptions);
+            if (closeModalAfter) {
+                fecharModal();
+            }
+        } catch (error) {
+            console.error('Erro durante a geração de PDF:', error);
+            exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
         }
     }
 
-    // --- Event Listeners ---
-    if (usarPapelTimbradoCheckbox) {
-        usarPapelTimbradoCheckbox.addEventListener('change', () => {
-            const uploadContainer = document.getElementById('letterheadUploadContainer');
-            if (uploadContainer) {
-                uploadContainer.style.display = usarPapelTimbradoCheckbox.checked ? 'block' : 'none';
-                if (!usarPapelTimbradoCheckbox.checked) {
-                    letterheadFileInput.value = ''; // Clear selected file input
-                    letterheadImage = null; // Clear loaded image data
-                }
+    usarPapelTimbradoCheckbox.addEventListener('change', () => {
+        console.log('Alterando estado do papel timbrado:', usarPapelTimbradoCheckbox.checked);
+        const uploadContainer = document.getElementById('letterheadUploadContainer');
+        if (uploadContainer) {
+            uploadContainer.style.display = usarPapelTimbradoCheckbox.checked ? 'block' : 'none';
+            if (!usarPapelTimbradoCheckbox.checked) {
+                letterheadFileInput.value = '';
+                letterheadImage = null;
+                console.log('Papel timbrado desativado, limpando arquivo');
             }
-            updatePreview(); // Update preview when letterhead usage changes
-        });
-    }
+        }
+        updatePreview();
+    });
 
-    if (letterheadFileInput) {
-        letterheadFileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    letterheadImage = await carregarImagemComoDataURL(file);
-                    exibirMensagemSucesso('Arquivo de papel timbrado carregado com sucesso.');
-                    updatePreview();
-                } catch (error) {
-                    exibirMensagemErro(error.message);
-                    letterheadFileInput.value = ''; // Clear input on error
-                    letterheadImage = null; // Clear loaded image data on error
-                }
+    letterheadFileInput.addEventListener('change', async (e) => {
+        console.log('Arquivo de papel timbrado selecionado');
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                letterheadImage = await carregarImagemComoDataURL(file);
+                exibirMensagemSucesso('Arquivo de papel timbrado carregado com sucesso.');
+                updatePreview();
+            } catch (error) {
+                console.error('Erro ao carregar arquivo de papel timbrado:', error);
+                exibirMensagemErro(error.message);
+                letterheadFileInput.value = '';
+                letterheadImage = null;
             }
-        });
-    }
+        }
+    });
 
-    if (gerarPDFBtn) {
-        gerarPDFBtn.addEventListener('click', () => initiatePDFGeneration(false));
-    }
+    gerarPDFBtn.addEventListener('click', () => initiatePDFGeneration(false));
+    confirmAndGenerateBtn.addEventListener('click', () => initiatePDFGeneration(true));
+    cancelLayoutBtn.addEventListener('click', fecharModal);
 
-    if (confirmAndGenerateBtn) {
-        confirmAndGenerateBtn.addEventListener('click', () => initiatePDFGeneration(true));
-    }
+    marginTopInput.addEventListener('input', (e) => {
+        console.log('Ajustando margem superior:', e.target.value);
+        const value = parseFloat(e.target.value);
+        if (value < 0 || value > 7) {
+            e.target.value = Math.min(Math.max(value, 0), 7);
+            exibirMensagemErro('A margem superior deve estar entre 0 e 7 cm.');
+        }
+        updatePreview();
+    });
 
-    if (cancelLayoutBtn) {
-        cancelLayoutBtn.addEventListener('click', fecharModal);
-    }
-
-    if (marginTopInput) {
-        marginTopInput.addEventListener('input', (e) => {
-            const value = parseFloat(e.target.value);
-            // Clamp value to ensure it stays within bounds
-            if (value < 0 || value > 7) {
-                e.target.value = Math.min(Math.max(value, 0), 7);
-                exibirMensagemErro('A margem superior deve estar entre 0 e 7 cm.');
-            }
-            updatePreview(); // Update preview on input change
-        });
-    }
-
-    if (footerMarginInput) {
-        footerMarginInput.addEventListener('input', (e) => {
-            const value = parseFloat(e.target.value);
-            // Clamp value to ensure it stays within bounds
-            if (value < 0 || value > 6.5) {
-                e.target.value = Math.min(Math.max(value, 0), 6.5);
-                exibirMensagemErro('A margem inferior do rodapé deve estar entre 0 e 6,5 cm.');
-            }
-            updatePreview(); // Update preview on input change
-        });
-    }
-
-    async function capturarDadosFormulario() {
-        const getValue = (id) => document.getElementById(id)?.value || '';
-        const dados = {
-            dirigente: getValue('dirigente'),
-            matricula: getValue('matricula'),
-            cargoDirigente: getValue('cargoDirigente'),
-            proposta: getValue('proposta'),
-            cnpj: getValue('cnpj'),
-            entidade: getValue('entidade'),
-            endereco: getValue('endereco'),
-            uf: getValue('uf'),
-            municipio: getValue('municipio'),
-            cep: getValue('cep'),
-            opcaoSelecao: getValue('opcaoSelecao'),
-            usarPapelTimbrado: !!usarPapelTimbradoCheckbox && usarPapelTimbradoCheckbox.checked,
-            espacosFisicos: []
-        };
-
-        document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-            const nome = row.querySelector('input[id^="nomeEspacoFisico"]')?.value;
-            const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]')?.value;
-            const areaTotal = row.querySelector('input[id^="areaTotal"]')?.value;
-            if (nome && endereco) {
-                dados.espacosFisicos.push({ nome, endereco, areaTotal });
-            }
-        });
-
-        return dados;
-    }
+    footerMarginInput.addEventListener('input', (e) => {
+        console.log('Ajustando margem inferior:', e.target.value);
+        const value = parseFloat(e.target.value);
+        if (value < 0 || value > 6.5) {
+            e.target.value = Math.min(Math.max(value, 0), 6.5);
+            exibirMensagemErro('A margem inferior do rodapé deve estar entre 0 e 6,5 cm.');
+        }
+        updatePreview();
+    });
 });

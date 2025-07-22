@@ -154,7 +154,7 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
         { text: `${(formData.municipio || 'São Domingos do Prata').toUpperCase()}/${(formData.uf || 'MG').toUpperCase()}, ${dataExtenso}.`, alignment: 'center', fontSize: 11, margin: [0, 10, 0, 10] },
         { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
         { text: formData.dirigente || 'Pedro Dias Pereira Neto', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 5] },
-        { text: `(${formData.cargoDirigente || 'Presidente'})`, alignment: 'center', italic: true, fontSize: 11 },
+        { text: `${formData.cargoDirigente || 'Presidente'}`, alignment: 'center', italic: true, fontSize: 11 },
         {
             text: `Documento composto por ${finalDeclarations.length} (${numToWords(finalDeclarations.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`,
             alignment: 'center',
