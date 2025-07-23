@@ -94,24 +94,17 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
         const pageStack = [];
         const headerStack = [];
 
-        // ✅ LÓGICA REFINADA: Cria um cabeçalho mais profissional quando o papel timbrado não é usado.
         if (!formData.useLetterheadChecked) {
             headerStack.push(
-                // 1. Nome da Entidade
-                { text: formData.entidade || 'SWMUSIC LTDA', bold: true, alignment: 'center', margin: [0, 0, 0, 2] },
-                // 2. Endereço
-                { text: formData.endereco || 'PORTUGAL, 316 - SAO JOAO', fontSize: 10, alignment: 'center' },
-                // 3. Linha horizontal para separação visual (com margem inferior de 25)
+                { text: formData.entidade || 'ASSOCIACAO MORIA', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
+                { text: formData.endereco || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE', fontSize: 10, alignment: 'center' },
                 { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
             );
         }
 
-        // Adiciona o cabeçalho (se existir) e o resto do conteúdo
         pageStack.push(
             ...headerStack,
-            // Título da Declaração com mais espaço abaixo (margem de 30)
             { text: `DECLARAÇÃO\n${title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
-            // Corpo do texto com melhor espaçamento entre linhas (lineHeight)
             { text: getDeclarationContent(title, formData), alignment: 'justify', fontSize: 12, lineHeight: 1.15 }
         );
 
@@ -121,49 +114,41 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
             stack: pageStack
         };
     }).concat({
-    pageBreak: 'before',
-    margin: [40, 100.249, 40, 184.249],
-    stack: [
-        { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
-        { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 5, 0, 5] },
-        {
-            table: {
-                headerRows: 1,
-                widths: [40, '*'], // Removed 30 for the 'Nº' column
-                body: [
-                    [{ text: 'Página', style: 'tableHeader' }, { text: 'Declaração', style: 'tableHeader' }], // Removed 'Nº' header
-                    ...finalDeclarations.map((titulo, idx) => [
-                        { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                        { text: titulo, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
-                        // Removed the third element for 'Nº'
-                    ])
-                ]
+        pageBreak: 'before',
+        margin: [40, 100.249, 40, 100],
+        stack: [
+            { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
+            { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: [40, '*'],
+                    body: [
+                        [{ text: 'Página', style: 'tableHeader' }, { text: 'DECLARAÇÃO', style: 'tableHeader' }],
+                        ...finalDeclarations.map((titulo, idx) => [
+                            { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                            { text: `Declaração ${titulo}`, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                        ])
+                    ]
+                },
+                layout: {
+                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                    vLineWidth: () => 1,
+                    hLineColor: () => '#003087',
+                    vLineColor: () => '#003087',
+                    paddingLeft: () => 5, paddingRight: () => 5,
+                    paddingTop: () => 2, paddingBottom: () => 2
+                },
+                margin: [0, 5, 0, 5],
+                alignment: 'center'
             },
-            layout: {
-                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-                vLineWidth: () => 1,
-                hLineColor: () => '#003087',
-                vLineColor: () => '#003087',
-                paddingLeft: () => 5, paddingRight: () => 5,
-                paddingTop: () => 2, paddingBottom: () => 2
-            },
-            margin: [0, 5, 0, 5],
-            alignment: 'center'
-        },
-        { text: `Por ser verdade, firmo o teor das declarações que compõem este arquivo:`, alignment: 'center', fontSize: 11, margin: [0, 10, 0, 10] },
-        { text: `${(formData.municipio || 'São Domingos do Prata').toUpperCase()}/${(formData.uf || 'MG').toUpperCase()}, ${dataExtenso}.`, alignment: 'center', fontSize: 11, margin: [0, 10, 0, 10] },
-        { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
-        { text: formData.dirigente || 'Pedro Dias Pereira Neto', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 5] },
-        { text: `${formData.cargoDirigente || 'Presidente'}`, alignment: 'center', italic: true, fontSize: 11 },
-        {
-            text: `Documento composto por ${finalDeclarations.length} (${numToWords(finalDeclarations.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`,
-            alignment: 'center',
-            fontSize: 9,
-            margin: [0, 15, 0, 0],
-            color: '#333333'
-        }
-    ]
-});
+            { text: `Por ser verdade, firmo o teor das declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 20] },
+            { text: `${(formData.municipio || 'São Domingos do Prata').toUpperCase()}/${(formData.uf || 'DF').toUpperCase()}, ${dataExtenso}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
+            { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+            { text: formData.dirigente || 'Pedro Dias', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
+            { text: `${formData.cargoDirigente || 'Presidente'}`, alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
+        ]
+    });
 
     return {
         pageSize: 'A4',
@@ -173,13 +158,19 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
                 ? null 
                 : { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 }),
         footer: (currentPage, pageCount) => {
-            if (currentPage === pageCount) return null;
             return {
                 margin: [40, 0, 40, 0],
                 stack: [
                     {
                         columns: [
-                            { text: 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as declarações anteriores.', fontSize: 8.5, color: '#555555', alignment: 'left' },
+                            { 
+                                text: currentPage < pageCount 
+                                    ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
+                                    : `Documento composto por ${finalDeclarations.length} (${numToWords(finalDeclarations.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
+                                fontSize: 8.5, 
+                                color: '#555555', 
+                                alignment: 'left' 
+                            },
                             { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
                         ]
                     },
@@ -189,16 +180,14 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
         },
         content: allPagesContent,
         styles: {
-            header: { fontSize: 18, bold: true, color: '#003087', alignment: 'center' },
-            subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'center' },
+            header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
+            subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
             tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
         },
         defaultStyle: { font: 'Roboto' }
     };
 }
 
-
-// ✅ FUNÇÃO REFEITA E CORRIGIDA
 async function generateAllDeclarationsPDF(orderedDeclarationsList = null, customLetterheadImage = null, customLayoutOptions = {}, programmaticFormData = {}) {
     if (!window.pdfMake) {
         console.error("pdfMake is not loaded. Cannot generate PDF.");
@@ -206,32 +195,26 @@ async function generateAllDeclarationsPDF(orderedDeclarationsList = null, custom
         return;
     }
 
-    // Funções auxiliares para ler os valores atuais do formulário
     const getInputValue = id => document.getElementById(id)?.value || '';
     const getFileInput = id => document.getElementById(id)?.files[0] || null;
     const getCheckboxValue = id => document.getElementById(id)?.checked || false;
 
-    // Objeto que captura os dados DO FORMULÁRIO no momento do clique.
-    // Isso garante que o valor do checkbox `useLetterhead` seja sempre o mais recente.
     const formDataFromDom = {
         dirigente: getInputValue('dirigente') || 'Pedro Dias',
         cargoDirigente: getInputValue('cargoDirigente') || 'Presidente',
-        entidade: getInputValue('entidade') || 'BANCO DO BRASIL S.A.',
-        cnpj: getInputValue('cnpj') || '00.000.000/0001-91',
-        endereco: getInputValue('endereco') || 'Rua Getúlio Vargas, 224 - Centro, São Domingos do Prata - MG',
-        uf: getInputValue('uf') || 'MG',
-        municipio: getInputValue('municipio') || 'São Domingos do Prata',
-        proposta: getInputValue('proposta') || '',
-        useLetterheadChecked: getCheckboxValue('useLetterhead'), // Ponto CRÍTICO da correção
+        entidade: getInputValue('entidade') || 'ASSOCIACAO MORIA',
+        cnpj: getInputValue('cnpj') || '27.119.091/001-35',
+        endereco: getInputValue('endereco') || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE',
+        uf: getInputValue('uf') || 'DF',
+        municipio: getInputValue('municipio') || 'Brasília',
+        proposta: getInputValue('proposta') || '22/22/23/2/24',
+        useLetterheadChecked: getCheckboxValue('useLetterhead'),
         letterheadFile: getFileInput('letterheadFile')
     };
-    
-    // Mescla os dados do formulário com quaisquer dados passados programaticamente.
-    // Isso permite flexibilidade, mas para o clique do usuário, os dados do DOM são a base.
+
     const finalFormData = { ...formDataFromDom, ...programmaticFormData };
 
     try {
-        // Passa o objeto de dados final e correto para a função de definição do documento.
         const docDefinition = await generatePdfDocDefinition(orderedDeclarationsList, customLetterheadImage, customLayoutOptions, finalFormData);
         if (!docDefinition) throw new Error("Failed to generate document definition.");
 
@@ -246,7 +229,6 @@ async function generateAllDeclarationsPDF(orderedDeclarationsList = null, custom
         alert("Erro ao gerar o PDF: " + error.message);
     }
 }
-
 
 function getDeclarationContent(title, { dirigente = '', cargoDirigente = '', entidade = '', cnpj = '', endereco = '', proposta = '' } = {}) {
     const contents = {

@@ -75,6 +75,10 @@ const declaracoesEspecificas = {
         {
             title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS",
             content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:\n1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto a contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.\n2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.\n3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.\n4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.\n\nPor ser expressão da verdade, firmo a presente declaração.`
+        },
+        {
+            title: "DECLARAÇÃO DE ADIMPLÊNCIA",
+            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares). Por ser expressão da verdade, firmo a presente declaração.`
         }
     ],
     '20JP_emenda': [
@@ -95,12 +99,52 @@ const declaracoesEspecificas = {
     ]
 };
 
-/**
- * Substitui placeholders no texto com os dados fornecidos.
- * @param {string} texto - Texto com placeholders.
- * @param {object} dados - Dados para substituição.
- * @returns {string} Texto com placeholders substituídos.
- */
+async function getBase64ImageFromUrl(imageUrl) {
+    if (!imageUrl) return null;
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to load image: ${response.statusText}`);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error("Error in getBase64ImageFromUrl:", error);
+        return null;
+    }
+}
+
+function getBase64FromFile(file) {
+    if (!file) throw new Error('No file provided');
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Error reading file as DataURL'));
+        reader.readAsDataURL(file);
+    });
+}
+
+async function convertPdfPageToImage(file) {
+    if (!file || !window.pdfjsLib) throw new Error('PDF.js not loaded or no file provided');
+    const fileAsArrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument(fileAsArrayBuffer);
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({ canvasContext: context, viewport }).promise;
+    return canvas.toDataURL('image/png');
+}
+
 function substituirPlaceholders(texto, dados) {
     const dataAtual = new Date();
     return texto
@@ -121,90 +165,20 @@ function substituirPlaceholders(texto, dados) {
         .replace(/\[enderecoEspacoFisico]/g, dados.espacosFisicos[0]?.endereco || 'Endereço não informado');
 }
 
-/**
- * Converte um número para extenso em português (até 100).
- * @param {number} num - Número a converter.
- * @returns {string} Número em extenso.
- */
 function numeroParaExtenso(num) {
-    const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-    const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-    if (num < 20) return unidades[num];
-    if (num < 100) return dezenas[Math.floor(num / 10)] + (num % 10 !== 0 ? ' e ' + unidades[num % 10] : '');
-    return num.toString();
+    const units = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+    const tens = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+    if (num < 20) return units[num];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' e ' + units[num % 10] : '');
+    return String(num);
 }
 
-/**
- * Carrega uma imagem externa ou um arquivo local (incluindo PDF) e retorna como dataURL.
- * @param {string|File} source - URL da imagem ou um objeto File.
- * @returns {Promise<string>} DataURL da imagem.
- */
-async function carregarImagemComoDataURL(source) {
-    return new Promise((resolve, reject) => {
-        console.log('Carregando imagem:', source);
-        if (source instanceof File) {
-            if (source.type === 'application/pdf') {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const pdfData = new Uint8Array(e.target.result);
-                        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-                        const page = await pdf.getPage(1);
-                        const viewport = page.getViewport({ scale: 1.0 });
-                        const canvas = document.createElement('canvas');
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-                        const context = canvas.getContext('2d');
-                        await page.render({ canvasContext: context, viewport: viewport }).promise;
-                        const dataURL = canvas.toDataURL('image/jpeg');
-                        console.log('PDF convertido para imagem com sucesso');
-                        resolve(dataURL);
-                    } catch (error) {
-                        console.error('Erro ao converter PDF para imagem:', error);
-                        reject(new Error('Erro ao converter PDF para imagem: ' + error.message));
-                    }
-                };
-                reader.onerror = () => reject(new Error('Erro ao ler o arquivo PDF.'));
-                reader.readAsArrayBuffer(source);
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    console.log('Imagem carregada com sucesso como DataURL');
-                    resolve(e.target.result);
-                };
-                reader.onerror = () => reject(new Error('Erro ao carregar o arquivo de imagem.'));
-                reader.readAsDataURL(source);
-            }
-        } else if (typeof source === 'string') {
-            const img = new Image();
-            img.crossOrigin = 'Anonymous';
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                const dataURL = canvas.toDataURL('image/jpeg');
-                console.log('Imagem carregada com sucesso da URL:', dataURL.substring(0, 50));
-                resolve(dataURL);
-            };
-            img.onerror = () => reject(new Error('Falha ao carregar a imagem da URL: ' + source));
-            img.src = source;
-        } else {
-            reject(new Error('Formato de fonte de imagem inválido. Esperado URL ou File.'));
-        }
-    });
-}
-
-/**
- * Gera o PDF com base nos dados do formulário.
- * @param {object} formData - Dados capturados do formulário.
- * @param {boolean} isPreview - Indica se é uma pré-visualização.
- * @param {string|null} letterheadImageBase64 - Imagem de fundo do papel timbrado em Base64 (opcional).
- * @param {object} layoutOptions - Opções de layout (margens em pontos).
- * @returns {object|undefined} DocDefinition para preview ou undefined para download.
- */
 async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = null, layoutOptions = {}) {
+    if (!window.pdfMake) {
+        console.error("pdfMake is not loaded. Cannot generate PDF.");
+        exibirMensagemErro("Erro: A biblioteca pdfMake não foi carregada. Verifique as dependências.");
+        return;
+    }
     if (isGeneratingPDF && !isPreview) {
         console.warn('Geração de PDF já em andamento. Aguardando conclusão.');
         return;
@@ -234,7 +208,11 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
         if (dados.usarPapelTimbrado && !finalLetterheadImage && dados.letterheadFile) {
             console.log('Carregando papel timbrado personalizado');
             try {
-                finalLetterheadImage = await carregarImagemComoDataURL(dados.letterheadFile);
+                finalLetterheadImage = await (dados.letterheadFile.type.startsWith('image/') 
+                    ? getBase64FromFile(dados.letterheadFile) 
+                    : dados.letterheadFile.type === 'application/pdf' 
+                        ? convertPdfPageToImage(dados.letterheadFile) 
+                        : null);
             } catch (error) {
                 console.error('Erro ao carregar papel timbrado:', error.message);
                 exibirMensagemErro('Erro ao carregar papel timbrado: ' + error.message);
@@ -243,7 +221,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
         } else if (!dados.usarPapelTimbrado && !finalLetterheadImage) {
             console.log('Carregando imagem padrão de papel timbrado');
             try {
-                finalLetterheadImage = await carregarImagemComoDataURL('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+                finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
             } catch (error) {
                 console.error('Erro ao carregar imagem padrão:', error.message);
                 exibirMensagemErro('Erro ao carregar a imagem padrão: ' + error.message);
@@ -251,15 +229,9 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             }
         }
 
-        const defaultLayoutPoints = {
-            leftRightMargin: 40,
-            topMargin: 60,
-            footerAreaFromBottom: 60
-        };
-
-        const actualLayout = { ...defaultLayoutPoints, ...layoutOptions };
-        actualLayout.topMargin = Math.min(actualLayout.topMargin, 198.425);
-        actualLayout.footerAreaFromBottom = Math.max(actualLayout.footerAreaFromBottom, 28.3465);
+        const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
+        const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY } = { ...defaults, ...layoutOptions };
+        const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
 
         let declaracoesParaIncluir = [
             ...declaracoesCompletas.filter(decl => {
@@ -274,13 +246,13 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
 
         console.log('Declarações incluídas:', declaracoesParaIncluir.map(d => d.title));
 
-        const createDeclarationContent = (declaracao, isLastDeclaration = false) => {
-            let content = substituirPlaceholders(declaracao.content, dados);
-            let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, margin: [0, 10, 0, 20] }];
+        const allPagesContent = declaracoesParaIncluir.map((decl, index) => {
+            let content = substituirPlaceholders(decl.content, dados);
+            let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }];
 
-            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')) && declaracao.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
+            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')) && decl.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
                 contentArray = [
-                    { text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(), alignment: 'justify', fontSize: 12, margin: [0, 10, 0, 5] },
+                    { text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(), alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 5] },
                     {
                         table: {
                             widths: ['*', '*'],
@@ -302,104 +274,98 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                             paddingTop: () => 5,
                             paddingBottom: () => 5
                         },
-                        margin: [0, 5, 0, 10]
+                        margin: [0, 5, 0, 30]
                     }
                 ];
             }
 
             const headerStack = !dados.usarPapelTimbrado ? [
-                { text: dados.entidade || 'Entidade não informada', bold: true, alignment: 'center', margin: [0, 0, 0, 2] },
+                { text: dados.entidade || 'Entidade não informada', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
                 { text: `${dados.endereco || 'Endereço não informado'} - ${dados.municipio || 'Município não informado'}/${dados.uf || 'UF não informada'} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
-                { canvas: [{ type: 'line', x1: 70, y1: 0, x2: 445, y2: 0, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 10] }
+                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
             ] : [];
 
-            return [
-                ...headerStack,
-                { text: substituirPlaceholders(declaracao.title, dados), style: 'header', alignment: 'center', margin: [0, actualLayout.topMargin, 0, 10] },
-                ...contentArray,
-                { text: '', pageBreak: isLastDeclaration ? undefined : 'after' }
-            ];
-        };
-
-        const allDeclarationsContent = declaracoesParaIncluir.flatMap((decl, index) =>
-            createDeclarationContent(decl, index === declaracoesParaIncluir.length - 1)
-        );
-
-        const titulosDeclaracoes = declaracoesParaIncluir.map(d => substituirPlaceholders(d.title, dados));
-        const totalDeclaracoes = titulosDeclaracoes.length;
-
-        const summaryPage = [
-            { text: '', pageBreak: 'before' },
-            { text: 'Sumário das Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 20, 0, 5] },
-            { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'center', margin: [0, 2, 0, 10] },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 50],
-                    body: [
-                        [{ text: 'Declaração', style: 'tableHeader', alignment: 'left' }, { text: 'Página', style: 'tableHeader', alignment: 'center' }],
-                        ...titulosDeclaracoes.map((titulo, index) => [
-                            { text: `${index + 1}. ${titulo}`, linkToPage: index + 1, decoration: 'underline', color: 'blue', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                            { text: `${index + 1}`, alignment: 'center', fontSize: 10, fillColor: index % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
-                        ])
-                    ]
+            return {
+                pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined,
+                margin: [defaults.leftRightMargin, topMargin, defaults.leftRightMargin, bottomMargin],
+                stack: [
+                    ...headerStack,
+                    { text: `DECLARAÇÃO\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                    ...contentArray
+                ]
+            };
+        }).concat({
+            pageBreak: 'before',
+            margin: [40, 100.249, 40, 100],
+            stack: [
+                { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
+                { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: [40, '*'],
+                        body: [
+                            [{ text: 'Página', style: 'tableHeader' }, { text: 'DECLARAÇÃO', style: 'tableHeader' }],
+                            ...declaracoesParaIncluir.map((decl, idx) => [
+                                { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                                { text: `Declaração ${substituirPlaceholders(decl.title, dados)}`, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                            ])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                        vLineWidth: () => 1,
+                        hLineColor: () => '#003087',
+                        vLineColor: () => '#003087',
+                        paddingLeft: () => 5, paddingRight: () => 5,
+                        paddingTop: () => 2, paddingBottom: () => 2
+                    },
+                    margin: [0, 5, 0, 5],
+                    alignment: 'center'
                 },
-                layout: {
-                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-                    vLineWidth: () => 0.5,
-                    hLineColor: () => '#003087',
-                    vLineColor: () => '#003087',
-                    paddingLeft: () => 5,
-                    paddingRight: () => 5,
-                    paddingTop: () => 2,
-                    paddingBottom: () => 2
-                },
-                margin: [20, 5, 20, 15],
-                alignment: 'center'
-            },
-            { text: `Por ser verdade, firmo o teor das declarações referenciais que compõem este arquivo.`, alignment: 'justify', fontSize: 12, margin: [20, 10, 20, 20] },
-            { text: `${dados.municipio}/${dados.uf}, ${dados.diaAtual} de ${dados.mesAtual} de ${dados.anoAtual}.`, alignment: 'center', fontSize: 12, margin: [0, 10, 0, 20] },
-            { text: `__________________________________________\n${dados.dirigente}\n${dados.cargoDirigente}`, alignment: 'center', fontSize: 12 }
-        ];
+                { text: `Por ser verdade, firmo o teor das ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 20] },
+                { text: `${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()}, ${new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
+                { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+                { text: dados.dirigente || 'Nome não informado', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
+                { text: dados.cargoDirigente || 'Cargo não informado', alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
+            ]
+        });
 
         const docDefinition = {
             pageSize: 'A4',
-            pageMargins: [
-                actualLayout.leftRightMargin,
-                actualLayout.topMargin,
-                actualLayout.leftRightMargin,
-                actualLayout.footerAreaFromBottom
-            ],
-            background: finalLetterheadImage ? [{ image: finalLetterheadImage, width: 595, height: 842, absolutePosition: { x: 0, y: 0 }, opacity: 0.9 }] : null,
+            pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
+            background: (currentPage, pageCount) => 
+                finalLetterheadImage ? { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
             footer: (currentPage, pageCount) => {
-                const footerContentHeightEstimate = 20;
-                const desiredDistanceFromBottom = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 5.5) * 28.3465;
-                const marginTopForFooterContent = actualLayout.footerAreaFromBottom - desiredDistanceFromBottom;
-
-                const footerContent = currentPage === pageCount ? {
+                return {
+                    margin: [40, 0, 40, 0],
                     stack: [
-                        { text: `Documento composto por ${totalDeclaracoes} (${numeroParaExtenso(totalDeclaracoes)}) declarações referenciais, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, alignment: 'center', fontSize: 9 },
-                        { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 9, margin: [0, 5, 0, 0] }
-                    ],
-                    margin: [actualLayout.leftRightMargin, marginTopForFooterContent, actualLayout.leftRightMargin, 0]
-                } : {
-                    stack: [
-                        { text: 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as declarações anteriores.', alignment: 'center', fontSize: 9 },
-                        { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 9, margin: [0, 5, 0, 0] }
-                    ],
-                    margin: [actualLayout.leftRightMargin, marginTopForFooterContent, actualLayout.leftRightMargin, 0]
+                        {
+                            columns: [
+                                { 
+                                    text: currentPage < pageCount 
+                                        ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
+                                        : `Documento composto por ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
+                                    fontSize: 8.5, 
+                                    color: '#555555', 
+                                    alignment: 'left' 
+                                },
+                                { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                            ]
+                        },
+                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                    ]
                 };
-                return footerContent;
             },
-            content: [...allDeclarationsContent, ...summaryPage],
+            content: allPagesContent,
             styles: {
-                header: { fontSize: 16, bold: true, color: '#003087', alignment: 'center' },
-                subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'center' },
-                tableHeader: { fontSize: 11, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'left' }
+                header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
+                subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
+                tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
             },
-            defaultStyle: { font: 'Roboto' },
+            defaultStyle: { font: 'Roboto', alignment: 'justify' },
             permissions: {
-                printing: 'lowResolution',
+                printing: 'highResolution',
                 modifying: false,
                 copying: false,
                 annotating: false,
@@ -435,11 +401,6 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
     }
 }
 
-/**
- * Valida os dados do formulário.
- * @param {object} dados - Dados capturados do formulário.
- * @returns {Array<string>} Lista de erros.
- */
 function validarDadosFormulario(dados) {
     const camposObrigatorios = ['dirigente', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'];
     const erros = camposObrigatorios.filter(campo => !dados[campo] || dados[campo].trim() === '').map(campo => `O campo ${campo} é obrigatório.`);
@@ -456,10 +417,6 @@ function validarDadosFormulario(dados) {
     return erros;
 }
 
-/**
- * Exibe uma mensagem de erro no elemento toast.
- * @param {string} mensagem - Mensagem a ser exibida.
- */
 function exibirMensagemErro(mensagem) {
     const toast = document.getElementById('toast');
     console.error('Exibindo mensagem de erro:', mensagem);
@@ -470,13 +427,10 @@ function exibirMensagemErro(mensagem) {
         setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
     } else {
         console.error('Toast não encontrado:', mensagem);
+        alert("Erro: " + mensagem);
     }
 }
 
-/**
- * Exibe uma mensagem de sucesso no elemento toast.
- * @param {string} mensagem - Mensagem a ser exibida.
- */
 function exibirMensagemSucesso(mensagem) {
     const toast = document.getElementById('toast');
     console.log('Exibindo mensagem de sucesso:', mensagem);
@@ -487,12 +441,10 @@ function exibirMensagemSucesso(mensagem) {
         setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
     } else {
         console.log('Toast não encontrado:', mensagem);
+        alert("Sucesso: " + mensagem);
     }
 }
 
-/**
- * Fecha o modal de pré-visualização.
- */
 function fecharModal() {
     console.log('Fechando modal de pré-visualização');
     const modal = document.getElementById('layoutEditorModal');
@@ -503,9 +455,6 @@ function fecharModal() {
     }
 }
 
-/**
- * Atualiza a pré-visualização do PDF no iframe.
- */
 async function updatePreview() {
     console.log('Atualizando pré-visualização');
     const modal = document.getElementById('layoutEditorModal');
@@ -515,8 +464,8 @@ async function updatePreview() {
     }
 
     const dados = await capturarDadosFormulario();
-    const marginTopCm = parseFloat(document.getElementById('marginTopCm')?.value || 3.5);
-    const footerMarginBottomCm = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 5.5);
+    const marginTopCm = parseFloat(document.getElementById('marginTopCm')?.value || 4.58);
+    const footerMarginBottomCm = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 2.4);
 
     const cmToPoints = cm => cm * 28.3465;
     const validatedTopMarginCm = Math.min(Math.max(marginTopCm, 0), 7);
@@ -524,7 +473,7 @@ async function updatePreview() {
 
     const layoutOptions = {
         topMargin: cmToPoints(validatedTopMarginCm),
-        footerAreaFromBottom: cmToPoints(validatedFooterMarginBottomCm)
+        footerPosition: 841.89 - cmToPoints(validatedFooterMarginBottomCm) - 40
     };
 
     console.log('Opções de layout:', layoutOptions);
@@ -557,10 +506,6 @@ async function updatePreview() {
     }
 }
 
-/**
- * Captura os dados do formulário.
- * @returns {Promise<object>} Dados do formulário.
- */
 async function capturarDadosFormulario() {
     console.log('Capturando dados do formulário');
     const getValue = (id) => {
@@ -599,7 +544,6 @@ async function capturarDadosFormulario() {
     return dados;
 }
 
-// Integração com o HTML
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Inicializando eventos do DOM');
     const gerarPDFBtn = document.getElementById('gerarPDF');
@@ -616,8 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    marginTopInput.value = 3.5;
-    footerMarginInput.value = 5.5;
+    marginTopInput.value = 4.58;
+    footerMarginInput.value = 2.4;
 
     async function initiatePDFGeneration(closeModalAfter = false) {
         console.log('Iniciando geração de PDF, fechar modal:', closeModalAfter);
@@ -629,13 +573,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const marginTopCm = parseFloat(marginTopInput.value || 3.5);
-        const footerMarginBottomCm = parseFloat(footerMarginInput.value || 5.5);
+        const marginTopCm = parseFloat(marginTopInput.value || 4.58);
+        const footerMarginBottomCm = parseFloat(footerMarginInput.value || 2.4);
         const cmToPoints = cm => cm * 28.3465;
 
         const layoutOptions = {
             topMargin: cmToPoints(Math.min(Math.max(marginTopCm, 0), 7)),
-            footerAreaFromBottom: cmToPoints(Math.min(Math.max(footerMarginBottomCm, 0), 6.5))
+            footerPosition: 841.89 - cmToPoints(Math.min(Math.max(footerMarginBottomCm, 0), 6.5)) - 40
         };
 
         try {
@@ -668,7 +612,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = e.target.files[0];
         if (file) {
             try {
-                letterheadImage = await carregarImagemComoDataURL(file);
+                letterheadImage = await (file.type.startsWith('image/') 
+                    ? getBase64FromFile(file) 
+                    : file.type === 'application/pdf' 
+                        ? convertPdfPageToImage(file) 
+                        : null);
                 exibirMensagemSucesso('Arquivo de papel timbrado carregado com sucesso.');
                 updatePreview();
             } catch (error) {
