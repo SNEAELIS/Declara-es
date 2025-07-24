@@ -301,10 +301,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
     <script>
-const orgaosExpedidores = [
-    'SSP', 'PC', 'PM', 'IFP', 'IIRGD', 'IGP', 'ITEP', 'POLITEC', 'SJC', 'SJDH', 'SJDS', 'SJS', 'SEJUSP', 'DGPC', 'DPTC', 'PF', 'DPF',
-    'MAER', 'AER', 'MEx', 'EX', 'MM', 'MAR', 'DETRAN', 'CNH', 'OAB', 'CRC', 'CREA', 'CAU', 'CRM', 'CRMV', 'CRO', 'COREN', 'CRP', 'CRF',
-    'CREF', 'CREFITO', 'CRQ', 'CRB', 'CRA', 'CRN', 'CRECI', 'CORECON', 'CONRE', 'MTE', 'MT', 'MRE', 'MJSP', 'CGPI', 'CGPMAF'
+const orgaosExpedidoresCompletos = [
+  // Secretarias Estaduais de Segurança
+  'SSP',
+  
+  // Forças Policiais
+  'PC', 'PM', 'PF', 'DPF', 'DPRF', 'CBM',
+
+  // Institutos Técnicos
+  'IFP', 'IIRGD', 'IGP', 'ITEP', 'POLITEC',
+
+  // Justiça
+  'TJ', 'TJSP', 'TJRJ', 'CNJ', 'MP', 'MPF', 'MPT', 'DPU', 'DPE',
+
+  // Ministérios e órgãos federais
+  'MJ', 'MJSP', 'ME', 'MRE', 'MTE', 'MD', 'MAPA', 'MEC', 'CGPI', 'CGPMAF',
+
+  // Forças Armadas
+  'EX', 'EB', 'MAR', 'MB', 'AER', 'FAB', 'MM', 'MAER',
+
+  // Conselhos Profissionais
+  'OAB', 'CRC', 'CREA', 'CAU', 'CRM', 'CRMV', 'CRO', 'COREN', 'CRP', 'CRF', 'CREF', 'CREFITO', 'CRQ', 'CRB', 'CRA', 'CRN', 'CRECI', 'CORECON', 'CONRE',
+
+  // Transporte / Documentos
+  'DETRAN', 'CNH', 'ANTT',
+
+  // Outros
+  'SEJUSP', 'SJC', 'SJDH', 'SJDS', 'SJS', 'DGPC', 'DPTC',
+  'INSS', 'CPTM', 'CGU', 'TRT', 'TRF', 'TRE', 'TSE', 'TST',
+  'IF', 'UFRJ', 'USP', 'UNB', 'UFBA', 'UFPE', // universidades que às vezes constam como emissoras
+  'CGPI/DIREX', 'OUTROS'
 ];
 let ufsData = [];
 

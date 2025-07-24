@@ -34,10 +34,6 @@ const declaracoesCompletas = [
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
         content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio sob a Proposta nº [proposta], que o(a) [entidade] possui condições orçamentárias e financeiras para arcar com as despesas decorrentes da execução do objeto, incluindo custos de manutenção, operação e eventuais contingências, garantindo a sustentabilidade do projeto ao longo de sua vigência. Esta declaração considera a aquisição de bens de capital e está respaldada por planejamento orçamentário documentado, estando ciente das responsabilidades previstas na Lei nº 4.320/1964 e na Lei Complementar nº 101/2000.`
     },
-    {
-        title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-        content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares). Por ser expressão da verdade, firmo a presente declaração.`
-    }
 ];
 
 const declaracoesEspecificas = {
@@ -176,11 +172,10 @@ function numeroParaExtenso(num) {
 async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = null, layoutOptions = {}) {
     if (!window.pdfMake) {
         console.error("pdfMake is not loaded. Cannot generate PDF.");
-        exibirMensagemErro("Erro: A biblioteca pdfMake não foi carregada. Verifique as dependências.");
-        return;
+        return isPreview ? {} : undefined;
     }
     if (isGeneratingPDF && !isPreview) {
-        console.warn('Geração de PDF já em andamento. Aguardando conclusão.');
+        console.warn('PDF generation already in progress. Waiting for completion.');
         return;
     }
 
@@ -196,61 +191,54 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
     };
 
     try {
-        console.log('Validando dados do formulário:', dados);
         const erros = validarDadosFormulario(dados);
         if (erros.length > 0) {
-            console.error('Erros de validação:', erros);
-            exibirMensagemErro(`Erro: ${erros.join(' ')}`);
+            console.error('Validation errors:', erros);
             return isPreview ? {} : undefined;
         }
 
         let finalLetterheadImage = letterheadImageBase64;
         if (dados.usarPapelTimbrado && !finalLetterheadImage && dados.letterheadFile) {
-            console.log('Carregando papel timbrado personalizado');
-            try {
-                finalLetterheadImage = await (dados.letterheadFile.type.startsWith('image/') 
-                    ? getBase64FromFile(dados.letterheadFile) 
-                    : dados.letterheadFile.type === 'application/pdf' 
-                        ? convertPdfPageToImage(dados.letterheadFile) 
-                        : null);
-            } catch (error) {
-                console.error('Erro ao carregar papel timbrado:', error.message);
-                exibirMensagemErro('Erro ao carregar papel timbrado: ' + error.message);
-                return isPreview ? {} : undefined;
-            }
+            finalLetterheadImage = await (dados.letterheadFile.type.startsWith('image/') 
+                ? getBase64FromFile(dados.letterheadFile) 
+                : dados.letterheadFile.type === 'application/pdf' 
+                    ? convertPdfPageToImage(dados.letterheadFile) 
+                    : null);
+            if (!finalLetterheadImage) throw new Error('Failed to load custom letterhead.');
         } else if (!dados.usarPapelTimbrado && !finalLetterheadImage) {
-            console.log('Carregando imagem padrão de papel timbrado');
-            try {
-                finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            } catch (error) {
-                console.error('Erro ao carregar imagem padrão:', error.message);
-                exibirMensagemErro('Erro ao carregar a imagem padrão: ' + error.message);
-                return isPreview ? {} : undefined;
-            }
+            finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+            if (!finalLetterheadImage) throw new Error('Failed to load default letterhead.');
         }
 
         const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
         const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY } = { ...defaults, ...layoutOptions };
         const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
 
-        let declaracoesParaIncluir = [
-            ...declaracoesCompletas.filter(decl => {
-                const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
-                const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
-                const ehAdimplencia = decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA";
-                const condicaoAdimplencia = !dados.opcaoSelecao.startsWith('00SL') || dados.municipioMais65mil;
-                return (!ehSustentabilidade || condicaoSustentabilidade) && (!ehAdimplencia || condicaoAdimplencia);
-            }),
-            ...(declaracoesEspecificas[dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')] || [])
-        ];
+        // Consolidar declarações sem duplicatas
+        const todasDeclaracoes = new Map();
+        declaracoesCompletas.forEach(decl => {
+            const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
+            const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
+            const ehAdimplencia = decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA";
+            const condicaoAdimplencia = !dados.opcaoSelecao.startsWith('00SL') || dados.municipioMais65mil;
+            if ((!ehSustentabilidade || condicaoSustentabilidade) && (!ehAdimplencia || condicaoAdimplencia)) {
+                todasDeclaracoes.set(decl.title, decl);
+            }
+        });
 
-        console.log('Declarações incluídas:', declaracoesParaIncluir.map(d => d.title));
+        const opcaoBase = dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '');
+        const declaracoesEspecificasArray = declaracoesEspecificas[opcaoBase] || [];
+        declaracoesEspecificasArray.forEach(decl => {
+            todasDeclaracoes.set(decl.title, decl);
+        });
+
+        const declaracoesParaIncluir = Array.from(todasDeclaracoes.values());
 
         const allPagesContent = declaracoesParaIncluir.map((decl, index) => {
             let content = substituirPlaceholders(decl.content, dados);
             let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }];
 
-            if (['00SL_emendas', '00SL_comissao'].includes(dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '')) && decl.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
+            if (['00SL_emendas', '00SL_comissao'].includes(opcaoBase) && decl.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && dados.espacosFisicos.length > 0) {
                 contentArray = [
                     { text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(), alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 5] },
                     {
@@ -269,10 +257,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                             vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 1 : 0.5,
                             hLineColor: (i, node) => (i === 0 || i === node.table.body.length) ? '#003087' : '#cccccc',
                             vLineColor: (i, node) => (i === 0 || i === node.table.widths.length) ? '#003087' : '#cccccc',
-                            paddingLeft: () => 5,
-                            paddingRight: () => 5,
-                            paddingTop: () => 5,
-                            paddingBottom: () => 5
+                            paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 5, paddingBottom: () => 5
                         },
                         margin: [0, 5, 0, 30]
                     }
@@ -290,7 +275,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                 margin: [defaults.leftRightMargin, topMargin, defaults.leftRightMargin, bottomMargin],
                 stack: [
                     ...headerStack,
-                    { text: `DECLARAÇÃO\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                    { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
                     ...contentArray
                 ]
             };
@@ -305,10 +290,10 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                         headerRows: 1,
                         widths: [40, '*'],
                         body: [
-                            [{ text: 'Página', style: 'tableHeader' }, { text: 'DECLARAÇÃO', style: 'tableHeader' }],
+                            [{ text: 'Página', style: 'tableHeader' }, { text: '', style: 'tableHeader' }],
                             ...declaracoesParaIncluir.map((decl, idx) => [
                                 { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                                { text: `Declaração ${substituirPlaceholders(decl.title, dados)}`, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                                { text: ` ${substituirPlaceholders(decl.title, dados)}`, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
                             ])
                         ]
                     },
@@ -317,8 +302,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                         vLineWidth: () => 1,
                         hLineColor: () => '#003087',
                         vLineColor: () => '#003087',
-                        paddingLeft: () => 5, paddingRight: () => 5,
-                        paddingTop: () => 2, paddingBottom: () => 2
+                        paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 2, paddingBottom: () => 2
                     },
                     margin: [0, 5, 0, 5],
                     alignment: 'center'
@@ -336,27 +320,23 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
             background: (currentPage, pageCount) => 
                 finalLetterheadImage ? { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
-            footer: (currentPage, pageCount) => {
-                return {
-                    margin: [40, 0, 40, 0],
-                    stack: [
-                        {
-                            columns: [
-                                { 
-                                    text: currentPage < pageCount 
-                                        ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
-                                        : `Documento composto por ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
-                                    fontSize: 8.5, 
-                                    color: '#555555', 
-                                    alignment: 'left' 
-                                },
-                                { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
-                            ]
-                        },
-                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
-                    ]
-                };
-            },
+            footer: (currentPage, pageCount) => ({
+                margin: [40, 0, 40, 0],
+                stack: [
+                    {
+                        columns: [
+                            { 
+                                text: currentPage < pageCount 
+                                    ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
+                                    : `Documento composto por ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
+                                fontSize: 8.5, color: '#555555', alignment: 'left' 
+                            },
+                            { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                        ]
+                    },
+                    { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                ]
+            }),
             content: allPagesContent,
             styles: {
                 header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
@@ -375,26 +355,19 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             }
         };
 
-        console.log('Definição do documento PDF:', docDefinition);
-
         if (isPreview) {
-            console.log('Retornando docDefinition para pré-visualização');
             return docDefinition;
         }
 
-        console.log('Gerando PDF para download');
         const nomeArquivo = `declaracao_${dados.proposta.replace(/\//g, '-')}.pdf`;
         const pdfDoc = pdfMake.createPdf(docDefinition);
         pdfDoc.download(nomeArquivo, () => {
-            console.log('Download do PDF concluído:', nomeArquivo);
-            exibirMensagemSucesso('PDF gerado e baixado com sucesso!');
+            console.log('PDF download completed:', nomeArquivo);
         }, (error) => {
-            console.error('Erro ao baixar o PDF:', error);
-            exibirMensagemErro('Erro ao baixar o PDF: ' + error.message);
+            console.error('Error downloading PDF:', error);
         });
     } catch (error) {
-        console.error('Erro ao gerar PDF:', error);
-        exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
+        console.error('Error generating PDF:', error);
     } finally {
         isGeneratingPDF = false;
         if (loadingMessage) loadingMessage.style.display = 'none';

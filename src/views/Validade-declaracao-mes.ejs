@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0056b3"> 
+    <meta name="theme-color" content="#0056b3">
     <meta name="description" content="Gerador de Declarações para Entidades Públicas do Ministério do Esporte.">
     <title>Gerador de Declarações - Ministério do Esporte</title>
     
@@ -269,7 +269,7 @@
                                 <option value="" disabled selected>Selecione o cargo</option>
                                 <option value="Governador do Estado">Governador(a) do Estado</option>
                                 <option value="Prefeito do Município">Prefeito(a) do Município</option>
-                                <option value="Secretário de Finanças">Secretário() de Finanças</option>
+                                <option value="Secretário de Finanças">Secretário(a) de Finanças</option>
                             </select>
                             <span class="error-message" aria-live="polite">Por favor, selecione um cargo.</span>
                         </div>
@@ -314,17 +314,22 @@
                         </div>
                     </div>
                      <div class="form-row">
-                        <div class="form-group full-width">
-                            <label for="nomeEstadoMunicipio">Nome do Estado ou Município</label>
-                            <input type="text" id="nomeEstadoMunicipio" placeholder="Preenchido via CNPJ" readonly required>
-                            <span class="error-message" aria-live="polite">Nome não encontrado.</span>
-                        </div>
-                    </div>
+                         <div class="form-group full-width">
+                             <label for="nomeEstadoMunicipio">Nome do Estado ou Município</label>
+                             <input type="text" id="nomeEstadoMunicipio" placeholder="Preenchido via CNPJ" readonly required>
+                             <span class="error-message" aria-live="polite">Nome não encontrado.</span>
+                         </div>
+                     </div>
                 </section>
                 
                 <section class="section">
                     <h3>Configurações das Declarações</h3>
+                    <p>Marque as opções que correspondem à realidade do seu município.</p>
                     <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="apresentaraCertidoes" name="configuracoes">
+                            <label for="apresentaraCertidoes">O Município apresentará as Certidões emitidas pelo Tribunal de Justiça (TJ), Tribunal Regional do Trabalho (TRT) e Tribunal Regional Federal (TRF)?</label>
+                        </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="ate65milHabitantes" name="configuracoes">
                             <label for="ate65milHabitantes">O município possui até 65 mil habitantes?</label>
@@ -379,7 +384,7 @@
     </main>
 
     <div id="successPopup" class="popup" role="alert" aria-hidden="true">
-        <p>PDF baixado com sucesso!</p>
+        <p>Documento(s) baixado(s) com sucesso!</p>
         <button id="closePopupBtn">Fechar</button>
     </div>
     <div id="overlay" class="overlay" aria-hidden="true"></div>
@@ -405,8 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlay');
     const loadingMessage = document.getElementById('loadingMessage');
     const tabs = ['aba1', 'aba2', 'aba3'];
-
-    // Variável para armazenar o nome da entidade (Razão Social/Fantasia)
     let nomeEntidadeGlobal = '';
 
     const applyTheme = (theme) => {
@@ -480,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const errorMessage = formGroup.querySelector('.error-message');
                 if (errorMessage) {
-                    errorMessage.textContent = '';
+                    errorMessage.textContent = 'Por favor, digite o nome completo.';
                 }
             }
         }
@@ -541,21 +544,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
             if (!response.ok) throw new Error('CNPJ não encontrado ou inválido.');
             const data = await response.json();
-
-            // PONTO 1: Armazena o nome da ENTIDADE (Fantasia/Razão Social) na variável global
+            
             nomeEntidadeGlobal = data.nome_fantasia || data.razao_social || data.municipio || '';
             
-            // PONTO 2: Popula os campos do formulário
             document.getElementById('cep').value = data.cep?.replace(/(\d{5})(\d{3})/, '$1-$2') || '';
             document.getElementById('endereco').value = `${data.logradouro || ''}, ${data.numero || ''}, ${data.bairro || ''}`.trim().replace(/^,|,$/g, '');
             document.getElementById('cidadeUF').value = `${data.municipio || ''}/${data.uf || ''}`;
-            
-            // Este campo continua sendo populado com o NOME DO MUNICÍPIO para uso no corpo das declarações
             document.getElementById('nomeEstadoMunicipio').value = data.municipio || '';
 
         } catch (error) {
             console.error('Erro ao buscar CNPJ:', error);
-            // Limpa a variável global em caso de erro
             nomeEntidadeGlobal = '';
             const formGroup = cnpjInput.closest('.form-group');
             formGroup.classList.add('invalid');
@@ -617,102 +615,101 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const getDeclaracoes = (opcao, dados, configuracoes) => {
-    // O texto agora usará 'nomeEstadoMunicipio' para o nome do município/estado
-    // e 'nomeEntidade' para a referência à entidade/empresa quando necessário.
-    const declaracoesBase = {
-        emenda: [{
-            id: 'area_gestora_existe',
-            title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\nINCISO VII DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso VII, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo.`
-        }, {
-            id: 'area_gestora_inexiste',
-            title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\n§ 17, DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 17, do Art. 29, da Portaria Interministerial MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo.`
-        }, {
-            id: 'taxa_administracao',
-            title: 'DECLARAÇÃO DE INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISO XXXIV, DO ART. 29, DA PORTARIA CONJUNTA N.º 33/2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso XXXIV, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui legislação, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta MGI/MF/CGU n.º 33/2023.`
-        }],
-        comissao: [{
-            id: 'precatorios_judiciais',
-            title: 'DECLARAÇÃO DE REGULARIDADE NO PAGAMENTO DE PRECATÓRIOS JUDICIAIS\nINCISO II c/c § 6º DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`
-        }, {
-            id: 'transparencia_orcamentaria',
-            title: 'DECLARAÇÃO DE TRANSPARÊNCIA DA EXECUÇÃO ORÇAMENTÁRIA E FINANCEIRA EM MEIO ELETRÔNICO DE ACESSO PÚBLICO E ADOÇÃO DE SISTEMA INTEGRADO DE ADMINISTRAÇÃO FINANCEIRA E CONTROLE\nINCISOS XV E XVI DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XV e XVI do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\nI. confere transparência à execução orçamentária em meios eletrônicos, nos termos do art. 48, § 1º, inciso II, e do art. 48-A da Lei Complementar nº 101, de 4 de maio de 2000; e\nII. adota sistema integrado de administração financeira e controle, nos termos do art. 48, § 1º, inciso III, da Lei Complementar nº 101, de 4 de maio de 2000 e do Decreto nº 10.540, de 5 de novembro de 2020.`
-        }, {
-            id: 'empresas_publicas',
-            title: 'DECLARAÇÃO DE REGULARIDADE NO FORNECIMENTO DA RELAÇÃO DAS EMPRESAS PÚBLICAS E DAS SOCIEDADES DE ECONOMIA MISTA AO REGISTRO PÚBLICO DE EMPRESAS MERCANTIS E ATIVIDADES AFINS E REGULARIDADE NA CONTRATAÇÃO DE OPERAÇÃO DE CRÉDITO COM INSTITUIÇÃO FINANCEIRA\nINCISOS XX E XXXII DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XX e XXXII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se:\na) regular no fornecimento da relação das empresas públicas e das sociedades de economia mista junto ao Registro Público de Empresas Mercantis e Atividades Afins, nos termos do art. 92 da Lei nº 13.303, de 30 de junho de 2016; e\nb) regular na contratação de operação de crédito com instituição financeira, nos termos do art. 33 da Lei Complementar nº 101, de 4 de maio de 2000.`
-        }, {
-            id: 'limites_cumprimento',
-            title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
-        }, {
-            id: 'limites_cumprimento_pessoal',
-            title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES COM DESPESA DE PESSOAL\nINCISO XXXI DO ART 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
-        }, {
-            id: 'precatorios_educacao_regular',
-            title: 'REGULARIDADE NA DESTINAÇÃO DOS PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\nINCISO XXXIII DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXIII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`
-        }, {
-            id: 'precatorios_educacao_ausencia',
-            title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento § 16, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`
-        }, {
-            id: 'area_gestora_existe_taxa',
-            title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISOS VII E XXXIV DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\na) possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`
-        }, {
-            id: 'area_gestora_inexiste_taxa',
-            title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023',
-            content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`
-        }]
+        const declaracoesBase = {
+            emenda: [{
+                id: 'area_gestora_existe',
+                title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\nINCISO VII DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso VII, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo.`
+            }, {
+                id: 'area_gestora_inexiste',
+                title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO\n§ 17, DO ART. 29 DA PORTARIA CONJUNTA N.º 33/2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 17, do Art. 29, da Portaria Interministerial MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo.`
+            }, {
+                id: 'taxa_administracao',
+                title: 'DECLARAÇÃO DE INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISO XXXIV, DO ART. 29, DA PORTARIA CONJUNTA N.º 33/2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso XXXIV, do Art. 29, da Portaria Conjunta MGI/MF/CGU n.º 33/2023, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, não possui legislação, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta MGI/MF/CGU n.º 33/2023.`
+            }],
+            comissao: [{
+                id: 'precatorios_judiciais',
+                title: 'DECLARAÇÃO DE REGULARIDADE NO PAGAMENTO DE PRECATÓRIOS JUDICIAIS\nINCISO II c/c § 6º DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`
+            }, {
+                id: 'transparencia_orcamentaria',
+                title: 'DECLARAÇÃO DE TRANSPARÊNCIA DA EXECUÇÃO ORÇAMENTÁRIA E FINANCEIRA EM MEIO ELETRÔNICO DE ACESSO PÚBLICO E ADOÇÃO DE SISTEMA INTEGRADO DE ADMINISTRAÇÃO FINANCEIRA E CONTROLE\nINCISOS XV E XVI DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XV e XVI do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\nI. confere transparência à execução orçamentária em meios eletrônicos, nos termos do art. 48, § 1º, inciso II, e do art. 48-A da Lei Complementar nº 101, de 4 de maio de 2000; e\nII. adota sistema integrado de administração financeira e controle, nos termos do art. 48, § 1º, inciso III, da Lei Complementar nº 101, de 4 de maio de 2000 e do Decreto nº 10.540, de 5 de novembro de 2020.`
+            }, {
+                id: 'empresas_publicas',
+                title: 'DECLARAÇÃO DE REGULARIDADE NO FORNECIMENTO DA RELAÇÃO DAS EMPRESAS PÚBLICAS E DAS SOCIEDADES DE ECONOMIA MISTA AO REGISTRO PÚBLICO DE EMPRESAS MERCANTIS E ATIVIDADES AFINS E REGULARIDADE NA CONTRATAÇÃO DE OPERAÇÃO DE CRÉDITO COM INSTITUIÇÃO FINANCEIRA\nINCISOS XX E XXXII DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XX e XXXII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se:\na) regular no fornecimento da relação das empresas públicas e das sociedades de economia mista junto ao Registro Público de Empresas Mercantis e Atividades Afins, nos termos do art. 92 da Lei nº 13.303, de 30 de junho de 2016; e\nb) regular na contratação de operação de crédito com instituição financeira, nos termos do art. 33 da Lei Complementar nº 101, de 4 de maio de 2000.`
+            }, {
+                id: 'limites_cumprimento',
+                title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
+            }, {
+                id: 'limites_cumprimento_pessoal',
+                title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES COM DESPESA DE PESSOAL\nINCISO XXXI DO ART 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
+            }, {
+                id: 'precatorios_educacao_regular',
+                title: 'REGULARIDADE NA DESTINAÇÃO DOS PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\nINCISO XXXIII DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXIII do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`
+            }, {
+                id: 'precatorios_educacao_ausencia',
+                title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento § 16, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}, encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`
+            }, {
+                id: 'area_gestora_existe_taxa',
+                title: 'DECLARAÇÃO DE EXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\nINCISOS VII E XXXIV DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos VII e XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\na) possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, com lotação de, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`
+            }, {
+                id: 'area_gestora_inexiste_taxa',
+                title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023',
+                content: `Eu, ${dados.nome}, na condição de ${dados.cargo} da ${dados.nomeEstadoMunicipio}, CNPJ nº ${dados.cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 17 e inciso XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${dados.nomeEstadoMunicipio}/${dados.cidadeUF.split('/')[1]}, endereço ${dados.endereco} ${dados.complemento}, CEP ${dados.cep}, ${dados.cidadeUF}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`
+            }]
+        };
+
+        let declaracoesSelecionadas = [];
+        if (opcao === '20JP_00SL_emenda') {
+            if (configuracoes.possuiAreaGestora) {
+                declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'area_gestora_existe'));
+            } else {
+                declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'area_gestora_inexiste'));
+            }
+            declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'taxa_administracao'));
+        } else if (opcao === '20JP_00SL_comissao') {
+            // === LÓGICA ALTERADA AQUI ===
+            if (!configuracoes.apresentaraCertidoes) {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_judiciais'));
+            }
+            // ============================
+            if (configuracoes.ate65milHabitantes) {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'limites_cumprimento_pessoal'));
+            } else {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'transparencia_orcamentaria'));
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'limites_cumprimento'));
+            }
+            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'empresas_publicas'));
+            if (configuracoes.regularPrecatorios) {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_educacao_regular'));
+            } else {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_educacao_ausencia'));
+            }
+            if (configuracoes.possuiAreaGestora) {
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'area_gestora_existe_taxa'));
+            } else {
+                // Esta declaração será adicionada aqui e filtrada depois para um PDF separado.
+                declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'area_gestora_inexiste_taxa'));
+            }
+        }
+        return declaracoesSelecionadas.filter(d => d !== undefined);
     };
 
-    let declaracoesSelecionadas = [];
-    if (opcao === '20JP_00SL_emenda') {
-        if (configuracoes.possuiAreaGestora) {
-            declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'area_gestora_existe'));
-        } else {
-            declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'area_gestora_inexiste'));
-        }
-        declaracoesSelecionadas.push(declaracoesBase.emenda.find(d => d.id === 'taxa_administracao'));
-    } else if (opcao === '20JP_00SL_comissao') {
-        declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_judiciais'));
-        if (configuracoes.ate65milHabitantes) {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'limites_cumprimento_pessoal'));
-        } else {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'transparencia_orcamentaria'));
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'limites_cumprimento'));
-        }
-        declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'empresas_publicas'));
-        if (configuracoes.regularPrecatorios) {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_educacao_regular'));
-        } else {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'precatorios_educacao_ausencia'));
-        }
-        if (configuracoes.possuiAreaGestora) {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'area_gestora_existe_taxa'));
-        } else {
-            declaracoesSelecionadas.push(declaracoesBase.comissao.find(d => d.id === 'area_gestora_inexiste_taxa'));
-        }
-    }
-    return declaracoesSelecionadas.filter(d => d !== undefined);
-};
-
-    const createDeclarationContent = (declaracao, pageNumber, dados) => {
-        let content = declaracao.content;
-        let contentArray = [{ text: content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }];
-
-        // PONTO 3: O cabeçalho agora usa 'dados.nomeEntidade'
-        const headerStack = !dados.usarPapelTimbrado ? [
+    const createDeclarationContent = (declaracao, dados) => {
+        const headerStack = [
             { text: dados.nomeEntidade || 'Entidade não informada', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
             { text: `${dados.endereco || 'Endereço não informado'} - ${dados.cidadeUF || 'Município/UF não informado'} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
             { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-        ] : [];
+        ];
 
         return {
             pageBreak: 'after',
@@ -720,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stack: [
                 ...headerStack,
                 { text: `DECLARAÇÃO\n${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
-                ...contentArray
+                { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }
             ]
         };
     };
@@ -761,8 +758,103 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     });
 
-    const gerarPDF = async () => {
-        toggleLoading(true, 'Gerando PDF...');
+    // === NOVA FUNÇÃO PARA GERAR O PDF PRINCIPAL ===
+    const gerarPDFPrincipal = (declaracoes, dados) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+                const allPagesContent = declaracoes.map((dec, index) => createDeclarationContent(dec, dados)).concat(createLastPageContent(declaracoes, dados));
+
+                const docDefinition = {
+                    pageSize: 'A4',
+                    pageMargins: [40, 0, 40, 100],
+                    background: (currentPage, pageCount) => watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
+                    footer: (currentPage, pageCount) => ({
+                        margin: [40, 0, 40, 0],
+                        stack: [
+                            {
+                                columns: [
+                                    {
+                                        text: currentPage < pageCount ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' : `Documento composto por ${declaracoes.length} (${numToWords(declaracoes.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`,
+                                        fontSize: 8.5, color: '#555555', alignment: 'left'
+                                    },
+                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                                ]
+                            },
+                            { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                        ]
+                    }),
+                    content: allPagesContent,
+                    styles: {
+                        header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
+                        subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
+                        tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
+                    },
+                    defaultStyle: { font: 'Roboto', alignment: 'justify' }
+                };
+
+                pdfMake.createPdf(docDefinition).download(`declaracoes_principais_${dados.nome.replace(/\s+/g, '_')}.pdf`, () => {
+                    resolve();
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+    
+    // === NOVA FUNÇÃO PARA GERAR O PDF SEPARADO ===
+    const gerarPDFDeclaracaoSeparada = (declaracao, dados) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+                
+                const pageContent = {
+                    margin: [40, 130, 40, 100],
+                    stack: [
+                        { text: `DECLARAÇÃO\n${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                        { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 50] },
+                        { text: `${(dados.cidadeUF.split('/')[0] || 'Município').toUpperCase()}/${(dados.cidadeUF.split('/')[1] || 'UF').toUpperCase()}, ${new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
+                        { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+                        { text: dados.nome || 'Nome não informado', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
+                        { text: dados.cargo || 'Cargo não informado', alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
+                    ]
+                };
+
+                const docDefinition = {
+                    pageSize: 'A4',
+                    pageMargins: [40, 0, 40, 100],
+                    background: () => watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
+                    footer: (currentPage, pageCount) => ({
+                        margin: [40, 0, 40, 0],
+                        stack: [
+                            {
+                                columns: [
+                                    { text: 'Valida somente no mês da assinatura', fontSize: 8.5, color: '#555555', alignment: 'left' },
+                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                                ]
+                            },
+                            { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                        ]
+                    }),
+                    content: [pageContent],
+                    styles: {
+                        header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
+                    },
+                    defaultStyle: { font: 'Roboto', alignment: 'justify' }
+                };
+
+                pdfMake.createPdf(docDefinition).download(`declaracao_remessa_area_gestora_${dados.nome.replace(/\s+/g, '_')}.pdf`, () => {
+                    resolve();
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    // === FUNÇÃO PRINCIPAL REFEITA PARA CONTROLAR A GERAÇÃO DOS PDFs ===
+    const processarGeracaoPDFs = async () => {
+        toggleLoading(true, 'Gerando documento(s)...');
         try {
             const dados = {
                 nome: document.getElementById('nomeResponsavel')?.value.trim() || '',
@@ -772,87 +864,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 endereco: document.getElementById('endereco')?.value.trim() || '',
                 complemento: document.getElementById('complemento')?.value.trim() || '',
                 cidadeUF: document.getElementById('cidadeUF')?.value || '',
-                // Usa a variável global para o nome da entidade
                 nomeEntidade: nomeEntidadeGlobal,
-                // Usa o campo do form para o nome do município (para o corpo das declarações)
-                nomeEstadoMunicipio: document.getElementById('nomeEstadoMunicipio')?.value.trim() || '',
-                date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }),
-                usarPapelTimbrado: false
+                nomeEstadoMunicipio: document.getElementById('nomeEstadoMunicipio')?.value.trim() || ''
             };
 
             const configuracoes = {
                 ate65milHabitantes: document.getElementById('ate65milHabitantes')?.checked || false,
                 regularPrecatorios: document.getElementById('regularPrecatorios')?.checked || false,
-                possuiAreaGestora: document.getElementById('possuiAreaGestora')?.checked || false
+                possuiAreaGestora: document.getElementById('possuiAreaGestora')?.checked || false,
+                apresentaraCertidoes: document.getElementById('apresentaraCertidoes')?.checked || false
             };
 
-            const declaracaoTipos = Array.from(document.querySelectorAll('input[name="declaracaoTipo"]:checked') || []).map(cb => cb.value);
+            const declaracaoTipos = Array.from(document.querySelectorAll('input[name="declaracaoTipo"]:checked')).map(cb => cb.value);
             if (declaracaoTipos.length === 0) throw new Error('Selecione pelo menos um tipo de declaração.');
 
-            const declaracoes = declaracaoTipos.flatMap(opcao => getDeclaracoes(opcao, dados, configuracoes));
-            if (!declaracoes.length) throw new Error('Nenhuma declaração válida gerada.');
+            const todasDeclaracoes = declaracaoTipos.flatMap(opcao => getDeclaracoes(opcao, dados, configuracoes));
+            if (!todasDeclaracoes.length) throw new Error('Nenhuma declaração válida para gerar com as opções selecionadas.');
 
-            const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            const allPagesContent = declaracoes.map((dec, index) => createDeclarationContent(dec, index + 1, dados)).concat(createLastPageContent(declaracoes, dados));
+            const declaracaoSeparada = todasDeclaracoes.find(d => d.id === 'area_gestora_inexiste_taxa');
+            const declaracoesPrincipais = todasDeclaracoes.filter(d => d.id !== 'area_gestora_inexiste_taxa');
 
-            const docDefinition = {
-                pageSize: 'A4',
-                pageMargins: [40, 0, 40, 100],
-                background: (currentPage, pageCount) =>
-                    watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
-                footer: (currentPage, pageCount) => {
-                    return {
-                        margin: [40, 0, 40, 0],
-                        stack: [
-                            {
-                                columns: [
-                                    {
-                                        text: currentPage < pageCount
-                                            ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.'
-                                            : `Documento composto por ${declaracoes.length} (${numToWords(declaracoes.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`,
-                                        fontSize: 8.5,
-                                        color: '#555555',
-                                        alignment: 'left'
-                                    },
-                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
-                                ]
-                            },
-                            { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
-                        ]
-                    };
-                },
-                content: allPagesContent,
-                styles: {
-                    header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
-                    subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
-                    tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
-                },
-                defaultStyle: { font: 'Roboto', alignment: 'justify' },
-                permissions: {
-                    printing: 'highResolution',
-                    modifying: false,
-                    copying: false,
-                    annotating: false,
-                    fillingForms: false,
-                    contentAccessibility: false,
-                    documentAssembly: false
-                }
-            };
+            if (declaracaoSeparada) {
+                await gerarPDFDeclaracaoSeparada(declaracaoSeparada, dados);
+            }
+            if (declaracoesPrincipais.length > 0) {
+                await gerarPDFPrincipal(declaracoesPrincipais, dados);
+            }
 
-            if (!window.pdfMake) throw new Error('A biblioteca pdfMake não está carregada.');
-            const pdfDoc = pdfMake.createPdf(docDefinition);
-            pdfDoc.getDataUrl((dataUrl) => {
-                const link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = `declaracao_${declaracaoTipos.join('_')}_${dados.nome.replace(/\s+/g, '_')}_${dados.date.replace(/\//g, '-')}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showPopup();
-            });
+            showPopup();
         } catch (error) {
             console.error('Erro na geração do PDF:', error);
-            alert('Erro ao gerar o PDF: ' + error.message);
+            alert(`Erro ao gerar o(s) PDF(s): ${error.message}`);
         } finally {
             toggleLoading(false);
         }
@@ -864,7 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Por favor, preencha todos os campos obrigatórios e selecione pelo menos um tipo de declaração.');
             return;
         }
-        gerarPDF();
+        processarGeracaoPDFs();
     });
 
     showTab('aba1');
@@ -872,34 +914,6 @@ document.addEventListener('DOMContentLoaded', () => {
     validateTab('aba2');
 });
 
-// Estas funções auxiliares não precisam de alteração
-function substituirPlaceholders(texto, dados) {
-    const dataAtual = new Date();
-    return texto
-        .replace(/\[dirigente]/g, dados.nome || 'Nome não informado')
-        .replace(/\[matricula]/g, '')
-        .replace(/\[cargoDirigente]/g, dados.cargo || 'Cargo não informado')
-        .replace(/\[entidade]/g, dados.nomeEntidade || 'Entidade não informada')
-        .replace(/\[cnpj]/g, dados.cnpj || 'CNPJ não informado')
-        .replace(/\[endereco]/g, dados.endereco || 'Endereço não informado')
-        .replace(/\[uf]/g, dados.cidadeUF.split('/')[1] || 'UF não informada')
-        .replace(/\[municipio]/g, dados.cidadeUF.split('/')[0] || 'Município não informado')
-        .replace(/\[cep]/g, dados.cep || 'CEP não informado')
-        .replace(/\[proposta]/g, '')
-        .replace(/\[diaAtual]/g, String(dataAtual.getDate()).padStart(2, '0'))
-        .replace(/\[mesAtual]/g, dataAtual.toLocaleString('pt-BR', { month: 'long' }))
-        .replace(/\[anoAtual]/g, dataAtual.getFullYear())
-        .replace(/\[nomeEspacoFisico]/g, '')
-        .replace(/\[enderecoEspacoFisico]/g, '');
-}
-
-function numeroParaExtenso(num) {
-    const units = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-    const tens = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-    if (num < 20) return units[num];
-    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' e ' + units[num % 10] : '');
-    return String(num);
-}
     </script>
 </body>
 </html>
