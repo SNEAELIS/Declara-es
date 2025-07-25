@@ -76,31 +76,23 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
 
     const dataExtenso = new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    let finalLetterheadImage = layoutOptions.isCustom && letterheadImageBase64 
-        ? letterheadImageBase64 
-        : formData.useLetterheadChecked && formData.letterheadFile 
-            ? await (formData.letterheadFile.type.startsWith('image/') 
-                ? getBase64FromFile(formData.letterheadFile) 
-                : formData.letterheadFile.type === 'application/pdf' 
-                    ? convertPdfPageToImage(formData.letterheadFile) 
-                    : null) 
-            : await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+    // Use default letterhead image since custom letterhead is removed
+    const finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
 
     const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
-    const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY, isCustom } = { ...defaults, ...layoutOptions };
+    const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY } = { ...defaults, ...layoutOptions };
     const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
 
     const allPagesContent = finalDeclarations.map((title, index) => {
         const pageStack = [];
         const headerStack = [];
 
-        if (!formData.useLetterheadChecked) {
-            headerStack.push(
-                { text: formData.entidade || 'ASSOCIACAO MORIA', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
-                { text: formData.endereco || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE', fontSize: 10, alignment: 'center' },
-                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-            );
-        }
+        // Default header since custom letterhead is not used
+        headerStack.push(
+            { text: formData.entidade || 'ASSOCIACAO MORIA', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
+            { text: formData.endereco || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE', fontSize: 10, alignment: 'center' },
+            { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
+        );
 
         pageStack.push(
             ...headerStack,
@@ -154,9 +146,9 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
         pageSize: 'A4',
         pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
         background: (currentPage, pageCount) => 
-            finalLetterheadImage && (!isCustom && currentPage === pageCount 
-                ? null 
-                : { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 }),
+            finalLetterheadImage 
+                ? { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 }
+                : null,
         footer: (currentPage, pageCount) => {
             return {
                 margin: [40, 0, 40, 0],
@@ -188,7 +180,7 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
     };
 }
 
-async function generateAllDeclarationsPDF(orderedDeclarationsList = null, customLetterheadImage = null, customLayoutOptions = {}, programmaticFormData = {}) {
+async function generateAllDeclarationsPDF(orderedDeclarationsList = null, customLayoutOptions = {}, programmaticFormData = {}) {
     if (!window.pdfMake) {
         console.error("pdfMake is not loaded. Cannot generate PDF.");
         alert("Erro: A biblioteca pdfMake não foi carregada. Verifique as dependências.");
@@ -196,8 +188,6 @@ async function generateAllDeclarationsPDF(orderedDeclarationsList = null, custom
     }
 
     const getInputValue = id => document.getElementById(id)?.value || '';
-    const getFileInput = id => document.getElementById(id)?.files[0] || null;
-    const getCheckboxValue = id => document.getElementById(id)?.checked || false;
 
     const formDataFromDom = {
         dirigente: getInputValue('dirigente') || 'Pedro Dias',
@@ -207,15 +197,13 @@ async function generateAllDeclarationsPDF(orderedDeclarationsList = null, custom
         endereco: getInputValue('endereco') || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE',
         uf: getInputValue('uf') || 'DF',
         municipio: getInputValue('municipio') || 'Brasília',
-        proposta: getInputValue('proposta') || '22/22/23/2/24',
-        useLetterheadChecked: getCheckboxValue('useLetterhead'),
-        letterheadFile: getFileInput('letterheadFile')
+        proposta: getInputValue('proposta') || '22/22/23/2/24'
     };
 
     const finalFormData = { ...formDataFromDom, ...programmaticFormData };
 
     try {
-        const docDefinition = await generatePdfDocDefinition(orderedDeclarationsList, customLetterheadImage, customLayoutOptions, finalFormData);
+        const docDefinition = await generatePdfDocDefinition(orderedDeclarationsList, null, customLayoutOptions, finalFormData);
         if (!docDefinition) throw new Error("Failed to generate document definition.");
 
         docDefinition.permissions = {

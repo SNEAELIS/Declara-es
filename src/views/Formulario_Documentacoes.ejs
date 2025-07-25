@@ -253,7 +253,7 @@
                 </div>
             </section>
             
-            <section class="section">
+            <!--<section class="section">
                 <h3>Opções de Layout</h3>
                 <div class="form-card">
                     <div class="checkbox-wrapper">
@@ -265,7 +265,7 @@
                         <input type="file" id="letterheadFile" name="letterheadFile" accept=".pdf,.jpeg,.jpg,.png">
                     </div>
                 </div>
-            </section>
+            </section>-->
         </form>
 
         <div class="button-container">
@@ -329,519 +329,463 @@
     <script src="/forms/declaracoes/public/js/Script/script.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.pdfjsLib) {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+       document.addEventListener('DOMContentLoaded', () => {
+    if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+    }
+
+    const dirigenteInput = document.getElementById('dirigente');
+    const cargoInput = document.getElementById('cargoDirigente');
+    const cnpjInput = document.getElementById('cnpj');
+    const entidadeInput = document.getElementById('entidade');
+    const enderecoInput = document.getElementById('endereco');
+    const ufInput = document.getElementById('uf');
+    const municipioInput = document.getElementById('municipio');
+    const propostaInput = document.getElementById('proposta');
+    const botaoGerarPDF = document.getElementById('botaoGerarPDF');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const declarationForm = document.getElementById('declaracoesForm');
+
+    const modal = document.getElementById('layoutEditorModal');
+    const iframe = document.getElementById('previewIframe');
+    const declarationListEl = document.getElementById('declarationList');
+    const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
+    const cancelLayoutBtn = document.getElementById('cancelLayout');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const marginTopCm = document.getElementById('marginTopCm');
+    const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+
+    let currentPreviewPage = 1;
+    let reorderedDeclarations = [];
+    let debounceTimer;
+    let cnpjDebounceTimer;
+    let fullPdfBlobUrl = null;
+
+    function toggleErro(input, showError, message = '') {
+        const errorDiv = input.parentElement.querySelector('.error-message');
+        input.classList.remove('error', 'success');
+        if (showError) {
+            input.classList.add('error');
+            if (errorDiv) {
+                errorDiv.textContent = message || `Campo obrigatório`;
+                errorDiv.style.display = 'block';
             }
+        } else {
+            input.classList.add('success');
+            if (errorDiv) errorDiv.style.display = 'none';
+        }
+    }
 
-            const dirigenteInput = document.getElementById('dirigente');
-            const cargoInput = document.getElementById('cargoDirigente');
-            const cnpjInput = document.getElementById('cnpj');
-            const entidadeInput = document.getElementById('entidade');
-            const enderecoInput = document.getElementById('endereco');
-            const ufInput = document.getElementById('uf');
-            const municipioInput = document.getElementById('municipio');
-            const propostaInput = document.getElementById('proposta');
-            const useLetterheadCheckbox = document.getElementById('useLetterhead');
-            const letterheadUploadContainer = document.getElementById('letterheadUploadContainer');
-            const letterheadFileInput = document.getElementById('letterheadFile');
-            const botaoGerarPDF = document.getElementById('botaoGerarPDF');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const declarationForm = document.getElementById('declaracoesForm');
+    function validarCampo(input, regex, errorMessage = 'Caracteres inválidos') {
+        const initialValue = input.value;
+        input.value = initialValue.replace(regex, '');
+        if (input.value !== initialValue) {
+            toggleErro(input, true, errorMessage);
+        } else {
+            toggleErro(input, false);
+        }
+    }
 
-            const modal = document.getElementById('layoutEditorModal');
-            const iframe = document.getElementById('previewIframe');
-            const declarationListEl = document.getElementById('declarationList');
-            const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
-            const cancelLayoutBtn = document.getElementById('cancelLayout');
-            const prevPageBtn = document.getElementById('prevPageBtn');
-            const nextPageBtn = document.getElementById('nextPageBtn');
-            const pageIndicator = document.getElementById('pageIndicator');
-            const marginTopCm = document.getElementById('marginTopCm');
-            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
+    function formatarProposta(input) {
+        let value = input.value
+            .replace(/[^\d/]/g, '')
+            .replace(/(\/.*)\//g, '$1');
+        let parts = value.split('/');
+        parts[0] = parts[0].slice(0, 6);
+        if (parts[1] !== undefined) {
+            parts[1] = parts[1].slice(0, 4);
+            input.value = parts.join('/');
+        } else {
+            input.value = parts[0];
+        }
+        toggleErro(input, false);
+    }
 
-            let currentPreviewPage = 1;
-            let reorderedDeclarations = [];
-            let letterheadBackground = null;
-            let debounceTimer;
-            let cnpjDebounceTimer;
-            let fullPdfBlobUrl = null;
+    function formatarEBuscarCNPJ(input) {
+        let value = input.value.replace(/\D/g, '').slice(0, 14);
+        value = value.replace(/(\d{2})(\d)/, '$1.$2')
+                     .replace(/(\d{3})(\d)/, '$1.$2')
+                     .replace(/(\d{3})(\d)/, '$1/$2')
+                     .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+        input.value = value;
 
-            function toggleErro(input, showError, message = '') {
-                const errorDiv = input.parentElement.querySelector('.error-message');
-                input.classList.remove('error', 'success');
-                if (showError) {
-                    input.classList.add('error');
-                    if (errorDiv) {
-                        errorDiv.textContent = message || `Campo obrigatório`;
-                        errorDiv.style.display = 'block';
-                    }
-                } else {
-                    input.classList.add('success');
-                    if (errorDiv) errorDiv.style.display = 'none';
-                }
+        clearTimeout(cnpjDebounceTimer);
+        if (value.length === 18) {
+            cnpjDebounceTimer = setTimeout(() => fetchEmpresaNome(value), 800);
+        } else {
+            entidadeInput.value = '';
+            enderecoInput.value = '';
+            ufInput.value = '';
+            municipioInput.value = '';
+            toggleErro(input, false);
+        }
+    }
+
+    async function fetchEmpresaNome(cnpj) {
+        const cleanCnpj = cnpj.replace(/[^\d]/g, '');
+        const spinner = document.getElementById('cnpj-spinner');
+
+        spinner.style.display = 'inline-block';
+        cnpjInput.classList.remove('success', 'error');
+        entidadeInput.value = 'Buscando...';
+        enderecoInput.value = 'Buscando...';
+        ufInput.value = 'Buscando...';
+        municipioInput.value = 'Buscando...';
+
+        try {
+            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'CNPJ não encontrado ou inválido.');
             }
-
-            function validarCampo(input, regex, errorMessage = 'Caracteres inválidos') {
-                const initialValue = input.value;
-                input.value = initialValue.replace(regex, '');
-                if (input.value !== initialValue) {
-                    toggleErro(input, true, errorMessage);
-                } else {
-                    toggleErro(input, false);
-                }
-            }
-
-            function formatarProposta(input) {
-                let value = input.value
-                    .replace(/[^\d/]/g, '')
-                    .replace(/(\/.*)\//g, '$1'); 
-                let parts = value.split('/');
-                parts[0] = parts[0].slice(0, 6);
-                if (parts[1] !== undefined) {
-                    parts[1] = parts[1].slice(0, 4);
-                    input.value = parts.join('/');
-                } else {
-                    input.value = parts[0];
-                }
-                toggleErro(input, false);
-            }
-
-            function formatarEBuscarCNPJ(input) {
-                let value = input.value.replace(/\D/g, '').slice(0, 14);
-                value = value.replace(/(\d{2})(\d)/, '$1.$2')
-                             .replace(/(\d{3})(\d)/, '$1.$2')
-                             .replace(/(\d{3})(\d)/, '$1/$2')
-                             .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-                input.value = value;
-
-                clearTimeout(cnpjDebounceTimer);
-                if (value.length === 18) {
-                    cnpjDebounceTimer = setTimeout(() => fetchEmpresaNome(value), 800);
-                } else {
-                    entidadeInput.value = '';
-                    enderecoInput.value = '';
-                    ufInput.value = '';
-                    municipioInput.value = '';
-                    toggleErro(input, false);
-                }
-            }
-
-            async function fetchEmpresaNome(cnpj) {
-                const cleanCnpj = cnpj.replace(/[^\d]/g, '');
-                const spinner = document.getElementById('cnpj-spinner');
-
-                spinner.style.display = 'inline-block';
-                cnpjInput.classList.remove('success', 'error');
-                entidadeInput.value = 'Buscando...';
-                enderecoInput.value = 'Buscando...';
-                ufInput.value = 'Buscando...';
-                municipioInput.value = 'Buscando...';
-
-                try {
-                    const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'CNPJ não encontrado ou inválido.');
-                    }
-                    const data = await response.json();
-                    
-                    if(!data.razao_social) throw new Error('Dados da empresa incompletos.');
-
-                    entidadeInput.value = data.razao_social || '';
-                    const logradouro = data.logradouro || '';
-                    const numero = data.numero || '';
-                    const bairro = data.bairro || '';
-                    const complemento = data.complemento ? `, ${data.complemento}` : '';
-                    enderecoInput.value = `${logradouro}, ${numero} - ${bairro}${complemento}`.trim().replace(/\s*,\s*$/g,'').replace(/,\s*,/g,',');
-                    ufInput.value = data.uf || '';
-                    municipioInput.value = data.municipio || '';
-                    
-                    toggleErro(cnpjInput, false);
-                    cnpjInput.classList.add('success');
-
-                } catch (error) {
-                    console.error('Erro ao buscar dados da empresa:', error);
-                    entidadeInput.value = '';
-                    enderecoInput.value = '';
-                    ufInput.value = '';
-                    municipioInput.value = '';
-                    toggleErro(cnpjInput, true, error.message);
-                } finally {
-                    spinner.style.display = 'none';
-                }
-            }
-
-            const cmToPoints = (cm) => cm * 28.3465;
-            const PAGE_HEIGHT_POINTS = 841.89; // Altura de uma página A4 em pontos
+            const data = await response.json();
             
-            const openModal = async () => {
-                const file = letterheadFileInput.files[0];
-                if (!file) {
-                    alert("Por favor, selecione um arquivo de papel timbrado.");
-                    return;
-                }
-                
-                loadingMessage.style.display = 'flex';
-                try {
-                    if (file.type.startsWith('image/')) {
-                        letterheadBackground = await getBase64FromFile(file);
-                    } else if (file.type === 'application/pdf') {
-                        letterheadBackground = await convertPdfPageToImage(file);
-                    } else {
-                        alert("Tipo de arquivo inválido! Por favor, selecione um JPEG, PNG ou PDF.");
-                        return;
-                    }
-                    
-                    if (reorderedDeclarations.length === 0 && typeof declarations !== 'undefined') {
-                        reorderedDeclarations = [...declarations];
-                    } else if (typeof declarations === 'undefined') {
-                        console.error("Erro: A variável 'declarations' não foi encontrada. Verifique se o script.js foi carregado corretamente.");
-                        alert("Erro interno: Declarações não carregadas.");
-                        return;
-                    }
+            if (!data.razao_social) throw new Error('Dados da empresa incompletos.');
 
+            entidadeInput.value = data.razao_social || '';
+            const logradouro = data.logradouro || '';
+            const numero = data.numero || '';
+            const bairro = data.bairro || '';
+            const complemento = data.complemento ? `, ${data.complemento}` : '';
+            enderecoInput.value = `${logradouro}, ${numero} - ${bairro}${complemento}`.trim().replace(/\s*,\s*$/g, '').replace(/,\s*,/g, ',');
+            ufInput.value = data.uf || '';
+            municipioInput.value = data.municipio || '';
+            
+            toggleErro(cnpjInput, false);
+            cnpjInput.classList.add('success');
+        } catch (error) {
+            console.error('Erro ao buscar dados da empresa:', error);
+            entidadeInput.value = '';
+            enderecoInput.value = '';
+            ufInput.value = '';
+            municipioInput.value = '';
+            toggleErro(cnpjInput, true, error.message);
+        } finally {
+            spinner.style.display = 'none';
+        }
+    }
+
+    const cmToPoints = (cm) => cm * 28.3465;
+    const PAGE_HEIGHT_POINTS = 841.89; // A4 page height in points
+
+    const openModal = async () => {
+        if (reorderedDeclarations.length === 0 && typeof declarations !== 'undefined') {
+            reorderedDeclarations = [...declarations];
+        } else if (typeof declarations === 'undefined') {
+            console.error("Erro: A variável 'declarations' não foi encontrada. Verifique se o script.js foi carregado corretamente.");
+            alert("Erro interno: Declarações não carregadas.");
+            return;
+        }
+
+        populateDeclarationList(reorderedDeclarations);
+        modal.style.display = 'flex';
+        currentPreviewPage = 1;
+        await updatePreview();
+    };
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+        iframe.src = 'about:blank';
+        if (fullPdfBlobUrl) {
+            URL.revokeObjectURL(fullPdfBlobUrl);
+            fullPdfBlobUrl = null;
+        }
+    };
+
+    const populateDeclarationList = (decls) => {
+        declarationListEl.innerHTML = '';
+        decls.forEach((title, index) => {
+            const li = document.createElement('li');
+            li.classList.add('declaration-item');
+            li.setAttribute('draggable', 'true');
+            li.dataset.index = index;
+            li.textContent = title;
+            declarationListEl.appendChild(li);
+        });
+        addDragDropListeners();
+    };
+
+    const addDragDropListeners = () => {
+        let dragStartIndex;
+
+        declarationListEl.querySelectorAll('.declaration-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                dragStartIndex = parseInt(item.dataset.index);
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', dragStartIndex);
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+
+            item.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                item.classList.add('drag-over');
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                item.classList.add('drag-over');
+            });
+
+            item.addEventListener('dragleave', () => {
+                item.classList.remove('drag-over');
+            });
+
+            item.addEventListener('drop', (e) => {
+                e.preventDefault();
+                item.classList.remove('drag-over');
+
+                const dragEndIndex = Array.from(declarationListEl.children).indexOf(item);
+                if (dragStartIndex !== dragEndIndex) {
+                    const [draggedItem] = reorderedDeclarations.splice(dragStartIndex, 1);
+                    reorderedDeclarations.splice(dragEndIndex, 0, draggedItem);
+                    
                     populateDeclarationList(reorderedDeclarations);
-                    modal.style.display = 'flex';
-                    currentPreviewPage = 1;
-                    await updatePreview();
-
-                } catch (error) {
-                    console.error("Erro ao processar papel timbrado:", error);
-                    alert("Não foi possível carregar o arquivo de papel timbrado. Erro: " + error.message);
-                } finally {
-                    loadingMessage.style.display = 'none';
-                }
-            };
-            
-            const closeModal = () => {
-                modal.style.display = 'none';
-                iframe.src = 'about:blank';
-                letterheadBackground = null;
-                if (fullPdfBlobUrl) {
-                    URL.revokeObjectURL(fullPdfBlobUrl);
-                    fullPdfBlobUrl = null;
-                }
-            };
-
-            const populateDeclarationList = (decls) => {
-                declarationListEl.innerHTML = '';
-                decls.forEach((title, index) => {
-                    const li = document.createElement('li');
-                    li.classList.add('declaration-item');
-                    li.setAttribute('draggable', 'true');
-                    li.dataset.index = index;
-                    li.textContent = title;
-                    declarationListEl.appendChild(li);
-                });
-                addDragDropListeners();
-            };
-
-            const addDragDropListeners = () => {
-                let dragStartIndex;
-
-                declarationListEl.querySelectorAll('.declaration-item').forEach(item => {
-                    item.addEventListener('dragstart', (e) => {
-                        dragStartIndex = parseInt(item.dataset.index);
-                        e.dataTransfer.effectAllowed = 'move';
-                        e.dataTransfer.setData('text/plain', dragStartIndex);
-                        setTimeout(() => item.classList.add('dragging'), 0);
-                    });
-
-                    item.addEventListener('dragenter', (e) => {
-                        e.preventDefault();
-                        item.classList.add('drag-over');
-                    });
-
-                    item.addEventListener('dragover', (e) => {
-                        e.preventDefault(); 
-                        item.classList.add('drag-over');
-                    });
-
-                    item.addEventListener('dragleave', () => {
-                        item.classList.remove('drag-over');
-                    });
-
-                    item.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        item.classList.remove('drag-over');
-
-                        const dragEndIndex = Array.from(declarationListEl.children).indexOf(item); 
-                        if (dragStartIndex !== dragEndIndex) {
-                            const [draggedItem] = reorderedDeclarations.splice(dragStartIndex, 1);
-                            reorderedDeclarations.splice(dragEndIndex, 0, draggedItem);
-                            
-                            populateDeclarationList(reorderedDeclarations);
-                            
-                            if (currentPreviewPage === dragStartIndex + 1) { 
-                                currentPreviewPage = dragEndIndex + 1;
-                            } else if (dragStartIndex < currentPreviewPage - 1 && dragEndIndex >= currentPreviewPage - 1) { 
-                                currentPreviewPage--;
-                            } else if (dragStartIndex > currentPreviewPage - 1 && dragEndIndex <= currentPreviewPage - 1) { 
-                                currentPreviewPage++;
-                            }
-                            currentPreviewPage = Math.max(1, Math.min(reorderedDeclarations.length + 1, currentPreviewPage)); 
-
-                            updatePreview();
-                        }
-                    });
-
-                    item.addEventListener('dragend', (e) => {
-                        item.classList.remove('dragging');
-                        declarationListEl.querySelectorAll('.declaration-item').forEach(li => {
-                            li.classList.remove('drag-over');
-                        });
-                    });
-                });
-            };
-
-            const updatePreview = async () => {
-                if (!modal || modal.style.display === 'none' || reorderedDeclarations.length === 0) return;
-
-                const formData = {
-                    dirigente: dirigenteInput.value,
-                    cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value,
-                    useLetterheadChecked: useLetterheadCheckbox.checked,
-                    letterheadFile: letterheadFileInput.files[0]
-                };
-
-                const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
-                const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue); // Calcula a posição do rodapé a partir do pé
-
-                const layoutOptions = {
-                    isCustom: true,
-                    topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-                    footerPosition: footerPosition
-                };
-                
-                if (typeof generatePdfDocDefinition !== 'function') {
-                    iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: A função `generatePdfDocDefinition` não foi encontrada. Verifique se seu script externo foi carregado corretamente.</p>";
-                    return;
-                }
-
-                const docDefinition = await generatePdfDocDefinition(reorderedDeclarations, letterheadBackground, layoutOptions, formData);
-
-                const printer = pdfMake.createPdf(docDefinition);
-                printer.getBlob((blob) => {
-                    if (fullPdfBlobUrl) {
-                        URL.revokeObjectURL(fullPdfBlobUrl);
-                    }
-                    fullPdfBlobUrl = URL.createObjectURL(blob);
-                    renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
-                });
-
-                const totalPages = reorderedDeclarations.length + 1;
-                pageIndicator.textContent = `Página ${currentPreviewPage} / ${totalPages}`;
-                prevPageBtn.disabled = currentPreviewPage === 1;
-                nextPageBtn.disabled = currentPreviewPage >= totalPages;
-            };
-
-            async function renderPdfPageToIframe(pdfUrl, pageNum) {
-                try {
-                    const loadingTask = pdfjsLib.getDocument(pdfUrl);
-                    const pdf = await loadingTask.promise;
-
-                    if (pageNum > pdf.numPages || pageNum < 1) {
-                        console.error("Página fora dos limites para pré-visualização:", pageNum, "de", pdf.numPages);
-                        iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: orange;'>Página não encontrada na visualização. Tente ajustar as margens ou a ordem das declarações.</p>";
-                        return;
-                    }
-
-                    const page = await pdf.getPage(pageNum);
-                    const scale = 1.5;
-                    const viewport = page.getViewport({ scale: scale });
-
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    const renderContext = {
-                        canvasContext: context,
-                        viewport: viewport,
-                    };
                     
-                    await page.render(renderContext).promise;
-                    iframe.src = canvas.toDataURL('image/png');
-                } catch (error) {
-                    console.error("Erro ao renderizar página do PDF no iframe:", error);
-                    iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao carregar a página para visualização. Verifique o console.</p>";
-                }
-            }
+                    if (currentPreviewPage === dragStartIndex + 1) {
+                        currentPreviewPage = dragEndIndex + 1;
+                    } else if (dragStartIndex < currentPreviewPage - 1 && dragEndIndex >= currentPreviewPage - 1) {
+                        currentPreviewPage--;
+                    } else if (dragStartIndex > currentPreviewPage - 1 && dragEndIndex <= currentPreviewPage - 1) {
+                        currentPreviewPage++;
+                    }
+                    currentPreviewPage = Math.max(1, Math.min(reorderedDeclarations.length + 1, currentPreviewPage));
 
-            dirigenteInput.addEventListener('input', () => validarCampo(dirigenteInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
-            cargoInput.addEventListener('input', () => validarCampo(cargoInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
-            cnpjInput.addEventListener('input', () => formatarEBuscarCNPJ(cnpjInput));
-            propostaInput.addEventListener('input', () => formatarProposta(propostaInput));
-            
-            useLetterheadCheckbox.addEventListener('change', (event) => {
-                letterheadUploadContainer.style.display = event.target.checked ? 'block' : 'none';
-                if (!event.target.checked) {
-                    letterheadFileInput.value = '';
+                    updatePreview();
                 }
             });
 
-            botaoGerarPDF.addEventListener('click', async (event) => {
-                event.preventDefault(); 
-
-                let formIsValid = true;
-                const requiredInputs = declarationForm.querySelectorAll('[required]');
-                requiredInputs.forEach(input => {
-                    if (input.value.trim() === '') {
-                        toggleErro(input, true, 'Campo obrigatório.');
-                        formIsValid = false;
-                    } else {
-                        if (input.id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) { 
-                            toggleErro(input, true, 'CNPJ inválido ou incompleto (14 dígitos).');
-                            formIsValid = false;
-                        } else if (input.id === 'proposta' && !(/^\d{6}\/\d{4}$/.test(input.value))) { 
-                            toggleErro(input, true, 'Formato da proposta inválido (ex: 000000/AAAA).');
-                            formIsValid = false;
-                        } else {
-                            toggleErro(input, false);
-                        }
-                    }
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                declarationListEl.querySelectorAll('.declaration-item').forEach(li => {
+                    li.classList.remove('drag-over');
                 });
-
-                if (cnpjInput.classList.contains('success')) {
-                    if (entidadeInput.value.trim() === '') {
-                        toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (enderecoInput.value.trim() === '') {
-                        toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (municipioInput.value.trim() === '') {
-                        toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (ufInput.value.trim() === '') {
-                        toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                } else if (cnpjInput.value.trim() !== '' && cnpjInput.value.replace(/\D/g, '').length === 14) {
-                    if (!entidadeInput.classList.contains('success') || entidadeInput.value.trim() === '' || entidadeInput.value.includes('Buscando')) { 
-                        toggleErro(entidadeInput, true, 'Dados da entidade não obtidos. Verifique o CNPJ ou conexão.');
-                        formIsValid = false;
-                    }
-                }
-
-                if (useLetterheadCheckbox.checked && !letterheadFileInput.files[0]) {
-                    toggleErro(letterheadFileInput, true, 'Por favor, selecione um arquivo de papel timbrado.');
-                    formIsValid = false;
-                } else if (useLetterheadCheckbox.checked && letterheadFileInput.files[0]) {
-                     toggleErro(letterheadFileInput, false);
-                }
-
-                if (!formIsValid) {
-                    alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
-                    return;
-                }
-
-                const formDataForPdf = {
-                    dirigente: dirigenteInput.value,
-                    cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value,
-                    useLetterheadChecked: useLetterheadCheckbox.checked,
-                    letterheadFile: letterheadFileInput.files[0]
-                };
-
-                if (useLetterheadCheckbox.checked && letterheadFileInput.files.length > 0) {
-                    await openModal();
-                } else {
-                    if (typeof generateAllDeclarationsPDF === 'function') {
-                        loadingMessage.style.display = 'flex';
-                        await generateAllDeclarationsPDF(null, null, { isCustom: false }, formDataForPdf); 
-                        loadingMessage.style.display = 'none';
-                    } else {
-                        alert("Erro: Função 'generateAllDeclarationsPDF' não encontrada. Verifique o arquivo script.js");
-                    }
-                }
-            });
-
-            confirmAndGenerateBtn.addEventListener('click', async () => {
-                if (!footerMarginBottomCm || !marginTopCm) {
-                    alert("Erro: Elementos de margem não encontrados. Recarregue a página.");
-                    return;
-                }
-
-                const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
-                const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue);
-
-                const layoutOptions = {
-                    isCustom: true,
-                    topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-                    footerPosition: footerPosition
-                };
-                
-                const formDataForPdf = {
-                    dirigente: dirigenteInput.value,
-                    cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value,
-                    useLetterheadChecked: useLetterheadCheckbox.checked,
-                    letterheadFile: letterheadFileInput.files[0]
-                };
-
-                if (typeof generateAllDeclarationsPDF === 'function') {
-                    closeModal();
-                    loadingMessage.style.display = 'flex';
-                    await generateAllDeclarationsPDF(reorderedDeclarations, letterheadBackground, layoutOptions, formDataForPdf);
-                    loadingMessage.style.display = 'none';
-                } else {
-                    alert("Erro: Função 'generateAllDeclarationsPDF' não encontrada. Verifique o arquivo script.js");
-                }
-            });
-
-            cancelLayoutBtn.addEventListener('click', closeModal);
-
-            marginTopCm.addEventListener('input', () => {
-                if (parseFloat(marginTopCm.value) > 7) {
-                    marginTopCm.value = 7;
-                    alert('Limite máximo de Margem Superior é 7 cm.');
-                }
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(updatePreview, 300);
-            });
-
-            footerMarginBottomCm.addEventListener('input', () => {
-                if (parseFloat(footerMarginBottomCm.value) > 6.5) {
-                    footerMarginBottomCm.value = 6.5;
-                    alert('Limite máximo de Margem Inferior do Rodapé é 6,5 cm.');
-                }
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(updatePreview, 300);
-            });
-            
-            nextPageBtn.addEventListener('click', () => {
-                const totalPages = reorderedDeclarations.length + 1;
-                if (currentPreviewPage < totalPages) {
-                    currentPreviewPage++;
-                    updatePreview();
-                }
-            });
-            prevPageBtn.addEventListener('click', () => {
-                if (currentPreviewPage > 1) {
-                    currentPreviewPage--;
-                    updatePreview();
-                }
             });
         });
+    };
+
+    const updatePreview = async () => {
+        if (!modal || modal.style.display === 'none' || reorderedDeclarations.length === 0) return;
+
+        const formData = {
+            dirigente: dirigenteInput.value,
+            cargoDirigente: cargoInput.value,
+            entidade: entidadeInput.value,
+            cnpj: cnpjInput.value,
+            endereco: enderecoInput.value,
+            uf: ufInput.value,
+            municipio: municipioInput.value,
+            proposta: propostaInput.value
+        };
+
+        const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
+        const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue);
+
+        const layoutOptions = {
+            topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+            footerPosition: footerPosition
+        };
+
+        if (typeof generatePdfDocDefinition !== 'function') {
+            iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: A função `generatePdfDocDefinition` não foi encontrada. Verifique se seu script externo foi carregado corretamente.</p>";
+            return;
+        }
+
+        const docDefinition = await generatePdfDocDefinition(reorderedDeclarations, null, layoutOptions, formData);
+
+        const printer = pdfMake.createPdf(docDefinition);
+        printer.getBlob((blob) => {
+            if (fullPdfBlobUrl) {
+                URL.revokeObjectURL(fullPdfBlobUrl);
+            }
+            fullPdfBlobUrl = URL.createObjectURL(blob);
+            renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
+        });
+
+        const totalPages = reorderedDeclarations.length + 1;
+        pageIndicator.textContent = `Página ${currentPreviewPage} / ${totalPages}`;
+        prevPageBtn.disabled = currentPreviewPage === 1;
+        nextPageBtn.disabled = currentPreviewPage >= totalPages
+    };
+
+    async function renderPdfPageToIframe(pdfUrl, pageNum) {
+        try {
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+
+            if (pageNum > pdf.numPages || pageNum < 1) {
+                console.error("Página fora dos limites para pré-visualização:", pageNum, "de", pdf.numPages);
+                iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: orange;'>Página não encontrada na visualização. Tente ajustar as margens ou a ordem das declarações.</p>";
+                return;
+            }
+
+            const page = await pdf.getPage(pageNum);
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport,
+            };
+            
+            await page.render(renderContext).promise;
+            iframe.src = canvas.toDataURL('image/png');
+        } catch (error) {
+            console.error("Erro ao renderizar página do PDF no iframe:", error);
+            iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao carregar a página para visualização. Verifique o console.</p>";
+        }
+    }
+
+    dirigenteInput.addEventListener('input', () => validarCampo(dirigenteInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
+    cargoInput.addEventListener('input', () => validarCampo(cargoInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
+    cnpjInput.addEventListener('input', () => formatarEBuscarCNPJ(cnpjInput));
+    propostaInput.addEventListener('input', () => formatarProposta(propostaInput));
+
+    botaoGerarPDF.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        let formIsValid = true;
+        const requiredInputs = declarationForm.querySelectorAll('[required]');
+        requiredInputs.forEach(input => {
+            if (input.value.trim() === '') {
+                toggleErro(input, true, 'Campo obrigatório.');
+                formIsValid = false;
+            } else {
+                if (input.id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
+                    toggleErro(input, true, 'CNPJ inválido ou incompleto (14 dígitos).');
+                    formIsValid = false;
+                } else if (input.id === 'proposta' && !(/^\d{6}\/\d{4}$/.test(input.value))) {
+                    toggleErro(input, true, 'Formato da proposta inválido (ex: 000000/AAAA).');
+                    formIsValid = false;
+                } else {
+                    toggleErro(input, false);
+                }
+            }
+        });
+
+        if (cnpjInput.classList.contains('success')) {
+            if (entidadeInput.value.trim() === '') {
+                toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (enderecoInput.value.trim() === '') {
+                toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (municipioInput.value.trim() === '') {
+                toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (ufInput.value.trim() === '') {
+                toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+        } else if (cnpjInput.value.trim() !== '' && cnpjInput.value.replace(/\D/g, '').length === 14) {
+            if (!entidadeInput.classList.contains('success') || entidadeInput.value.trim() === '' || entidadeInput.value.includes('Buscando')) {
+                toggleErro(entidadeInput, true, 'Dados da entidade não obtidos. Verifique o CNPJ ou conexão.');
+                formIsValid = false;
+            }
+        }
+
+        if (!formIsValid) {
+            alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
+            return;
+        }
+
+        const formDataForPdf = {
+            dirigente: dirigenteInput.value,
+            cargoDirigente: cargoInput.value,
+            entidade: entidadeInput.value,
+            cnpj: cnpjInput.value,
+            endereco: enderecoInput.value,
+            uf: ufInput.value,
+            municipio: municipioInput.value,
+            proposta: propostaInput.value
+        };
+
+        if (typeof generateAllDeclarationsPDF === 'function') {
+            loadingMessage.style.display = 'flex';
+            await openModal(); // Open modal for preview and reordering
+        } else {
+            alert("Erro: Função 'generateAllDeclarationsPDF' não encontrada. Verifique o arquivo script.js");
+        }
+    });
+
+    confirmAndGenerateBtn.addEventListener('click', async () => {
+        if (!footerMarginBottomCm || !marginTopCm) {
+            alert("Erro: Elementos de margem não encontrados. Recarregue a página.");
+            return;
+        }
+
+        const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
+        const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue);
+
+        const layoutOptions = {
+            topMargin: cmToPoints(parseFloat(marginTopCm.value)),
+            footerPosition: footerPosition
+        };
+
+        const formDataForPdf = {
+            dirigente: dirigenteInput.value,
+            cargoDirigente: cargoInput.value,
+            entidade: entidadeInput.value,
+            cnpj: cnpjInput.value,
+            endereco: enderecoInput.value,
+            uf: ufInput.value,
+            municipio: municipioInput.value,
+            proposta: propostaInput.value
+        };
+
+        if (typeof generateAllDeclarationsPDF === 'function') {
+            closeModal();
+            loadingMessage.style.display = 'flex';
+            await generateAllDeclarationsPDF(reorderedDeclarations, layoutOptions, formDataForPdf);
+            loadingMessage.style.display = 'none';
+        } else {
+            alert("Erro: Função 'generateAllDeclarationsPDF' não encontrada. Verifique o arquivo script.js");
+        }
+    });
+
+    cancelLayoutBtn.addEventListener('click', closeModal);
+
+    marginTopCm.addEventListener('input', () => {
+        if (parseFloat(marginTopCm.value) > 7) {
+            marginTopCm.value = 7;
+            alert('Limite máximo de Margem Superior é 7 cm.');
+        }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updatePreview, 300);
+    });
+
+    footerMarginBottomCm.addEventListener('input', () => {
+        if (parseFloat(footerMarginBottomCm.value) > 6.5) {
+            footerMarginBottomCm.value = 6.5;
+            alert('Limite máximo de Margem Inferior do Rodapé é 6,5 cm.');
+        }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updatePreview, 300);
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+        const totalPages = reorderedDeclarations.length + 1;
+        if (currentPreviewPage < totalPages) {
+            currentPreviewPage++;
+            updatePreview();
+        }
+    });
+
+    prevPageBtn.addEventListener('click', () => {
+        if (currentPreviewPage > 1) {
+            currentPreviewPage--;
+            updatePreview();
+        }
+    });
+});
     </script>
 </html>

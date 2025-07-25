@@ -110,36 +110,6 @@
         }
         footer img { max-width: 150px; height: auto; filter: brightness(0) invert(1); }
         html.dark footer img { filter: none; }
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center;
-            z-index: 2000; backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: var(--container-bg); padding: 1.5rem; border-radius: 12px;
-            box-shadow: var(--shadow-lg); width: 95%; max-width: 1100px;
-            display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; max-height: 90vh;
-        }
-        .layout-controls { display: flex; flex-direction: column; gap: 1rem; }
-        .control-panel { background: var(--container-bg); padding: 1rem; border-radius: 8px; overflow-y: auto; }
-        .control-panel h4 { font-family: var(--font-heading); color: var(--primary-color); margin-bottom: 1rem; }
-        .control-group { margin-bottom: 1rem; }
-        .control-group label { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; }
-        .control-group input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid var(--input-border-color); border-radius: 4px; }
-        .preview-area { display: flex; flex-direction: column; }
-        #previewIframe { width: 100%; height: 100%; border: 1px solid var(--input-border-color); border-radius: 4px; box-shadow: var(--shadow); }
-        .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 1rem; padding-top: 1rem; }
-        .pagination-controls button { background: none; border: 1px solid var(--input-border-color); padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; }
-        .pagination-controls button:hover:not(:disabled) { background: #e9ecef; }
-        .pagination-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #pageIndicator { font-size: 0.9rem; font-weight: 500; }
-        .modal-actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--input-border-color); }
-        .modal-actions button { width: 100%; font-family: var(--font-heading); font-weight: 600; font-size: 1rem; border: none; padding: 0.7rem 1.5rem; border-radius: 6px; cursor: pointer; }
-        .btn-primary { background-color: var(--primary-color); color: var(--primary-text-color); }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
-        .btn-secondary { background-color: #e9ecef; color: var(--text-color); }
-        .btn-secondary:hover { background-color: #dee2e6; }
-        .upload-container { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--input-border-color); display: none; }
         .checkbox-wrapper { display: flex; align-items: center; background-color: var(--form-row-bg); padding: 1rem; border-radius: 6px; }
         .checkbox-wrapper label { margin: 0 0 0 0.75rem; font-weight: 500; color: var(--text-color); cursor: pointer; }
         input[type="checkbox"] { appearance: none; min-width: 1.25rem; width: 1.25rem; height: 1.25rem; border: 2px solid var(--input-border-color); border-radius: 4px; cursor: pointer; position: relative; }
@@ -153,10 +123,6 @@
         .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
         @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
-        @media (max-width: 1024px) {
-            .modal-content { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
-            .preview-area { min-height: 500px; }
-        }
         @media (max-width: 600px) {
             .form-row { flex-direction: column; }
             .container { margin: 70px 10px 100px; padding: 15px; }
@@ -327,7 +293,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
+                    <!--<div class="form-row">
                         <div class="full-width">
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" id="usarPapelTimbrado" name="usarPapelTimbrado" onchange="toggleLetterheadUpload()">
@@ -339,7 +305,7 @@
                                 <span id="erro-letterheadFile" class="error-message">Por favor, selecione um arquivo de papel timbrado.</span>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </section>
                 <div class="button-container">
                     <button type="button" onclick="mostrarAba('aba2')">Voltar</button>
@@ -352,36 +318,7 @@
             Processando PDF...
         </div>
         <div id="toast" class="toast"></div>
-        <div id="layoutEditorModal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="layout-controls">
-                    <div class="control-panel">
-                        <h4>Pré-visualização e Ajuste Fino</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 1.5rem;">Ajuste as margens para o seu papel timbrado. As alterações serão aplicadas em todas as páginas e refletidas na visualização ao lado. Limite: Margem Superior até 7 cm, Margem Inferior do Rodapé até 6,5 cm.</p>
-                        <div class="control-group">
-                            <label for="marginTopCm">Margem Superior (cm):</label>
-                            <input type="number" id="marginTopCm" value="3.5" step="0.1" min="0" max="7">
-                        </div>
-                        <div class="control-group">
-                            <label for="footerMarginBottomCm">Margem Inferior do Rodapé (cm):</label>
-                            <input type="number" id="footerMarginBottomCm" value="5.5" step="0.1" min="0" max="6.5">
-                        </div>
-                    </div>
-                    <div class="modal-actions">
-                        <button id="confirmAndGenerate" class="btn-primary">Salvar e Gerar PDF</button>
-                        <button id="cancelLayout" class="btn-secondary">Cancelar</button>
-                    </div>
-                </div>
-                <div class="preview-area">
-                    <iframe id="previewIframe" title="Pré-visualização do PDF"></iframe>
-                    <div class="pagination-controls">
-                        <button id="prevPageBtn">< Anterior</button>
-                        <span id="pageIndicator">Página 1</span>
-                        <button id="nextPageBtn">Próxima ></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </div>
     <footer>
         <img src="https://homologacao.itech.ifsertaope.edu.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" alt="Logo Ministério do Esporte">
@@ -392,119 +329,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="/forms/declaracoes/public/js/script2.js"></script>
     <script>
-        // Define Roboto fonts for pdfMake globally
-        pdfMake.fonts = {
-            Roboto: {
-                normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Regular.ttf',
-                bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Medium.ttf',
-                italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Italic.ttf',
-                bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-MediumItalic.ttf'
-            }
-        };
+// Define Roboto fonts for pdfMake globally
+pdfMake.fonts = {
+    Roboto: {
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Regular.ttf',
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Medium.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-MediumItalic.ttf'
+    }
+};
 
-        let espacoFisicoCount = 1;
-        let is00SLEnabled = false;
-        let currentPreviewPage = 1;
-        let fullPdfBlobUrl = null;
-        let letterheadBackground = null;
-        let debounceTimer;
+let espacoFisicoCount = 1;
+let is00SLEnabled = false;
 
-        // Initialize pdf.js worker
-        if (window.pdfjsLib) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
-        }
+// Theme switcher
+const themeSwitcher = document.getElementById('theme-switcher');
+const html = document.documentElement;
+themeSwitcher.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+});
 
-        // Theme switcher
-        const themeSwitcher = document.getElementById('theme-switcher');
-        const html = document.documentElement;
-        themeSwitcher.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-        });
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
+    setupAba3Listeners();
+    const gerarPDFBtn = document.getElementById('gerarPDF');
 
-        // Toggle letterhead upload field
-        function toggleLetterheadUpload() {
-            const checkbox = document.getElementById('usarPapelTimbrado');
-            const uploadContainer = document.getElementById('letterheadUploadContainer');
-            const fileInput = document.getElementById('letterheadFile');
-            uploadContainer.style.display = checkbox.checked ? 'block' : 'none';
-            if (!checkbox.checked) {
-                fileInput.value = '';
-                document.getElementById('erro-letterheadFile').style.display = 'none';
-            }
-            atualizarOpcao();
-            validarGerarPDF();
-        }
-
-        // Convert file to base64
-        async function getBase64FromFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Convert PDF page to image
-        async function convertPdfPageToImage(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            const page = await pdf.getPage(1);
-            const scale = 1.5;
-            const viewport = page.getViewport({ scale });
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            await page.render({ canvasContext: context, viewport }).promise;
-            return canvas.toDataURL('image/png');
-        }
-
-        // Open modal for PDF preview
-        async function openModal() {
-            const fileInput = document.getElementById('letterheadFile');
-            const file = fileInput.files[0];
-            if (!file) {
-                showToast('Por favor, selecione um arquivo de papel timbrado.', true);
-                return;
-            }
-            document.getElementById('loadingMessage').style.display = 'flex';
-            try {
-                if (file.type.startsWith('image/')) {
-                    letterheadBackground = await getBase64FromFile(file);
-                } else if (file.type === 'application/pdf') {
-                    letterheadBackground = await convertPdfPageToImage(file);
-                } else {
-                    showToast('Tipo de arquivo inválido! Use PDF, JPEG ou PNG.', true);
-                    return;
-                }
-                document.getElementById('layoutEditorModal').style.display = 'flex';
-                currentPreviewPage = 1;
-                await updatePreview();
-            } catch (error) {
-                showToast('Erro ao processar papel timbrado: ' + error.message, true);
-            } finally {
-                document.getElementById('loadingMessage').style.display = 'none';
-            }
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('layoutEditorModal').style.display = 'none';
-            document.getElementById('previewIframe').src = 'about:blank';
-            letterheadBackground = null;
-            if (fullPdfBlobUrl) {
-                URL.revokeObjectURL(fullPdfBlobUrl);
-                fullPdfBlobUrl = null;
-            }
-        }
-
-        // Update PDF preview
-        async function updatePreview() {
-            const modal = document.getElementById('layoutEditorModal');
-            if (!modal || modal.style.display === 'none') return;
-
+    gerarPDFBtn.addEventListener('click', async () => {
+        document.getElementById('loadingMessage').style.display = 'flex';
+        try {
             const formData = {
                 dirigente: document.getElementById('dirigente').value,
                 matricula: document.getElementById('matricula').value,
@@ -517,8 +371,6 @@
                 municipio: document.getElementById('municipio').value,
                 cep: document.getElementById('cep').value,
                 opcaoSelecao: document.getElementById('opcaoSelecao').value,
-                usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
-                letterheadFile: document.getElementById('letterheadFile').files[0],
                 municipioMais65mil: document.getElementById('municipioMais65mil').checked,
                 espacosFisicos: []
             };
@@ -529,552 +381,342 @@
                     formData.espacosFisicos.push({ nome, endereco });
                 }
             });
-
-            const marginTopCm = document.getElementById('marginTopCm');
-            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
-            const cmToPoints = cm => cm * 28.3465;
-            const PAGE_HEIGHT_POINTS = 841.89;
-            const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
-            const layoutOptions = {
-                topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-                footerPosition: footerPosition
-            };
-
-            if (!letterheadBackground || !letterheadBackground.startsWith('data:')) {
-                showToast('Erro ao processar o papel timbrado. Verifique o arquivo.', true);
-                return;
+            if (typeof gerarPDF === 'function') {
+                await gerarPDF(formData);
+                showToast('PDF gerado com sucesso!');
+            } else {
+                throw new Error('Função de geração de PDF não encontrada.');
             }
-
-            if (typeof gerarPDF !== 'function') {
-                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: Função `gerarPDF` não encontrada.</p>";
-                return;
-            }
-
-            try {
-                const docDefinition = await gerarPDF(formData, true, letterheadBackground, layoutOptions);
-                if (!docDefinition || !docDefinition.content) {
-                    throw new Error('DocDefinition inválido ou vazio.');
-                }
-
-                const printer = pdfMake.createPdf(docDefinition);
-                printer.getBlob(blob => {
-                    if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
-                    fullPdfBlobUrl = URL.createObjectURL(blob);
-                    renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
-                });
-            } catch (error) {
-                document.getElementById('previewIframe').srcdoc = `<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao gerar preview: ${error.message}</p>`;
-                console.error('Erro no updatePreview:', error);
-                return;
-            }
-
-            const totalPages = formData.opcaoSelecao.includes('00SL') ? formData.espacosFisicos.length + 1 : 2;
-            document.getElementById('pageIndicator').textContent = `Página ${currentPreviewPage} / ${totalPages}`;
-            document.getElementById('prevPageBtn').disabled = currentPreviewPage === 1;
-            document.getElementById('nextPageBtn').disabled = currentPreviewPage >= totalPages;
+        } catch (error) {
+            showToast('Erro ao gerar PDF: ' + error.message, true);
+        } finally {
+            document.getElementById('loadingMessage').style.display = 'none';
         }
+    });
+});
 
-        // Render PDF page to iframe
-        async function renderPdfPageToIframe(pdfUrl, pageNum) {
-            try {
-                const loadingTask = pdfjsLib.getDocument(pdfUrl);
-                const pdf = await loadingTask.promise;
-                if (pageNum > pdf.numPages || pageNum < 1) {
-                    document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: orange;'>Página não encontrada.</p>";
-                    return;
-                }
-                const page = await pdf.getPage(pageNum);
-                const scale = 1.5;
-                const viewport = page.getViewport({ scale });
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({ canvasContext: context, viewport }).promise;
-                document.getElementById('previewIframe').src = canvas.toDataURL('image/png');
-            } catch (error) {
-                document.getElementById('previewIframe').srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao carregar página: " + error.message + "</p>";
-            }
+function mostrarAba(abaId) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(abaId).classList.add('active');
+    document.querySelector(`.tab-buttons button[onclick="mostrarAba('${abaId}')"]`).classList.add('active');
+    document.querySelectorAll('.tab-buttons button').forEach(btn => {
+        btn.setAttribute('aria-selected', btn.classList.contains('active'));
+    });
+}
+
+function validarLetras(input) {
+    const erro = document.getElementById(`erro-${input.id}`);
+    if (erro) {
+        input.value = input.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
+        erro.style.display = input.value ? 'none' : 'block';
+    }
+}
+
+function validarLetrasApenas(event) {
+    const char = String.fromCharCode(event.which || event.keyCode);
+    return /^[A-Za-zÀ-ÿ\s]$/.test(char) || event.preventDefault();
+}
+
+function validarNumeros(input) {
+    const erro = document.getElementById(`erro-${input.id}`);
+    if (erro) {
+        input.value = input.value.replace(/\D/g, '');
+        erro.style.display = input.value ? 'none' : 'block';
+    }
+}
+
+function validarProposta(input) {
+    const erro = document.getElementById('erro-proposta');
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 10) value = value.slice(0, 10);
+    if (value.length > 6) value = value.slice(0, 6) + '/' + value.slice(6);
+    input.value = value;
+    erro.style.display = input.value && !/^\d{6}\/\d{4}$/.test(input.value) ? 'block' : 'none';
+}
+
+function mascaraCNPJ(input) {
+    const erro = document.getElementById('erro-cnpj');
+    let value = input.value.replace(/\D/g, '');
+    if (value.length >= 14) {
+        erro.style.display = 'none';
+        fetchCNPJData(value);
+    } else {
+        erro.textContent = 'Digite 14 números.';
+        erro.style.display = 'block';
+        document.getElementById('entidade').value = '';
+        document.getElementById('endereco').value = '';
+        document.getElementById('uf').value = '';
+        document.getElementById('municipio').value = '';
+        document.getElementById('cep').value = '';
+        document.getElementById('erro-entidade').style.display = 'block';
+        document.getElementById('erro-endereco').style.display = 'block';
+        document.getElementById('erro-uf').style.display = 'block';
+        document.getElementById('erro-municipio').style.display = 'block';
+        document.getElementById('erro-cep').style.display = 'block';
+    }
+    let valorFormatado = '';
+    if (value.length > 0) valorFormatado = value.substring(0, 2);
+    if (value.length > 2) valorFormatado += '.' + value.substring(2, 5);
+    if (value.length > 5) valorFormatado += '.' + value.substring(5, 8);
+    if (value.length > 8) valorFormatado += '/' + value.substring(8, 12);
+    if (value.length > 12) valorFormatado += '-' + value.substring(12, 14);
+    input.value = valorFormatado;
+}
+
+async function fetchCNPJData(cnpj) {
+    const erro = document.getElementById('erro-cnpj');
+    const entidadeInput = document.getElementById('entidade');
+    const enderecoInput = document.getElementById('endereco');
+    const ufInput = document.getElementById('uf');
+    const municipioInput = document.getElementById('municipio');
+    const cepInput = document.getElementById('cep');
+    try {
+        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        if (!response.ok) throw new Error('CNPJ não encontrado');
+        const data = await response.json();
+        const razaoSocial = data.razao_social || '';
+        const isMunicipio = razaoSocial.toLowerCase().includes('munic') || razaoSocial.toLowerCase().includes('prefeitura');
+        entidadeInput.value = isMunicipio && data.municipio && data.uf ? 
+            `Município de ${data.municipio}/${data.uf.toUpperCase()}` : 
+            razaoSocial || '';
+        document.getElementById('erro-entidade').style.display = entidadeInput.value ? 'none' : 'block';
+        const endereco = `${data.logradouro || ''}${data.numero ? `, ${data.numero}` : ''}${data.bairro ? '' : ''}`;
+        enderecoInput.value = endereco.trim().replace(/^,|,$/g, '') || '';
+        document.getElementById('erro-endereco').style.display = enderecoInput.value ? 'none' : 'block';
+        ufInput.value = data.uf ? data.uf.toUpperCase() : '';
+        document.getElementById('erro-uf').style.display = ufInput.value ? 'none' : 'block';
+        municipioInput.value = data.municipio ? data.municipio.replace(/[^A-Za-zÀ-ÿ\s]/g, '') : '';
+        document.getElementById('erro-municipio').style.display = municipioInput.value ? 'none' : 'block';
+        if (data.cep) {
+            const cleanCEP = data.cep.replace(/\D/g, '');
+            cepInput.value = cleanCEP.replace(/^(\d{5})(\d{3})$/, '$1-$2');
+            document.getElementById('erro-cep').style.display = 'none';
+        } else {
+            cepInput.value = '';
+            document.getElementById('erro-cep').style.display = 'block';
         }
+        erro.style.display = 'none';
+    } catch (error) {
+        erro.textContent = 'CNPJ inválido ou serviço indisponível.';
+        erro.style.display = 'block';
+        entidadeInput.value = '';
+        enderecoInput.value = '';
+        ufInput.value = '';
+        municipioInput.value = '';
+        cepInput.value = '';
+        document.getElementById('erro-entidade').style.display = 'block';
+        document.getElementById('erro-endereco').style.display = 'block';
+        document.getElementById('erro-uf').style.display = 'block';
+        document.getElementById('erro-municipio').style.display = 'block';
+        document.getElementById('erro-cep').style.display = 'block';
+    }
+}
 
-        // Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('theme') === 'dark') html.classList.add('dark');
-            setupAba3Listeners();
-            const gerarPDFBtn = document.getElementById('gerarPDF');
-            const marginTopCm = document.getElementById('marginTopCm');
-            const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
-            const prevPageBtn = document.getElementById('prevPageBtn');
-            const nextPageBtn = document.getElementById('nextPageBtn');
-            const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
-            const cancelLayoutBtn = document.getElementById('cancelLayout');
+function validarAba(currentTab, nextTab) {
+    let campos;
+    switch (currentTab) {
+        case 'aba1':
+            campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta'];
+            break;
+        case 'aba2':
+            campos = ['cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep'];
+            break;
+        default:
+            return;
+    }
+    let valido = true;
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        const erro = document.getElementById(`erro-${id}`);
+        if (!input || !erro) {
+            console.warn(`Elemento ou erro não encontrado para ${id}`);
+            return;
+        }
+        let isInvalid = false;
+        if (!input.value) {
+            isInvalid = true;
+        } else if (id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
+            erro.textContent = 'O CNPJ deve conter 14 números.';
+            isInvalid = true;
+        } else if (id === 'proposta' && !/^\d{6}\/\d{4}$/.test(input.value)) {
+            erro.textContent = 'Digite no formato XXXXXX/ANO (6 dígitos/ano).';
+            isInvalid = true;
+        } else if (id === 'cep' && input.value.length !== 9) {
+            isInvalid = true;
+        }
+        erro.style.display = isInvalid ? 'block' : 'none';
+        valido = valido && !isInvalid;
+    });
+    if (valido) {
+        const nextButton = document.querySelector(`button[onclick="mostrarAba('${nextTab}')"]`);
+        if (nextButton) {
+            nextButton.disabled = false;
+            mostrarAba(nextTab);
+        }
+    } else {
+        showToast('Preencha todos os campos obrigatórios corretamente.', true);
+    }
+}
 
-            gerarPDFBtn.addEventListener('click', async () => {
-                document.getElementById('loadingMessage').style.display = 'flex';
-                try {
-                    const usarPapelTimbrado = document.getElementById('usarPapelTimbrado').checked;
-                    const fileInput = document.getElementById('letterheadFile');
-                    if (usarPapelTimbrado && !fileInput.files[0]) {
-                        document.getElementById('erro-letterheadFile').style.display = 'block';
-                        showToast('Por favor, selecione um arquivo de papel timbrado.', true);
-                        return;
-                    }
-                    const formData = {
-                        dirigente: document.getElementById('dirigente').value,
-                        matricula: document.getElementById('matricula').value,
-                        cargoDirigente: document.getElementById('cargoDirigente').value,
-                        proposta: document.getElementById('proposta').value,
-                        cnpj: document.getElementById('cnpj').value,
-                        entidade: document.getElementById('entidade').value,
-                        endereco: document.getElementById('endereco').value,
-                        uf: document.getElementById('uf').value,
-                        municipio: document.getElementById('municipio').value,
-                        cep: document.getElementById('cep').value,
-                        opcaoSelecao: document.getElementById('opcaoSelecao').value,
-                        usarPapelTimbrado: usarPapelTimbrado,
-                        letterheadFile: fileInput.files[0],
-                        municipioMais65mil: document.getElementById('municipioMais65mil').checked,
-                        espacosFisicos: []
-                    };
-                    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-                        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-                        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-                        if (nome && endereco) {
-                            formData.espacosFisicos.push({ nome, endereco });
-                        }
-                    });
-                    if (usarPapelTimbrado) {
-                        await openModal();
-                    } else {
-                        if (typeof gerarPDF === 'function') {
-                            await gerarPDF(formData);
-                            showToast('PDF gerado com sucesso!');
-                        } else {
-                            throw new Error('Função de geração de PDF não encontrada.');
-                        }
-                    }
-                } catch (error) {
-                    showToast('Erro ao gerar PDF: ' + error.message, true);
-                } finally {
-                    document.getElementById('loadingMessage').style.display = 'none';
-                }
-            });
-
-            marginTopCm.addEventListener('input', () => {
-                if (parseFloat(marginTopCm.value) > 7) {
-                    marginTopCm.value = 7;
-                    showToast('Limite máximo de Margem Superior é 7 cm.', true);
-                }
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(updatePreview, 300);
-            });
-
-            footerMarginBottomCm.addEventListener('input', () => {
-                if (parseFloat(footerMarginBottomCm.value) > 6.5) {
-                    footerMarginBottomCm.value = 6.5;
-                    showToast('Limite máximo de Margem Inferior do Rodapé é 6,5 cm.', true);
-                }
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(updatePreview, 300);
-            });
-
-            prevPageBtn.addEventListener('click', () => {
-                if (currentPreviewPage > 1) {
-                    currentPreviewPage--;
-                    updatePreview();
-                }
-            });
-
-            nextPageBtn.addEventListener('click', () => {
-                const totalPages = document.getElementById('opcaoSelecao').value.includes('00SL') ? 
-                    document.querySelectorAll('#espacoFisicoFields .form-row').length + 1 : 2;
-                if (currentPreviewPage < totalPages) {
-                    currentPreviewPage++;
-                    updatePreview();
-                }
-            });
-
-            confirmAndGenerateBtn.addEventListener('click', async () => {
-                document.getElementById('loadingMessage').style.display = 'flex';
-                try {
-                    const formData = {
-                        dirigente: document.getElementById('dirigente').value,
-                        matricula: document.getElementById('matricula').value,
-                        cargoDirigente: document.getElementById('cargoDirigente').value,
-                        proposta: document.getElementById('proposta').value,
-                        cnpj: document.getElementById('cnpj').value,
-                        entidade: document.getElementById('entidade').value,
-                        endereco: document.getElementById('endereco').value,
-                        uf: document.getElementById('uf').value,
-                        municipio: document.getElementById('municipio').value,
-                        cep: document.getElementById('cep').value,
-                        opcaoSelecao: document.getElementById('opcaoSelecao').value,
-                        usarPapelTimbrado: document.getElementById('usarPapelTimbrado').checked,
-                        letterheadFile: document.getElementById('letterheadFile').files[0],
-                        municipioMais65mil: document.getElementById('municipioMais65mil').checked,
-                        espacosFisicos: []
-                    };
-                    document.querySelectorAll('#espacoFisicoFields .form-row').forEach(row => {
-                        const nome = row.querySelector('input[id^="nomeEspacoFisico"]').value;
-                        const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]').value;
-                        if (nome && endereco) {
-                            formData.espacosFisicos.push({ nome, endereco });
-                        }
-                    });
-                    const cmToPoints = cm => cm * 28.3465;
-                    const PAGE_HEIGHT_POINTS = 841.89;
-                    const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(parseFloat(footerMarginBottomCm.value));
-                    const layoutOptions = {
-                        isCustom: true,
-                        topMargin: cmToPoints(parseFloat(marginTopCm.value)),
-                        footerPosition: footerPosition
-                    };
-                    if (typeof gerarPDF === 'function') {
-                        await gerarPDF(formData, false, letterheadBackground, layoutOptions);
-                        showToast('PDF gerado com sucesso!');
-                        closeModal();
-                    } else {
-                        throw new Error('Função de geração de PDF não encontrada.');
-                    }
-                } catch (error) {
-                    showToast('Erro ao gerar PDF: ' + error.message, true);
-                } finally {
-                    document.getElementById('loadingMessage').style.display = 'none';
-                }
-            });
-
-            cancelLayoutBtn.addEventListener('click', closeModal);
+function setupAba3Listeners() {
+    document.querySelectorAll('input[name="tipo_proposta"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('sub_options_00SL').style.display = radio.id === 'radio_00SL' && radio.checked ? 'block' : 'none';
+            document.getElementById('sub_options_20JP').style.display = radio.id === 'radio_20JP' && radio.checked ? 'block' : 'none';
+            document.getElementById('camposEspacoFisico').style.display = radio.id === 'radio_00SL' && radio.checked ? 'block' : 'none';
+            atualizarOpcao();
+            validarGerarPDF();
         });
-
-        function mostrarAba(abaId) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(abaId).classList.add('active');
-            document.querySelector(`.tab-buttons button[onclick="mostrarAba('${abaId}')"]`).classList.add('active');
-            document.querySelectorAll('.tab-buttons button').forEach(btn => {
-                btn.setAttribute('aria-selected', btn.classList.contains('active'));
-            });
-        }
-
-        function validarLetras(input) {
-            const erro = document.getElementById(`erro-${input.id}`);
-            if (erro) {
-                input.value = input.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
-                erro.style.display = input.value ? 'none' : 'block';
-            }
-        }
-
-        function validarLetrasApenas(event) {
-            const char = String.fromCharCode(event.which || event.keyCode);
-            return /^[A-Za-zÀ-ÿ\s]$/.test(char) || event.preventDefault();
-        }
-
-        function validarNumeros(input) {
-            const erro = document.getElementById(`erro-${input.id}`);
-            if (erro) {
-                input.value = input.value.replace(/\D/g, '');
-                erro.style.display = input.value ? 'none' : 'block';
-            }
-        }
-
-        function validarProposta(input) {
-            const erro = document.getElementById('erro-proposta');
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 10) value = value.slice(0, 10);
-            if (value.length > 6) value = value.slice(0, 6) + '/' + value.slice(6);
-            input.value = value;
-            erro.style.display = input.value && !/^\d{6}\/\d{4}$/.test(input.value) ? 'block' : 'none';
-        }
-
-        function mascaraCNPJ(input) {
-            const erro = document.getElementById('erro-cnpj');
-            let value = input.value.replace(/\D/g, '');
-            if (value.length >= 14) {
-                erro.style.display = 'none';
-                fetchCNPJData(value);
-            } else {
-                erro.textContent = 'Digite 14 números.';
-                erro.style.display = 'block';
-                document.getElementById('entidade').value = '';
-                document.getElementById('endereco').value = '';
-                document.getElementById('uf').value = '';
-                document.getElementById('municipio').value = '';
-                document.getElementById('cep').value = '';
-                document.getElementById('erro-entidade').style.display = 'block';
-                document.getElementById('erro-endereco').style.display = 'block';
-                document.getElementById('erro-uf').style.display = 'block';
-                document.getElementById('erro-municipio').style.display = 'block';
-                document.getElementById('erro-cep').style.display = 'block';
-            }
-            let valorFormatado = '';
-            if (value.length > 0) valorFormatado = value.substring(0, 2);
-            if (value.length > 2) valorFormatado += '.' + value.substring(2, 5);
-            if (value.length > 5) valorFormatado += '.' + value.substring(5, 8);
-            if (value.length > 8) valorFormatado += '/' + value.substring(8, 12);
-            if (value.length > 12) valorFormatado += '-' + value.substring(12, 14);
-            input.value = valorFormatado;
-        }
-
-        async function fetchCNPJData(cnpj) {
-            const erro = document.getElementById('erro-cnpj');
-            const entidadeInput = document.getElementById('entidade');
-            const enderecoInput = document.getElementById('endereco');
-            const ufInput = document.getElementById('uf');
-            const municipioInput = document.getElementById('municipio');
-            const cepInput = document.getElementById('cep');
-            try {
-                const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-                if (!response.ok) throw new Error('CNPJ não encontrado');
-                const data = await response.json();
-                const razaoSocial = data.razao_social || '';
-                const isMunicipio = razaoSocial.toLowerCase().includes('munic') || razaoSocial.toLowerCase().includes('prefeitura');
-                entidadeInput.value = isMunicipio && data.municipio && data.uf ? 
-                    `Município de ${data.municipio}/${data.uf.toUpperCase()}` : 
-                    razaoSocial || '';
-                document.getElementById('erro-entidade').style.display = entidadeInput.value ? 'none' : 'block';
-                const endereco = `${data.logradouro || ''}${data.numero ? `, ${data.numero}` : ''}${data.bairro ? '' : ''}`;
-                enderecoInput.value = endereco.trim().replace(/^,|,$/g, '') || '';
-                document.getElementById('erro-endereco').style.display = enderecoInput.value ? 'none' : 'block';
-                ufInput.value = data.uf ? data.uf.toUpperCase() : '';
-                document.getElementById('erro-uf').style.display = ufInput.value ? 'none' : 'block';
-                municipioInput.value = data.municipio ? data.municipio.replace(/[^A-Za-zÀ-ÿ\s]/g, '') : '';
-                document.getElementById('erro-municipio').style.display = municipioInput.value ? 'none' : 'block';
-                if (data.cep) {
-                    const cleanCEP = data.cep.replace(/\D/g, '');
-                    cepInput.value = cleanCEP.replace(/^(\d{5})(\d{3})$/, '$1-$2');
-                    document.getElementById('erro-cep').style.display = 'none';
-                } else {
-                    cepInput.value = '';
-                    document.getElementById('erro-cep').style.display = 'block';
-                }
-                erro.style.display = '';
-            } catch (error) {
-                erro.textContent = 'CNPJ inválido ou serviço indisponível.';
-                erro.style.display = 'block';
-                entidadeInput.value = '';
-                enderecoInput.value = '';
-                ufInput.value = '';
-                municipioInput.value = '';
-                cepInput.value = '';
-                document.getElementById('erro-entidade').style.display = 'block';
-                document.getElementById('erro-endereco').style.display = 'block';
-                document.getElementById('erro-uf').style.display = 'block';
-                document.getElementById('erro-municipio').style.display = 'block';
-                document.getElementById('erro-cep').style.display = 'block';
-            }
-        }
-
-        function validarAba(currentTab, nextTab) {
-            let campos;
-            switch (currentTab) {
-                case 'aba1':
-                    campos = ['dirigente', 'matricula', 'cargoDirigente', 'proposta'];
-                    break;
-                case 'aba2':
-                    campos = ['cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep'];
-                    break;
-                default:
-                    return;
-            }
-            let valido = true;
-            campos.forEach(id => {
-                const input = document.getElementById(id);
-                const erro = document.getElementById(`erro-${id}`);
-                if (!input || !erro) {
-                    console.warn(`Elemento ou erro não encontrado para ${id}`);
-                    return;
-                }
-                let isInvalid = false;
-                if (!input.value) {
-                    isInvalid = true;
-                } else if (id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
-                    erro.textContent = 'O CNPJ deve conter 14 números.';
-                    isInvalid = true;
-                } else if (id === 'proposta' && !/^\d{6}\/\d{4}$/.test(input.value)) {
-                    erro.textContent = 'Digite no formato XXXXXX/ANO (6 dígitos/ano).';
-                    isInvalid = true;
-                } else if (id === 'cep' && input.value.length !== 9) {
-                    isInvalid = true;
-                }
-                erro.style.display = isInvalid ? 'block' : 'none';
-                valido = valido && !isInvalid;
-            });
-            if (valido) {
-                const nextButton = document.querySelector(`button[onclick="mostrarAba('${nextTab}')"]`);
-                if (nextButton) {
-                    nextButton.disabled = false;
-                    mostrarAba(nextTab);
-                }
-            } else {
-                showToast('Preencha todos os campos obrigatórios corretamente.', true);
-            }
-        }
-
-        function setupAba3Listeners() {
-            document.querySelectorAll('input[name="tipo_proposta"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    document.getElementById('sub_options_00SL').style.display = radio.id === 'radio_00SL' && radio.checked ? 'block' : 'none';
-                    document.getElementById('sub_options_20JP').style.display = radio.id === 'radio_20JP' && radio.checked ? 'block' : 'none';
-                    document.getElementById('camposEspacoFisico').style.display = radio.id === 'radio_00SL' && radio.checked ? 'block' : 'none';
-                    atualizarOpcao();
-                    validarGerarPDF();
-                });
-            });
-            document.querySelectorAll('input[name^="origem_"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    atualizarOpcao();
-                    validarGerarPDF();
-                });
-            });
-            document.querySelectorAll('#espacoFisicoFields input').forEach(input => {
-                input.addEventListener('input', validarGerarPDF);
-            });
-            document.getElementById('usarPapelTimbrado').addEventListener('change', toggleLetterheadUpload);
-            document.getElementById('letterheadFile').addEventListener('change', () => {
-                document.getElementById('erro-letterheadFile').style.display = 'none';
-                validarGerarPDF();
-            });
-            document.getElementById('municipioMais65mil').addEventListener('change', () => {
-                atualizarOpcao();
-                validarGerarPDF();
-            });
-        }
-
-        function adicionarEspacoFisico() {
-            const container = document.getElementById('espacoFisicoFields');
-            const index = espacoFisicoCount++;
-            const div = document.createElement('div');
-            div.className = 'form-row';
-            div.id = `espacoFisicoRow${index}`;
-            div.innerHTML = `
-                <div class="half-width">
-                    <label for="nomeEspacoFisico${index}">Nome do Espaço Físico:</label>
-                    <input type="text" id="nomeEspacoFisico${index}" oninput="validarLetras(this)" required aria-describedby="erro-nomeEspacoFisico${index}">
-                    <span id="erro-nomeEspacoFisico${index}" class="error-message">Digite apenas letras e espaços.</span>
-                </div>
-                <div class="half-width">
-                    <label for="enderecoEspacoFisico${index}">Endereço do Espaço Físico:</label>
-                    <input type="text" id="enderecoEspacoFisico${index}" required aria-describedby="erro-enderecoEspacoFisico${index}">
-                    <span id="erro-enderecoEspacoFisico${index}" class="error-message">Campo necessário.</span>
-                </div>
-                <button type="button" class="remove-btn" onclick="removerEspacoFisico(${index})">Remover</button>
-            `;
-            container.appendChild(div);
-            document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = 'inline-block');
+    });
+    document.querySelectorAll('input[name^="origem_"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            atualizarOpcao();
             validarGerarPDF();
-        }
+        });
+    });
+    document.getElementById('municipioMais65mil').addEventListener('change', () => {
+        atualizarOpcao();
+        validarGerarPDF();
+    });
+    document.querySelectorAll('#espacoFisicoFields input').forEach(input => {
+        input.addEventListener('input', validarGerarPDF);
+    });
+}
 
-        function removerEspacoFisico(index) {
-            const toRemove = document.getElementById(`espacoFisicoRow${index}`);
-            if (toRemove) toRemove.remove();
-            if (document.querySelectorAll('#espacoFisicoFields .form-row').length <= 1) {
-                document.querySelector('#espacoFisicoFields .remove-btn').style.display = 'none';
+function adicionarEspacoFisico() {
+    const container = document.getElementById('espacoFisicoFields');
+    const index = espacoFisicoCount++;
+    const div = document.createElement('div');
+    div.className = 'form-row';
+    div.id = `espacoFisicoRow${index}`;
+    div.innerHTML = `
+        <div class="half-width">
+            <label for="nomeEspacoFisico${index}">Nome do Espaço Físico:</label>
+            <input type="text" id="nomeEspacoFisico${index}" oninput="validarLetras(this)" onkeypress="validarLetrasApenas(event)" required aria-describedby="erro-nomeEspacoFisico${index}">
+            <span id="erro-nomeEspacoFisico${index}" class="error-message">Digite apenas letras e espaços.</span>
+        </div>
+        <div class="half-width">
+            <label for="enderecoEspacoFisico${index}">Endereço do Espaço Físico:</label>
+            <input type="text" id="enderecoEspacoFisico${index}" required aria-describedby="erro-enderecoEspacoFisico${index}">
+            <span id="erro-enderecoEspacoFisico${index}" class="error-message">Campo necessário.</span>
+        </div>
+        <button type="button" class="remove-btn" onclick="removerEspacoFisico(${index})">Remover</button>
+    `;
+    container.appendChild(div);
+    document.querySelectorAll('.remove-btn').forEach(btn => btn.style.display = 'inline-block');
+    validarGerarPDF();
+}
+
+function removerEspacoFisico(index) {
+    const toRemove = document.getElementById(`espacoFisicoRow${index}`);
+    if (toRemove) toRemove.remove();
+    if (document.querySelectorAll('#espacoFisicoFields .form-row').length <= 1) {
+        const removeBtn = document.querySelector('#espacoFisicoFields .remove-btn');
+        if (removeBtn) removeBtn.style.display = 'none';
+    }
+    validarGerarPDF();
+}
+
+function salvarEspacoFisico() {
+    let valido = true;
+    const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
+    const tipoProposta = document.querySelector('input[name="tipo_proposta"]:checked');
+    if (tipoProposta && tipoProposta.value === '00SL') {
+        if (campos.length === 0) {
+            showToast('Adicione pelo menos um espaço físico.', true);
+            valido = false;
+        }
+        campos.forEach(row => {
+            const nomeInput = row.querySelector('input[id^="nomeEspacoFisico"]');
+            const enderecoInput = row.querySelector('input[id^="enderecoEspacoFisico"]');
+            const erroNome = row.querySelector('span[id^="erro-nomeEspacoFisico"]');
+            const erroEndereco = row.querySelector('span[id^="erro-enderecoEspacoFisico"]');
+            if (!nomeInput.value.trim()) {
+                erroNome.style.display = 'block';
+                valido = false;
+            } else {
+                erroNome.style.display = 'none';
             }
-            validarGerarPDF();
-        }
+            if (!enderecoInput.value.trim()) {
+                erroEndereco.style.display = 'block';
+                valido = false;
+            } else {
+                erroEndereco.style.display = 'none';
+            }
+        });
+    }
+    if (valido) {
+        is00SLEnabled = true;
+        showToast('Dados do espaço físico salvos com sucesso!');
+    } else {
+        showToast('Preencha todos os campos dos espaços físicos corretamente.', true);
+    }
+    validarGerarPDF();
+}
 
-        function salvarEspacoFisico() {
-            let valido = true;
-            const campos = document.querySelectorAll('#espacoFisicoFields .form-row');
-            const tipoProposta = document.querySelector('input[name="tipo_proposta"]:checked');
-            const municipioMais65mil = document.getElementById('municipioMais65mil');
-            if (tipoProposta && tipoProposta.value === '00SL') {
-                if (campos.length === 0) {
-                    showToast('Adicione pelo menos um espaço físico.', true);
-                    valido = false;
+function validarGerarPDF() {
+    const btn = document.getElementById('gerarPDF');
+    let valido = false;
+    const tipo = document.querySelector('input[name="tipo_proposta"]:checked');
+    if (tipo) {
+        if (tipo.value === '00SL') {
+            const origem = document.querySelector('input[name="origem_00SL"]:checked');
+            if (origem && is00SLEnabled) {
+                let espacosOk = true;
+                const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
+                if (espacos.length === 0) {
+                    espacosOk = false;
+                    showToast('Adicione pelo menos um espaço físico para a proposta 00SL.', true);
                 }
-                campos.forEach(row => {
-                    const nomeInput = row.querySelector('input[id^="nomeEspacoFisico"]');
-                    const enderecoInput = row.querySelector('input[id^="enderecoEspacoFisico"]');
-                    const erroNome = row.querySelector('span[id^="erro-nomeEspacoFisico"]');
-                    const erroEndereco = row.querySelector('span[id^="erro-enderecoEspacoFisico"]');
-                    if (!nomeInput.value.trim()) {
-                        erroNome.style.display = 'block';
-                        valido = false;
+                espacos.forEach(i => {
+                    if (!i.value.trim()) {
+                        espacosOk = false;
+                        document.getElementById(`erro-${i.id}`).style.display = 'block';
                     } else {
-                        erroNome.style.display = 'none';
-                    }
-                    if (!enderecoInput.value.trim()) {
-                        erroEndereco.style.display = 'block';
-                        valido = false;
-                    } else {
-                        erroEndereco.style.display = 'none';
+                        document.getElementById(`erro-${i.id}`).style.display = 'none';
                     }
                 });
-            }
-            if (valido) {
-                is00SLEnabled = true;
-                showToast('Dados do espaço físico salvos com sucesso!');
+                valido = espacosOk;
             } else {
-                showToast('Preencha todos os campos dos espaços físicos corretamente.', true);
+                showToast('Selecione a origem do recurso e salve os espaços físicos.', true);
             }
-            validarGerarPDF();
-        }
-
-        function validarGerarPDF() {
-            const btn = document.getElementById('gerarPDF');
-            let valido = false;
-            const tipo = document.querySelector('input[name="tipo_proposta"]:checked');
-            if (tipo) {
-                if (tipo.value === '00SL') {
-                    const origem = document.querySelector('input[name="origem_00SL"]:checked');
-                    const municipioMais65mil = document.getElementById('municipioMais65mil').checked;
-                    if (origem && is00SLEnabled) {
-                        let espacosOk = true;
-                        const espacos = document.querySelectorAll('#espacoFisicoFields input[required]');
-                        if (espacos.length === 0) {
-                            espacosOk = false;
-                            showToast('Adicione pelo menos um espaço físico para a proposta 00SL.', true);
-                        }
-                        espacos.forEach(i => {
-                            if (!i.value.trim()) {
-                                espacosOk = false;
-                                document.getElementById(`erro-${i.id}`).style.display = 'block';
-                            } else {
-                                document.getElementById(`erro-${i.id}`).style.display = 'none';
-                            }
-                        });
-                        valido = espacosOk;
-                    } else {
-                        showToast('Selecione a origem do recurso e salve os espaços físicos.', true);
-                    }
-                } else if (tipo.value === '20JP') {
-                    const origem = document.querySelector('input[name="origem_20JP"]:checked');
-                    if (origem) {
-                        valido = true;
-                    } else {
-                        showToast('Selecione a origem do recurso para a proposta 20JP.', true);
-                    }
-                }
+        } else if (tipo.value === '20JP') {
+            const origem = document.querySelector('input[name="origem_20JP"]:checked');
+            if (origem) {
+                valido = true;
             } else {
-                showToast('Selecione o tipo de proposta (00SL ou 20JP).', true);
-            }
-            btn.disabled = !valido;
-        }
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.backgroundColor = isError ? 'var(--error-color)' : 'var(--success-color)';
-            toast.className = 'toast show';
-            setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
-        }
-
-        function atualizarOpcao() {
-            const tipo = document.querySelector('input[name="tipo_proposta"]:checked')?.value;
-            const origem = document.querySelector('input[name="origem_00SL"]:checked')?.value || document.querySelector('input[name="origem_20JP"]:checked')?.value;
-            const usarPapelTimbrado = document.getElementById('usarPapelTimbrado').checked;
-            const municipioMais65mil = document.getElementById('municipioMais65mil').checked;
-            const opcaoInput = document.getElementById('opcaoSelecao');
-            if (tipo && origem) {
-                opcaoInput.value = `${tipo}_${origem}${usarPapelTimbrado ? '_timbrado' : ''}${tipo === '00SL' && municipioMais65mil ? '_mais65mil' : ''}`;
-            } else {
-                opcaoInput.value = '';
+                showToast('Selecione a origem do recurso para a proposta 20JP.', true);
             }
         }
+    } else {
+        showToast('Selecione o tipo de proposta (00SL ou 20JP).', true);
+    }
+    btn.disabled = !valido;
+}
 
-        // Initialize hidden field
-        document.body.insertAdjacentHTML('beforeend', '<input type="hidden" id="opcaoSelecao" value="">');
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.backgroundColor = isError ? 'var(--error-color)' : 'var(--success-color)';
+    toast.className = 'toast show';
+    setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+}
+
+function atualizarOpcao() {
+    const tipo = document.querySelector('input[name="tipo_proposta"]:checked')?.value;
+    const origem = document.querySelector('input[name="origem_00SL"]:checked')?.value || document.querySelector('input[name="origem_20JP"]:checked')?.value;
+    const municipioMais65mil = document.getElementById('municipioMais65mil').checked;
+    const opcaoInput = document.getElementById('opcaoSelecao');
+    if (tipo && origem) {
+        opcaoInput.value = `${tipo}_${origem}${tipo === '00SL' && municipioMais65mil ? '_mais65mil' : ''}`;
+    } else {
+        opcaoInput.value = '';
+    }
+}
+
+// Initialize hidden field
+document.body.insertAdjacentHTML('beforeend', '<input type="hidden" id="opcaoSelecao" value="">');
     </script>
 </body>
 </html>
