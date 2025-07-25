@@ -301,36 +301,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
     <script>
-const orgaosExpedidoresCompletos = [
-  // Secretarias Estaduais de Segurança
-  'SSP',
-  
-  // Forças Policiais
-  'PC', 'PM', 'PF', 'DPF', 'DPRF', 'CBM',
-
-  // Institutos Técnicos
-  'IFP', 'IIRGD', 'IGP', 'ITEP', 'POLITEC',
-
-  // Justiça
-  'TJ', 'TJSP', 'TJRJ', 'CNJ', 'MP', 'MPF', 'MPT', 'DPU', 'DPE',
-
-  // Ministérios e órgãos federais
-  'MJ', 'MJSP', 'ME', 'MRE', 'MTE', 'MD', 'MAPA', 'MEC', 'CGPI', 'CGPMAF',
-
-  // Forças Armadas
-  'EX', 'EB', 'MAR', 'MB', 'AER', 'FAB', 'MM', 'MAER',
-
-  // Conselhos Profissionais
-  'OAB', 'CRC', 'CREA', 'CAU', 'CRM', 'CRMV', 'CRO', 'COREN', 'CRP', 'CRF', 'CREF', 'CREFITO', 'CRQ', 'CRB', 'CRA', 'CRN', 'CRECI', 'CORECON', 'CONRE',
-
-  // Transporte / Documentos
-  'DETRAN', 'CNH', 'ANTT',
-
-  // Outros
-  'SEJUSP', 'SJC', 'SJDH', 'SJDS', 'SJS', 'DGPC', 'DPTC',
-  'INSS', 'CPTM', 'CGU', 'TRT', 'TRF', 'TRE', 'TSE', 'TST',
-  'IF', 'UFRJ', 'USP', 'UNB', 'UFBA', 'UFPE', // universidades que às vezes constam como emissoras
-  'CGPI/DIREX', 'OUTROS'
+const orgaosExpedidores = [
+    'SSP', 'PC', 'PM', 'IFP', 'IIRGD', 'IGP', 'ITEP', 'POLITEC', 'SJC', 'SJDH', 'SJDS', 'SJS', 'SEJUSP', 'DGPC', 'DPTC', 'PF', 'DPF',
+    'MAER', 'AER', 'MEx', 'EX', 'MM', 'MAR', 'DETRAN', 'CNH', 'OAB', 'CRC', 'CREA', 'CAU', 'CRM', 'CRMV', 'CRO', 'COREN', 'CRP', 'CRF',
+    'CREF', 'CREFITO', 'CRQ', 'CRB', 'CRA', 'CRN', 'CRECI', 'CORECON', 'CONRE', 'MTE', 'MT', 'MRE', 'MJSP', 'CGPI', 'CGPMAF'
 ];
 let ufsData = [];
 
@@ -781,8 +755,8 @@ async function gerarPDF() {
         header: function(currentPage, pageCount) {
             return currentPage === 1 ? {
                 text: [
-                    { text: 'PREFEITURA DE SOLONÓPOLE - GABINETE DO PREFEITO\n', fontSize: 16, bold: true, alignment: 'center', color: '#003087' },
-                    { text: 'Solonópole - CE, CEP: 63620-000\n', fontSize: 11, alignment: 'center', italics: true }
+                    { text: `PREFEITURA DE ${municipioEntidade.toUpperCase()} - GABINETE DO PREFEITO\n`, fontSize: 16, bold: true, alignment: 'center', color: '#003087' },
+                    { text: `${municipioEntidade} - ${ufEntidade}, ${enderecoEntidade.split(',').pop().trim()}\n`, fontSize: 11, alignment: 'center', italics: true }
                 ],
                 margin: [40, 10, 40, 20]
             } : {};

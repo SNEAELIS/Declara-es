@@ -716,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
             margin: [40, 130, 40, 100],
             stack: [
                 ...headerStack,
-                { text: `DECLARAÇÃO\n${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                { text: `${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
                 { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }
             ]
         };
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headerRows: 1,
                     widths: [40, '*'],
                     body: [
-                        [{ text: 'Página', style: 'tableHeader' }, { text: 'DECLARAÇÃO', style: 'tableHeader' }],
+                        [{ text: 'Página', style: 'tableHeader' }, { text: '', style: 'tableHeader' }],
                         ...declaracoes.map((decl, idx) => [
                             { text: `${idx + 1}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
                             { text: `Declaração ${decl.title}`, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
@@ -811,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pageContent = {
                     margin: [40, 130, 40, 100],
                     stack: [
-                        { text: `DECLARAÇÃO\n${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                        { text: `${declaracao.title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
                         { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 50] },
                         { text: `${(dados.cidadeUF.split('/')[0] || 'Município').toUpperCase()}/${(dados.cidadeUF.split('/')[1] || 'UF').toUpperCase()}, ${new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
                         { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
