@@ -755,12 +755,12 @@ async function gerarPDF() {
         header: function(currentPage, pageCount) {
             return currentPage === 1 ? {
                 text: [
-                    { text: `PREFEITURA DE ${municipioEntidade.toUpperCase()} - GABINETE DO PREFEITO\n`, fontSize: 16, bold: true, alignment: 'center', color: '#003087' },
-                    { text: `${municipioEntidade} - ${ufEntidade}, ${enderecoEntidade.split(',').pop().trim()}\n`, fontSize: 11, alignment: 'center', italics: true }
+                    { text: `${nomeEntidade.toUpperCase()}\n`, fontSize: 16, bold: true, alignment: 'center', color: '#003087' },
+                    { text: `${enderecoEntidade}\n`, fontSize: 11, alignment: 'center', italics: true }
                 ],
                 margin: [40, 10, 40, 20]
             } : {};
-        },
+        }, 
         content: [
             { text: 'DECLARAÇÃO DOS ARTIGOS 26 E 27 DO DECRETO Nº 8.726/2016 E ARTIGO 39 DA LEI Nº 13.019/2014', style: 'header', margin: [0, 15, 0, 15], alignment: 'center' },
             { text: `Declaro, em nome da ${nomeEntidade} (CNPJ: ${cnpj}), nos termos dos artigos 26, caput, inciso VII, e 27 do Decreto nº 8.726, de 27 de abril de 2016, e artigo 39, incisos III ao VII, da Lei nº 13.019, de 31 de julho de 2014, que os seus dirigentes abaixo relacionados, a saber:`, margin: [0, 10, 0, 10], alignment: 'justify' },
