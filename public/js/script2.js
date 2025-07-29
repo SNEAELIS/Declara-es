@@ -1,6 +1,6 @@
 let isGeneratingPDF = false;
-let letterheadImage = null;
 
+// Declarações completas
 const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE AUSÊNCIA DE DESTINAÇÃO DE RECURSOS",
@@ -33,9 +33,10 @@ const declaracoesCompletas = [
     {
         title: "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO",
         content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO perante o Ministério do Esporte, para fins de celebração de convênio sob a Proposta nº [proposta], que o(a) [entidade] possui condições orçamentárias e financeiras para arcar com as despesas decorrentes da execução do objeto, incluindo custos de manutenção, operação e eventuais contingências, garantindo a sustentabilidade do projeto ao longo de sua vigência. Esta declaração considera a aquisição de bens de capital e está respaldada por planejamento orçamentário documentado, estando ciente das responsabilidades previstas na Lei nº 4.320/1964 e na Lei Complementar nº 101/2000.`
-    },
+    }
 ];
 
+// Declarações específicas
 const declaracoesEspecificas = {
     '00SL_emendas': [
         {
@@ -49,10 +50,6 @@ const declaracoesEspecificas = {
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
             content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
-        },
-        {
-            title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:\n1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto a contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.\n2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.\n3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.\n4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.\n\nPor ser expressão da verdade, firmo a presente declaração.`
         }
     ],
     '00SL_comissao': [
@@ -67,14 +64,6 @@ const declaracoesEspecificas = {
         {
             title: "DECLARAÇÃO DE CUSTEIO DA INSTALAÇÃO DOS EQUIPAMENTOS",
             content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro o compromisso de dispor de recursos financeiros próprios ou de outras fontes lícitas, não vinculados à Proposta nº [proposta], para custear integralmente a instalação dos equipamentos pactuados, incluindo mão de obra, materiais complementares e eventuais despesas imprevistas. Esta declaração está respaldada por planejamento orçamentário documentado, e me responsabilizo por garantir a execução das obras no prazo estipulado, sob pena de inadimplemento contratual.`
-        },
-        {
-            title: "DECLARAÇÃO DE AQUISIÇÃO DE BENS E SERVIÇOS COMUNS",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que respeita à aquisição de bens e serviços comuns, declaro o compromisso de:\n1. Realizar Processo Licitatório na modalidade Pregão, em atendimento ao § 2º do Art. 17, da Lei n.º 14.133, de 1º de abril de 2021, Art. 51, da Portaria Conjunta n.º 33, de 30 de agosto de 2023, § 3º do Art. 1º, do Decreto n.º 10.024, de 20 de setembro de 2019 e demais legislações que regem a matéria, inclusive quanto a contratação de recursos humanos, quando for o caso, em conformidade com as orientações contidas no Acórdão n.º 2588/2017 – TCU – Plenário.\n2. Dar publicidade ao Processo Licitatório, divulgando no Diário Oficial da União, conforme preconiza o Art. 11 do Decreto nº 3.555, de 08 de agosto de 2000 e Art. 20, do Decreto n.º 10.024, de 20 de setembro de 2019.\n3. Consultar e emitir, para posterior inserção no sistema Transferegov, a declaração e certidões citadas no item 3 quando da assinatura do contrato a ser formalizado com as empresas vencedoras do certame ou do registro da nota de empenho quando não ocorrer a celebração do instrumento contratual, a fim de comprovar que no ato de assinatura as empresas estavam idôneas e aptas para contratar com a Administração Pública.\n4. Publicar os editais de licitação para consecução do objeto conveniado somente após a assinatura do respectivo instrumento, conforme Art. 53, da Portaria Conjunta n.º 33, de 30 de agosto de 2023.\n\nPor ser expressão da verdade, firmo a presente declaração.`
-        },
-        {
-            title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, inclusive no que tange às contribuições de que tratam os artigos 195 e 239 da Constituição Federal (contribuições dos empregados para a seguridade social, contribuições para o PIS/PASEP e contribuições para o FGTS, com relação a recursos anteriormente recebidos da Administração Pública Federal, por meio de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições, auxílios e similares). Por ser expressão da verdade, firmo a presente declaração.`
         }
     ],
     '20JP_emenda': [
@@ -87,14 +76,11 @@ const declaracoesEspecificas = {
         {
             title: "DECLARAÇÃO DE CIÊNCIA DOS REQUISITOS PARA CONTRATAÇÃO DE RECURSOS HUMANOS",
             content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], no que diz respeito à contratação de recursos humanos para a execução da Proposta nº [proposta], declaro ter ciência de que:\n\n1. A forma de contratação deverá ser analisada e aprovada pela Consultoria Jurídica da Entidade Convenente, observando as orientações contidas no Acórdão nº 2588/2017 – TCU – Plenário, na Portaria Conjunta MGI/MF/AGU nº 33, de 30 de agosto de 2023, e na Lei nº 14.133/2021 (Nova Lei de Licitações).\n\n2. O repasse de recursos financeiros para custeio desta ação, incluindo pagamento de profissionais e encargos sociais/trabalhistas, seguirá os valores e percentuais aprovados no Plano de Trabalho da Proposta nº [proposta]. Caso os encargos sociais ou trabalhistas excedam o limite estipulado, a [entidade] arcará com o diferencial, sem ônus para o convenente.\n\n3. O pagamento será realizado mensalmente, conforme pactuado, observadas as seguintes condições:\n   - Pagamento dos Profissionais: efetuado no mês subsequente à prestação dos serviços, mediante comprovação documental;\n   - Pagamento dos Encargos Sociais e/ou Trabalhistas: acompanhará a periodicidade dos pagamentos aos recursos humanos vinculados, com recolhimento tempestivo aos órgãos competentes.\n\nDeclaro estar ciente de que o descumprimento destas condições poderá acarretar a suspensão do repasse de recursos e a aplicação de sanções administrativas.`
-        },
-        {
-            title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-            content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
         }
     ]
 };
 
+// Funções auxiliares
 async function getBase64ImageFromUrl(imageUrl) {
     if (!imageUrl) return null;
     try {
@@ -111,34 +97,6 @@ async function getBase64ImageFromUrl(imageUrl) {
         console.error("Error in getBase64ImageFromUrl:", error);
         return null;
     }
-}
-
-function getBase64FromFile(file) {
-    if (!file) throw new Error('No file provided');
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('Error reading file as DataURL'));
-        reader.readAsDataURL(file);
-    });
-}
-
-async function convertPdfPageToImage(file) {
-    if (!file || !window.pdfjsLib) throw new Error('PDF.js not loaded or no file provided');
-    const fileAsArrayBuffer = await file.arrayBuffer();
-    const loadingTask = pdfjsLib.getDocument(fileAsArrayBuffer);
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(1);
-    const scale = 1.5;
-    const viewport = page.getViewport({ scale });
-
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    await page.render({ canvasContext: context, viewport }).promise;
-    return canvas.toDataURL('image/png');
 }
 
 function substituirPlaceholders(texto, dados) {
@@ -169,13 +127,45 @@ function numeroParaExtenso(num) {
     return String(num);
 }
 
-async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = null, layoutOptions = {}) {
-    if (!window.pdfMake) {
-        console.error("pdfMake is not loaded. Cannot generate PDF.");
-        return isPreview ? {} : undefined;
+// Função para atualizar a opção selecionada
+function atualizarOpcao() {
+    const tipoProposta = document.querySelector('input[name="tipo_proposta"]:checked')?.value || '';
+    const origem00SL = document.querySelector('input[name="origem_00SL"]:checked')?.value || '';
+    const origem20JP = document.querySelector('input[name="origem_20JP"]:checked')?.value || '';
+    const municipioMais65mil00SL = document.getElementById('municipioMais65mil')?.checked || false;
+    const municipioMais65mil20JP = document.getElementById('municipioMais65mil20JP')?.checked || false;
+
+    let opcaoSelecao = '';
+
+    if (tipoProposta === '20JP') {
+        opcaoSelecao = origem20JP ? `20JP_${origem20JP}` : '20JP';
+        if (municipioMais65mil20JP && origem20JP === 'comissao') {
+            opcaoSelecao += '_mais65mil';
+        }
+    } else if (tipoProposta === '00SL' && !document.querySelector('#radio_20JP').checked) {
+        opcaoSelecao = origem00SL ? `00SL_${origem00SL}` : '00SL';
+        if (municipioMais65mil00SL && origem00SL === 'comissao') {
+            opcaoSelecao += '_mais65mil';
+        }
     }
-    if (isGeneratingPDF && !isPreview) {
-        console.warn('PDF generation already in progress. Waiting for completion.');
+
+    document.getElementById('opcaoSelecao').value = opcaoSelecao;
+
+    // Mostrar/esconder os campos de checkbox
+    const municipioMais65milContainer00SL = document.getElementById('municipioMais65milContainer');
+    const municipioMais65milContainer20JP = document.getElementById('municipioMais65milContainer20JP');
+    if (municipioMais65milContainer00SL) {
+        municipioMais65milContainer00SL.style.display = (tipoProposta === '00SL' && origem00SL === 'comissao' && !document.querySelector('#radio_20JP').checked) ? 'block' : 'none';
+    }
+    if (municipioMais65milContainer20JP) {
+        municipioMais65milContainer20JP.style.display = (tipoProposta === '20JP' && origem20JP === 'comissao') ? 'block' : 'none';
+    }
+}
+
+// Função principal de geração de PDF
+async function gerarPDF(formData) {
+    if (!window.pdfMake || isGeneratingPDF) {
+        console.warn('PDF generation not possible or already in progress. isGeneratingPDF:', isGeneratingPDF, 'pdfMake:', !!window.pdfMake);
         return;
     }
 
@@ -194,43 +184,41 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
         const erros = validarDadosFormulario(dados);
         if (erros.length > 0) {
             console.error('Validation errors:', erros);
-            return isPreview ? {} : undefined;
+            exibirMensagemErro(erros.join(' '));
+            return;
         }
 
-        let finalLetterheadImage = letterheadImageBase64;
-        if (dados.usarPapelTimbrado && !finalLetterheadImage && dados.letterheadFile) {
-            finalLetterheadImage = await (dados.letterheadFile.type.startsWith('image/') 
-                ? getBase64FromFile(dados.letterheadFile) 
-                : dados.letterheadFile.type === 'application/pdf' 
-                    ? convertPdfPageToImage(dados.letterheadFile) 
-                    : null);
-            if (!finalLetterheadImage) throw new Error('Failed to load custom letterhead.');
-        } else if (!dados.usarPapelTimbrado && !finalLetterheadImage) {
-            finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            if (!finalLetterheadImage) throw new Error('Failed to load default letterhead.');
-        }
+        const letterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+        if (!letterheadImage) throw new Error('Failed to load default letterhead.');
 
         const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
-        const { topMargin = defaults.topMargin, footerPosition = defaults.footerPosY } = { ...defaults, ...layoutOptions };
-        const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
+        const layoutOptions = { topMargin: defaults.topMargin, footerPosition: defaults.footerPosY };
+        const bottomMargin = Math.max(100, 841.89 - layoutOptions.footerPosition - 40);
 
         // Consolidar declarações sem duplicatas
         const todasDeclaracoes = new Map();
         declaracoesCompletas.forEach(decl => {
             const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
             const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
-            const ehAdimplencia = decl.title === "DECLARAÇÃO DE ADIMPLÊNCIA";
-            const condicaoAdimplencia = !dados.opcaoSelecao.startsWith('00SL') || dados.municipioMais65mil;
-            if ((!ehSustentabilidade || condicaoSustentabilidade) && (!ehAdimplencia || condicaoAdimplencia)) {
+            if (!ehSustentabilidade || condicaoSustentabilidade) {
                 todasDeclaracoes.set(decl.title, decl);
             }
         });
 
-        const opcaoBase = dados.opcaoSelecao.replace(/_timbrado|_mais65mil/g, '');
+        const opcaoBase = dados.opcaoSelecao.replace(/_mais65mil/g, '');
         const declaracoesEspecificasArray = declaracoesEspecificas[opcaoBase] || [];
         declaracoesEspecificasArray.forEach(decl => {
             todasDeclaracoes.set(decl.title, decl);
         });
+
+        // Incluir Declaração de Adimplência para 00SL_comissao ou 20JP_comissao com município > 65 mil
+        if ((dados.municipioMais65mil00SL && dados.opcaoSelecao.includes('00SL_comissao')) || (dados.municipioMais65mil20JP && dados.opcaoSelecao.includes('20JP_comissao'))) {
+            const adimplencia = {
+                title: "DECLARAÇÃO DE ADIMPLÊNCIA",
+                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
+            };
+            todasDeclaracoes.set(adimplencia.title, adimplencia);
+        }
 
         const declaracoesParaIncluir = Array.from(todasDeclaracoes.values());
 
@@ -264,15 +252,15 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
                 ];
             }
 
-            const headerStack = !dados.usarPapelTimbrado ? [
-                { text: dados.entidade || 'Entidade não informada', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
-                { text: `${dados.endereco || 'Endereço não informado'} - ${dados.municipio || 'Município não informado'}/${dados.uf || 'UF não informada'} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
+            const headerStack = [
+                { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
+                { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
                 { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-            ] : [];
+            ];
 
             return {
                 pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined,
-                margin: [defaults.leftRightMargin, topMargin, defaults.leftRightMargin, bottomMargin],
+                margin: [defaults.leftRightMargin, layoutOptions.topMargin, defaults.leftRightMargin, bottomMargin],
                 stack: [
                     ...headerStack,
                     { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
@@ -283,7 +271,10 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             pageBreak: 'before',
             margin: [40, 100.249, 40, 100],
             stack: [
-                { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
+                { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
+                { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
+                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] },
+                { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
                 { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
                 {
                     table: {
@@ -318,8 +309,7 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
         const docDefinition = {
             pageSize: 'A4',
             pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
-            background: (currentPage, pageCount) => 
-                finalLetterheadImage ? { image: finalLetterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
+            background: letterheadImage ? { image: letterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
             footer: (currentPage, pageCount) => ({
                 margin: [40, 0, 40, 0],
                 stack: [
@@ -355,30 +345,32 @@ async function gerarPDF(formData, isPreview = false, letterheadImageBase64 = nul
             }
         };
 
-        if (isPreview) {
-            return docDefinition;
-        }
-
         const nomeArquivo = `declaracao_${dados.proposta.replace(/\//g, '-')}.pdf`;
         const pdfDoc = pdfMake.createPdf(docDefinition);
         pdfDoc.download(nomeArquivo, () => {
             console.log('PDF download completed:', nomeArquivo);
+            exibirMensagemSucesso('PDF gerado com sucesso!');
+            isGeneratingPDF = false;
         }, (error) => {
             console.error('Error downloading PDF:', error);
+            exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
+            isGeneratingPDF = false;
         });
     } catch (error) {
         console.error('Error generating PDF:', error);
-    } finally {
+        exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
         isGeneratingPDF = false;
+    } finally {
         if (loadingMessage) loadingMessage.style.display = 'none';
     }
 }
 
+// Função de validação do formulário
 function validarDadosFormulario(dados) {
     const camposObrigatorios = ['dirigente', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'];
     const erros = camposObrigatorios.filter(campo => !dados[campo] || dados[campo].trim() === '').map(campo => `O campo ${campo} é obrigatório.`);
 
-    if (!['00SL_emendas', '00SL_comissao', '20JP_emenda', '20JP_comissao', '00SL_emendas_timbrado', '00SL_comissao_timbrado', '20JP_emenda_timbrado', '20JP_comissao_timbrado', '00SL_emendas_mais65mil', '00SL_comissao_mais65mil', '00SL_emendas_timbrado_mais65mil', '00SL_comissao_timbrado_mais65mil'].includes(dados.opcaoSelecao)) {
+    if (!['00SL_emendas', '00SL_comissao', '20JP_emenda', '20JP_comissao', '00SL_comissao_mais65mil', '20JP_comissao_mais65mil'].includes(dados.opcaoSelecao)) {
         erros.push('A opção selecionada é inválida.');
     }
 
@@ -386,10 +378,10 @@ function validarDadosFormulario(dados) {
         erros.push('Pelo menos um espaço físico deve ser informado para propostas 00SL.');
     }
 
-    console.log('Resultado da validação do formulário:', erros);
     return erros;
 }
 
+// Funções de mensagens
 function exibirMensagemErro(mensagem) {
     const toast = document.getElementById('toast');
     console.error('Exibindo mensagem de erro:', mensagem);
@@ -418,67 +410,7 @@ function exibirMensagemSucesso(mensagem) {
     }
 }
 
-function fecharModal() {
-    console.log('Fechando modal de pré-visualização');
-    const modal = document.getElementById('layoutEditorModal');
-    if (modal) {
-        modal.style.display = 'none';
-        const iframe = document.getElementById('previewIframe');
-        if (iframe) iframe.src = 'about:blank';
-    }
-}
-
-async function updatePreview() {
-    console.log('Atualizando pré-visualização');
-    const modal = document.getElementById('layoutEditorModal');
-    if (!modal || modal.style.display === 'none') {
-        console.log('Modal não está visível, ignorando atualização');
-        return;
-    }
-
-    const dados = await capturarDadosFormulario();
-    const marginTopCm = parseFloat(document.getElementById('marginTopCm')?.value || 4.58);
-    const footerMarginBottomCm = parseFloat(document.getElementById('footerMarginBottomCm')?.value || 2.4);
-
-    const cmToPoints = cm => cm * 28.3465;
-    const validatedTopMarginCm = Math.min(Math.max(marginTopCm, 0), 7);
-    const validatedFooterMarginBottomCm = Math.min(Math.max(footerMarginBottomCm, 0), 6.5);
-
-    const layoutOptions = {
-        topMargin: cmToPoints(validatedTopMarginCm),
-        footerPosition: 841.89 - cmToPoints(validatedFooterMarginBottomCm) - 40
-    };
-
-    console.log('Opções de layout:', layoutOptions);
-
-    try {
-        const docDefinition = await gerarPDF(dados, true, letterheadImage, layoutOptions);
-        if (!docDefinition || !docDefinition.content) {
-            console.error('DocDefinition inválido ou vazio');
-            exibirMensagemErro('Erro ao gerar pré-visualização: Documento inválido.');
-            return;
-        }
-
-        const pdfDoc = pdfMake.createPdf(docDefinition);
-        pdfDoc.getDataUrl((dataUrl) => {
-            console.log('Pré-visualização gerada com sucesso:', dataUrl.substring(0, 50));
-            const iframe = document.getElementById('previewIframe');
-            if (iframe) {
-                iframe.src = dataUrl;
-            } else {
-                console.error('Iframe de pré-visualização não encontrado');
-                exibirMensagemErro('Erro ao exibir pré-visualização: Iframe não encontrado.');
-            }
-        }, (error) => {
-            console.error('Erro ao gerar DataURL para pré-visualização:', error);
-            exibirMensagemErro('Erro ao gerar pré-visualização: ' + error.message);
-        });
-    } catch (error) {
-        console.error('Erro ao atualizar pré-visualização:', error);
-        exibirMensagemErro('Erro ao atualizar pré-visualização: ' + error.message);
-    }
-}
-
+// Função para capturar dados do formulário
 async function capturarDadosFormulario() {
     console.log('Capturando dados do formulário');
     const getValue = (id) => {
@@ -486,6 +418,12 @@ async function capturarDadosFormulario() {
         const value = element?.value || '';
         console.log(`Campo ${id}:`, value);
         return value;
+    };
+    const checkboxValue = (id) => {
+        const element = document.getElementById(id);
+        const checked = element ? element.checked : false;
+        console.log(`Checkbox ${id}:`, checked);
+        return checked;
     };
     const dados = {
         dirigente: getValue('dirigente'),
@@ -499,9 +437,8 @@ async function capturarDadosFormulario() {
         municipio: getValue('municipio'),
         cep: getValue('cep'),
         opcaoSelecao: getValue('opcaoSelecao'),
-        usarPapelTimbrado: !!document.getElementById('usarPapelTimbrado') && document.getElementById('usarPapelTimbrado').checked,
-        municipioMais65mil: !!document.getElementById('municipioMais65mil') && document.getElementById('municipioMais65mil').checked,
-        letterheadFile: document.getElementById('letterheadFile')?.files[0] || null,
+        municipioMais65mil00SL: checkboxValue('municipioMais65mil'), // Checkbox para 00SL
+        municipioMais65mil20JP: checkboxValue('municipioMais65mil20JP'), // Checkbox para 20JP
         espacosFisicos: []
     };
 
@@ -509,119 +446,37 @@ async function capturarDadosFormulario() {
         const nome = row.querySelector('input[id^="nomeEspacoFisico"]')?.value;
         const endereco = row.querySelector('input[id^="enderecoEspacoFisico"]')?.value;
         if (nome && endereco) {
-            console.log('Espaço físico adicionado:', { nome, endereco });
             dados.espacosFisicos.push({ nome, endereco });
         }
     });
 
+    console.log('Dados capturados:', dados);
     return dados;
 }
 
+// Inicialização do DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando eventos do DOM');
     const gerarPDFBtn = document.getElementById('gerarPDF');
-    const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
-    const usarPapelTimbradoCheckbox = document.getElementById('usarPapelTimbrado');
-    const letterheadFileInput = document.getElementById('letterheadFile');
-    const marginTopInput = document.getElementById('marginTopCm');
-    const footerMarginInput = document.getElementById('footerMarginBottomCm');
-    const cancelLayoutBtn = document.getElementById('cancelLayout');
-
-    if (!gerarPDFBtn || !confirmAndGenerateBtn || !usarPapelTimbradoCheckbox || !letterheadFileInput || !marginTopInput || !footerMarginInput || !cancelLayoutBtn) {
-        console.error('Um ou mais elementos HTML não foram encontrados');
-        exibirMensagemErro('Erro interno: Elementos do formulário não encontrados.');
+    if (!gerarPDFBtn) {
+        console.error('Botão Gerar PDF não encontrado');
+        exibirMensagemErro('Erro interno: Botão Gerar PDF não encontrado.');
         return;
     }
 
-    marginTopInput.value = 4.58;
-    footerMarginInput.value = 2.4;
-
-    async function initiatePDFGeneration(closeModalAfter = false) {
-        console.log('Iniciando geração de PDF, fechar modal:', closeModalAfter);
+    gerarPDFBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
         const dados = await capturarDadosFormulario();
-        
-        if (dados.usarPapelTimbrado && !letterheadImage && !dados.letterheadFile) {
-            console.error('Papel timbrado selecionado, mas nenhum arquivo foi fornecido');
-            exibirMensagemErro('Por favor, selecione um arquivo de papel timbrado.');
-            return;
-        }
-
-        const marginTopCm = parseFloat(marginTopInput.value || 4.58);
-        const footerMarginBottomCm = parseFloat(footerMarginInput.value || 2.4);
-        const cmToPoints = cm => cm * 28.3465;
-
-        const layoutOptions = {
-            topMargin: cmToPoints(Math.min(Math.max(marginTopCm, 0), 7)),
-            footerPosition: 841.89 - cmToPoints(Math.min(Math.max(footerMarginBottomCm, 0), 6.5)) - 40
-        };
-
         try {
-            await gerarPDF(dados, false, letterheadImage, layoutOptions);
-            if (closeModalAfter) {
-                fecharModal();
-            }
+            await gerarPDF(dados);
         } catch (error) {
             console.error('Erro durante a geração de PDF:', error);
             exibirMensagemErro('Erro ao gerar PDF: ' + error.message);
         }
-    }
-
-    usarPapelTimbradoCheckbox.addEventListener('change', () => {
-        console.log('Alterando estado do papel timbrado:', usarPapelTimbradoCheckbox.checked);
-        const uploadContainer = document.getElementById('letterheadUploadContainer');
-        if (uploadContainer) {
-            uploadContainer.style.display = usarPapelTimbradoCheckbox.checked ? 'block' : 'none';
-            if (!usarPapelTimbradoCheckbox.checked) {
-                letterheadFileInput.value = '';
-                letterheadImage = null;
-                console.log('Papel timbrado desativado, limpando arquivo');
-            }
-        }
-        updatePreview();
     });
 
-    letterheadFileInput.addEventListener('change', async (e) => {
-        console.log('Arquivo de papel timbrado selecionado');
-        const file = e.target.files[0];
-        if (file) {
-            try {
-                letterheadImage = await (file.type.startsWith('image/') 
-                    ? getBase64FromFile(file) 
-                    : file.type === 'application/pdf' 
-                        ? convertPdfPageToImage(file) 
-                        : null);
-                exibirMensagemSucesso('Arquivo de papel timbrado carregado com sucesso.');
-                updatePreview();
-            } catch (error) {
-                console.error('Erro ao carregar arquivo de papel timbrado:', error);
-                exibirMensagemErro(error.message);
-                letterheadFileInput.value = '';
-                letterheadImage = null;
-            }
-        }
+    document.querySelectorAll('input[name="tipo_proposta"], input[name="origem_00SL"], input[name="origem_20JP"], #municipioMais65mil, #municipioMais65mil20JP').forEach(input => {
+        input.addEventListener('change', atualizarOpcao);
     });
 
-    gerarPDFBtn.addEventListener('click', () => initiatePDFGeneration(false));
-    confirmAndGenerateBtn.addEventListener('click', () => initiatePDFGeneration(true));
-    cancelLayoutBtn.addEventListener('click', fecharModal);
-
-    marginTopInput.addEventListener('input', (e) => {
-        console.log('Ajustando margem superior:', e.target.value);
-        const value = parseFloat(e.target.value);
-        if (value < 0 || value > 7) {
-            e.target.value = Math.min(Math.max(value, 0), 7);
-            exibirMensagemErro('A margem superior deve estar entre 0 e 7 cm.');
-        }
-        updatePreview();
-    });
-
-    footerMarginInput.addEventListener('input', (e) => {
-        console.log('Ajustando margem inferior:', e.target.value);
-        const value = parseFloat(e.target.value);
-        if (value < 0 || value > 6.5) {
-            e.target.value = Math.min(Math.max(value, 0), 6.5);
-            exibirMensagemErro('A margem inferior do rodapé deve estar entre 0 e 6,5 cm.');
-        }
-        updatePreview();
-    });
+    atualizarOpcao();
 });

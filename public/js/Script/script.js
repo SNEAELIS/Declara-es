@@ -68,6 +68,14 @@ const declarations = [
 // MAIN PDF GENERATION LOGIC
 // ---------------------------------------------------------------------------------
 
+function createHeader(formData) {
+    return [
+        { text: formData.entidade || 'ASSOCIACAO MORIA', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
+        { text: formData.endereco || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE', fontSize: 10, alignment: 'center' },
+        { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
+    ];
+}
+
 async function generatePdfDocDefinition(orderedDeclarationsList = null, letterheadImageBase64 = null, layoutOptions = {}, formData = {}) {
     if (!window.pdfMake) return null;
 
@@ -76,7 +84,6 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
 
     const dataExtenso = new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Use default letterhead image since custom letterhead is removed
     const finalLetterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
 
     const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
@@ -84,31 +91,20 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
     const bottomMargin = Math.max(100, 841.89 - footerPosition - 40);
 
     const allPagesContent = finalDeclarations.map((title, index) => {
-        const pageStack = [];
-        const headerStack = [];
-
-        // Default header since custom letterhead is not used
-        headerStack.push(
-            { text: formData.entidade || 'ASSOCIACAO MORIA', bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
-            { text: formData.endereco || 'SRTVN QD 701 CONJUNTO C ALA B SN - ASA NORTE, SALA 603 CENTRO EMPRESARIAL NORTE', fontSize: 10, alignment: 'center' },
-            { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-        );
-
-        pageStack.push(
-            ...headerStack,
-            { text: `DECLARAÇÃO\n${title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
-            { text: getDeclarationContent(title, formData), alignment: 'justify', fontSize: 12, lineHeight: 1.15 }
-        );
-
         return {
             pageBreak: index < finalDeclarations.length - 1 ? 'after' : undefined,
             margin: [defaults.leftRightMargin, topMargin, defaults.leftRightMargin, bottomMargin],
-            stack: pageStack
+            stack: [
+                ...createHeader(formData),
+                { text: `DECLARAÇÃO\n${title}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
+                { text: getDeclarationContent(title, formData), alignment: 'justify', fontSize: 12, lineHeight: 1.15 }
+            ]
         };
     }).concat({
         pageBreak: 'before',
         margin: [40, 100.249, 40, 100],
         stack: [
+            ...createHeader(formData),
             { text: 'Declarações Referenciais', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
             { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
             {
