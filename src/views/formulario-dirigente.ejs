@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador Documentações</title>
     <style>
-        /* Global styles */
         * {
             margin: 0;
             padding: 0;
@@ -20,7 +19,6 @@
             padding-bottom: 60px;
         }
 
-        /* Header styles */
         header {
             background-color: #003087;
             color: white;
@@ -47,7 +45,6 @@
             height: auto;
         }
 
-        /* Container styles */
         .container {
             background: #fff;
             margin: 80px auto 30px;
@@ -70,7 +67,6 @@
             color: #333;
         }
 
-        /* Section styles */
         .section {
             margin-bottom: 20px;
         }
@@ -163,7 +159,6 @@
             margin-top: 20px;
         }
 
-        /* Footer styles */
         footer {
             text-align: center;
             padding: 10px;
@@ -177,7 +172,6 @@
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 600px) {
             .form-row {
                 flex-direction: column;
@@ -667,7 +661,7 @@ async function getBase64Image(src) {
 }
 
 function getDataAtual() {
-    const hoje = new Date('2025-07-22T14:43:00-03:00'); // 02:43 PM -03, July 22, 2025
+    const hoje = new Date('2025-07-30T14:54:00-03:00');
     const dia = String(hoje.getDate()).padStart(2, '0');
     const mes = String(hoje.getMonth() + 1).padStart(2, '0');
     const ano = hoje.getFullYear();
@@ -727,43 +721,54 @@ async function gerarPDF() {
     } else {
         textoContasRejeitadas = { text: 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.', margin: [0, 10], alignment: 'justify' };
     }
-    
+
     let textoSancoesLei13019;
     if (sancoesLei13019) {
         textoSancoesLei13019 = { text: 'VI – foram punidos, mas o período que durou a penalidade já se exauriu.', margin: [0, 10], alignment: 'justify' };
     } else {
         textoSancoesLei13019 = { text: 'VI – não foram punidos com as sanções previstas no art. 39, inciso V, alíneas “a”, “b”, “c” e “d”, da Lei nº 13.019, de 2014.', margin: [0, 10], alignment: 'justify' };
     }
-    
+
     let textoImprobidadeAdministrativa;
     if (improbidadeAdministrativa) {
         textoImprobidadeAdministrativa = { text: 'c) foram consideradas responsáveis por ato de improbidade, mas os respectivos efeitos, nos prazos previstos no art. 12, incisos I, II e III, da Lei nº 8.429, de 1992, já se exauriram.', margin: [10, 5], alignment: 'justify' };
     } else {
-        textoImprobidadeAdministrativa = { text: 'c) foram considerados responsáveis por ato de improbidade.', margin: [10, 5], alignment: 'justify' };
+        textoImprobidadeAdministrativa = { text: 'c) não foram considerados responsáveis por ato de improbidade.', margin: [10, 5], alignment: 'justify' };
     }
 
     const docDefinition = {
         pageSize: 'A4',
         pageMargins: [40, 80, 40, 40],
-        background: (currentPage) => currentPage === 1 && watermarkImage ? [{
+        background: (currentPage) => watermarkImage ? [{
             image: watermarkImage,
             width: 595,
             height: 842,
-            opacity: 0.15,
+            opacity: 0.5,
             absolutePosition: { x: 0, y: 0 }
         }] : [],
         header: function(currentPage, pageCount) {
-            return currentPage === 1 ? {
+            const headerContent = {
                 text: [
                     { text: `${nomeEntidade.toUpperCase()}\n`, fontSize: 16, bold: true, alignment: 'center', color: '#003087' },
                     { text: `${enderecoEntidade}\n`, fontSize: 11, alignment: 'center', italics: true }
-                ],
-                margin: [40, 10, 40, 20]
-            } : {};
-        }, 
+                ]
+            };
+            return {
+                ...headerContent,
+                margin: currentPage === 1 ? [40, 10, 40, 20] : [40, 40, 40, 20]
+            };
+        },
+        footer: function(currentPage, pageCount) {
+            return {
+                text: `Página ${currentPage} de ${pageCount}`,
+                alignment: 'right',
+                margin: [0, 0, 40, 10],
+                fontSize: 10
+            };
+        },
         content: [
             { text: 'DECLARAÇÃO DOS ARTIGOS 26 E 27 DO DECRETO Nº 8.726/2016 E ARTIGO 39 DA LEI Nº 13.019/2014', style: 'header', margin: [0, 15, 0, 15], alignment: 'center' },
-            { text: `Declaro, em nome da ${nomeEntidade} (CNPJ: ${cnpj}), nos termos dos artigos 26, caput, inciso VII, e 27 do Decreto nº 8.726, de 27 de abril de 2016, e artigo 39, incisos III ao VII, da Lei nº 13.019, de 31 de julho de 2014, que os seus dirigentes abaixo relacionados, a saber:`, margin: [0, 10, 0, 10], alignment: 'justify' },
+            { text: `Declaro, em nome da ${nomeEntidade} (CNPJ: ${cnpj}), nos termos dos artigos 26, caput, inciso VII, e 27 do Decreto nº 8.726, de 27 de abril de 2016, e artigo 39, incisos III ao VII, da Lei nº 13.019, de 31 de julho de 2014, que os seus dirigentes abaixo relacionados, a saber:`, margin: [0, 10, 0, 10], alignment: 'justify', lineHeight: 1.2 },
             { text: 'RELAÇÃO NOMINAL ATUALIZADA DOS DIRIGENTES DA ENTIDADE', style: 'subheader', margin: [0, 15, 0, 10], alignment: 'center', decoration: 'underline', fontSize: 14 },
             {
                 table: {
@@ -789,20 +794,20 @@ async function gerarPDF() {
                     paddingBottom: function(i, node) { return 4; }
                 }
             },
-            { text: 'I – não são membros de Poder ou do Ministério Público, nem dirigem órgão ou entidade da Administração Pública Federal;', margin: [0, 15], alignment: 'justify' },
-            { text: 'II – não são cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau de membros de Poder, do Ministério Público ou de dirigentes de órgão ou entidade da Administração Pública Federal;', margin: [0, 15], alignment: 'justify' },
-            { text: 'III – não contratarão, com recursos da parceria, servidores ou empregados públicos, incluindo cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau, salvo hipóteses previstas em lei específica ou na lei de diretrizes orçamentárias;', margin: [0, 15], alignment: 'justify' },
-            { text: 'IV – não serão remunerados, a qualquer título, com recursos repassados:', margin: [0, 15], alignment: 'justify' },
-            { text: 'a) membros de Poder, do Ministério Público ou dirigentes de órgão ou entidade da administração pública federal;', margin: [15, 5], alignment: 'justify' },
-            { text: 'b) servidores ou empregados públicos, incluindo cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau, salvo hipóteses previstas em lei específica ou na lei de diretrizes orçamentárias;', margin: [15, 5], alignment: 'justify' },
-            { text: 'c) pessoas naturais condenadas por crimes contra a administração pública, patrimônio público, crimes eleitorais com pena privativa de liberdade ou lavagem de bens, direitos e valores;', margin: [15, 5], alignment: 'justify' },
+            { text: 'I – não são membros de Poder ou do Ministério Público, nem dirigem órgão ou entidade da Administração Pública Federal;', margin: [0, 10], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'II – não são cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau de membros de Poder, do Ministério Público ou de dirigentes de órgão ou entidade da Administração Pública Federal;', margin: [0, 10], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'III – não contratarão, com recursos da parceria, servidores ou empregados públicos, incluindo cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau, salvo hipóteses previstas em lei específica ou na lei de diretrizes orçamentárias;', margin: [0, 10], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'IV – não serão remunerados, a qualquer título, com recursos repassados:', margin: [0, 10], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'a) membros de Poder, do Ministério Público ou dirigentes de órgão ou entidade da administração pública federal;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'b) servidores ou empregados públicos, incluindo cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau, salvo hipóteses previstas em lei específica ou na lei de diretrizes orçamentárias;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'c) pessoas naturais condenadas por crimes contra a administração pública, patrimônio público, crimes eleitorais com pena privativa de liberdade ou lavagem de bens, direitos e valores;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
             textoContasRejeitadas,
             textoSancoesLei13019,
-            { text: 'VII – não foram, nos últimos 8 (oito) anos:', margin: [0, 15], alignment: 'justify' },
-            { text: 'a) julgados com contas relativas a parcerias irregulares ou rejeitadas por Tribunal ou Conselho de Contas, em decisão irrecorrível;', margin: [15, 5], alignment: 'justify' },
-            { text: 'b) inabilitados por falta grave para exercer cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [15, 5], alignment: 'justify' },
+            { text: 'VII – não foram, nos últimos 8 (oito) anos:', margin: [0, 10], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'a) julgados com contas relativas a parcerias irregulares ou rejeitadas por Tribunal ou Conselho de Contas, em decisão irrecorrível;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
+            { text: 'b) inabilitados por falta grave para exercer cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
             textoImprobidadeAdministrativa,
-            { text: `\n${municipioEntidade}/${ufEntidade}, ${dataAtual}.`, alignment: 'center', margin: [0, 20] },
+            { text: `\n${municipioEntidade}/${ufEntidade}, ${dataAtual}.`, alignment: 'center', margin: [0, 20], lineHeight: 1.2 },
             { text: '_______________________________', alignment: 'center', margin: [0, 10] },
             { text: `${nomeRepresentante}`, alignment: 'center', margin: [0, 5] },
             { text: `${cargoRepresentante}`, alignment: 'center', margin: [0, 5] }
@@ -812,15 +817,9 @@ async function gerarPDF() {
             subheader: { fontSize: 15, bold: true, color: '#002147' }
         },
         defaultStyle: {
-            fontSize: 12
-        },
-        fonts: {
-            Helvetica: {
-                normal: 'Helvetica',
-                bold: 'Helvetica-Bold',
-                italics: 'Helvetica-Oblique',
-                bolditalics: 'Helvetica-BoldOblique'
-            }
+            font: 'Roboto',
+            fontSize: 12,
+            lineHeight: 1.2
         }
     };
 
@@ -899,3 +898,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     gerarCampos();
 });
     </script>
+</body>
+</html>
