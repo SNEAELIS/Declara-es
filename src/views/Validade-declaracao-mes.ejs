@@ -384,7 +384,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     // --- UI and Form Handling (Largely Unchanged) ---
     const form = document.getElementById('declaracoesForm');
     const themeToggle = document.getElementById('themeToggle');
@@ -593,7 +593,7 @@
         });
     });
 
-    // --- PDF Generation Logic (Refactored and Corrected) ---
+    // --- PDF Generation Logic ---
 
     const getBase64ImageFromUrl = (url) => new Promise((resolve) => {
         const img = new Image();
@@ -621,6 +621,9 @@
         const fullAddress = `${endereco}${complemento ? `, ${complemento}` : ''}`;
         const uf = cidadeUF.split('/')[1] || 'UF';
         
+        // ** NOVO TEXTO DO RODAPÉ APLICADO AQUI **
+        const novoTextoRodapeLongo = 'Declaração válida até a data limite de publicação do Relatório de Gestão Fiscal-RGF (ou Relatório Resumido da Execução Orçamentária – RREO subsequente - 30 dias após o encerramento do quadrimestre, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas)';
+
         const declaracoesBase = {
             "area_gestora_existe_taxa": {
                 id: 'area_gestora_existe_taxa',
@@ -632,7 +635,7 @@
                 id: 'area_gestora_inexiste_taxa',
                 title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023',
                 content: `Eu, ${nome}, na condição de ${cargo} do Município de ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 17 e inciso XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${nomeEstadoMunicipio}/${uf}, endereço ${fullAddress}, CEP ${cep}, ${cidadeUF}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`,
-                footer: 'Declaração válida somente no mês da assinatura'
+                footer: 'Declaração válida somente no mês da assinatura, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
             },
             "precatorios_judiciais": {
                 id: 'precatorios_judiciais',
@@ -650,13 +653,13 @@
                 id: 'limites_cumprimento',
                 title: 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023',
                 content: `Eu, ${nome}, na condição de ${cargo} do Município de ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${nomeEstadoMunicipio}/${uf}, endereço ${fullAddress}, CEP ${cep}, ${cidadeUF}, encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`,
-                footer: 'Declaração válida até a data limite de publicação do relatório subsequente - 30 dias após o encerramento do quadrimestre, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
+                footer: novoTextoRodapeLongo
             },
             "precatorios_educacao_ausencia": {
                 id: 'precatorios_educacao_ausencia',
                 title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023',
                 content: `Eu, ${nome}, na condição de ${cargo} do Município de ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 16 do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${nomeEstadoMunicipio}/${uf}, endereço ${fullAddress}, CEP ${cep}, ${cidadeUF}, encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`,
-                footer: 'Declaração válida até a data limite de publicação do relatório subsequente - 30 dias após o encerramento do quadrimestre, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
+                footer: novoTextoRodapeLongo
             }
         };
 
@@ -688,12 +691,9 @@
 
     const createDeclarationContent = (declaracao, dados, { withSignature = false } = {}) => {
         const contentStack = [
-            // Cabeçalho da Entidade
             { text: dados.nomeEntidade || 'Entidade não informada', style: 'entityName' },
             { text: `${dados.endereco || 'Endereço não informado'} - ${dados.cidadeUF || 'Município/UF não informado'} - CEP: ${dados.cep || 'CEP não informado'}`, style: 'entityAddress' },
-            // Linha de separação
             { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 10] },
-            // Título e Conteúdo da Declaração
             { text: declaracao.title, style: 'header', alignment: 'center', margin: [0, 15, 0, 20] },
             { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }
         ];
@@ -718,7 +718,6 @@
             stack: [
                 { text: dados.nomeEntidade || 'Entidade não informada', style: 'entityName' },
                 { text: `${dados.endereco || 'Endereço não informado'} - ${dados.cidadeUF || 'Município/UF não informado'} - CEP: ${dados.cep || 'CEP não informado'}`, style: 'entityAddress' },
-                // Linha de separação
                 { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 10] },
                 { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 15, 0, 15] },
                 { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', margin: [0, 5, 0, 10] },
@@ -774,7 +773,7 @@
 
                 const docDefinition = {
                     pageSize: 'A4',
-                    pageMargins: [40, 60, 40, 60], // [left, top, right, bottom] -> Margem inferior aumentada
+                    pageMargins: [40, 60, 40, 60],
                     background: () => watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 } } : null,
                     footer: (currentPage, pageCount) => {
                         let footerText = '';
@@ -785,13 +784,25 @@
                         } else {
                             footerText = declaracoes[0]?.footer;
                         }
-                        return {
-                            margin: [40, 10, 40, 0], 
-                            columns: [
-                                { text: footerText || '', fontSize: 8, color: '#555', alignment: 'left' },
-                                { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8, color: '#555', alignment: 'right' }
-                            ]
-                        };
+
+                        // ** NOVO LAYOUT DO RODAPÉ APLICADO AQUI **
+                        if (footerText && footerText.includes('RGF')) {
+                            return {
+                                margin: [40, 10, 40, 0],
+                                stack: [
+                                    { text: footerText, fontSize: 8, color: '#555', alignment: 'justify' },
+                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8, color: '#555', alignment: 'right', margin: [0, 4, 0, 0] }
+                                ]
+                            };
+                        } else {
+                             return {
+                                margin: [40, 10, 40, 0],
+                                columns: [
+                                    { text: footerText || '', fontSize: 8, color: '#555', alignment: 'left' },
+                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8, color: '#555', alignment: 'right' }
+                                ]
+                            };
+                        }
                     },
                     content: allPagesContent,
                     styles: {
@@ -804,9 +815,18 @@
                     defaultStyle: { font: 'Roboto', alignment: 'justify' }
                 };
 
-                const fileName = isMultiPage 
-                    ? `Declarações_COM_Envio_ao_TCE_${dados.nome.replace(/\s+/g, '_')}.pdf`
-                    : `Declaração_SEM_envio_ao_TCE_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+                // ** NOVO NOME DE ARQUIVO APLICADO AQUI **
+                let fileName = '';
+                if (isMultiPage) {
+                    fileName = `Declarações_COM_Envio_ao_TCE_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+                } else {
+                    const singleDeclId = declaracoes[0].id;
+                    if (singleDeclId === 'area_gestora_existe_taxa' || singleDeclId === 'area_gestora_inexiste_taxa') {
+                        fileName = `Declaração_de_Área_Gestora_e_Legislação_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+                    } else {
+                        fileName = `Declaração_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+                    }
+                }
 
                 pdfMake.createPdf(docDefinition).download(fileName, () => resolve());
             } catch (error) {
