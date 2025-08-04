@@ -635,7 +635,7 @@
                 id: 'area_gestora_inexiste_taxa',
                 title: 'DECLARAÇÃO DE INEXISTÊNCIA DE ÁREA GESTORA DOS RECURSOS RECEBIDOS POR TRANSFERÊNCIA VOLUNTÁRIA DA UNIÃO E INEXISTÊNCIA DE LEGISLAÇÃO DO PROPONENTE, NA LOCALIDADE DE EXECUÇÃO DO OBJETO, QUE ESTABELEÇA A COBRANÇA DE TAXA DE ADMINISTRAÇÃO DE CONTRATO\n§ 17 E INCISO XXXIV DO ART. 29 DA PC 33, DE 2023',
                 content: `Eu, ${nome}, na condição de ${cargo} do Município de ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 17 e inciso XXXIV do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que o Município de ${nomeEstadoMunicipio}/${uf}, endereço ${fullAddress}, CEP ${cep}, ${cidadeUF}:\na) não possui área gestora dos recursos recebidos por transferência voluntária da União, com atribuições definidas para gestão, celebração, execução e prestação de contas, assim, atribuirá a competência pela gestão dos recursos recebidos por transferência voluntária da União a outro setor que possua, no mínimo, um servidor ou empregado público efetivo; e\nb) inexiste legislação do proponente, na localidade de execução do objeto, que estabeleça a cobrança de taxa de administração de contrato, em consonância com a vedação do art. 21, parágrafo único, inciso I, da Portaria Conjunta nº 33/2023.`,
-                footer: 'Declaração válida somente no mês da assinatura, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
+                footer: 'Declaração válida somente no mês da assinatura'
             },
             "precatorios_judiciais": {
                 id: 'precatorios_judiciais',
@@ -773,9 +773,17 @@
 
                 const docDefinition = {
                     pageSize: 'A4',
-                    pageMargins: [40, 60, 40, 60],
+                    // --- ALTERAÇÃO 1: Margens da Página ---
+                    // Aumentamos a margem superior para 80 (abaixando o conteúdo do cabeçalho)
+                    // e diminuímos a margem inferior para 50 (subindo a posição do rodapé).
+                    pageMargins: [40, 80, 40, 80],
+
                     background: () => watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 } } : null,
+                    
+                    // --- ALTERAÇÃO 2: Rodapé Refeito ---
+                    // Esta nova função de rodapé é mais estruturada e profissional.
                     footer: (currentPage, pageCount) => {
+                        // Lógica para obter o texto do rodapé (inalterada)
                         let footerText = '';
                         if (pageCount > 1) {
                              footerText = (currentPage < pageCount)
@@ -785,25 +793,47 @@
                             footerText = declaracoes[0]?.footer;
                         }
 
-                        // ** NOVO LAYOUT DO RODAPÉ APLICADO AQUI **
-                        if (footerText && footerText.includes('RGF')) {
-                            return {
-                                margin: [40, 10, 40, 0],
-                                stack: [
-                                    { text: footerText, fontSize: 8, color: '#555', alignment: 'justify' },
-                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8, color: '#555', alignment: 'right', margin: [0, 4, 0, 0] }
-                                ]
-                            };
-                        } else {
-                             return {
-                                margin: [40, 10, 40, 0],
-                                columns: [
-                                    { text: footerText || '', fontSize: 8, color: '#555', alignment: 'left' },
-                                    { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8, color: '#555', alignment: 'right' }
-                                ]
-                            };
-                        }
+                        // Se não houver texto, não exibe nada.
+                        if (!footerText) return null;
+
+                        // Determina o alinhamento do texto principal do rodapé.
+                        const isLongText = footerText.includes('RGF');
+                        const mainTextAlign = isLongText ? 'justify' : 'left';
+                        
+                        // Retorna um objeto de layout consistente para todas as páginas.
+                        return {
+                            // Margens do bloco do rodapé: [esquerda, topo, direita, baixo]
+                            margin: [40, 10, 40, 0],
+                            stack: [
+                                // 1. Linha separadora cinza claro acima do texto do rodapé.
+                                {
+                                    canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#AAAAAA' }],
+                                    margin: [0, 0, 0, 5] // Espaço entre a linha e o texto abaixo
+                                },
+                                // 2. Colunas para o texto e o número da página.
+                                {
+                                    columns: [
+                                        // Coluna para o texto principal
+                                        {
+                                            text: footerText,
+                                            alignment: mainTextAlign,
+                                            fontSize: 8,
+                                            color: '#555'
+                                        },
+                                        // Coluna para o número da página
+                                        {
+                                            text: `Página ${currentPage} de ${pageCount}`,
+                                            alignment: 'right',
+                                            fontSize: 8,
+                                            color: '#555',
+                                            width: 'auto' // Ocupa apenas o espaço necessário
+                                        }
+                                    ]
+                                }
+                            ]
+                        };
                     },
+
                     content: allPagesContent,
                     styles: {
                         header: { fontSize: 12, bold: true, color: '#003087' },
@@ -815,14 +845,13 @@
                     defaultStyle: { font: 'Roboto', alignment: 'justify' }
                 };
 
-                // ** NOVO NOME DE ARQUIVO APLICADO AQUI **
                 let fileName = '';
                 if (isMultiPage) {
                     fileName = `Declarações_COM_Envio_ao_TCE_${dados.nome.replace(/\s+/g, '_')}.pdf`;
                 } else {
                     const singleDeclId = declaracoes[0].id;
                     if (singleDeclId === 'area_gestora_existe_taxa' || singleDeclId === 'area_gestora_inexiste_taxa') {
-                        fileName = `Declaração_de_Área_Gestora_e_Legislação_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+                        fileName = `Declaração_de_Área_Gestora_e_Inexistência de Legislação_${dados.nome.replace(/\s+/g, '_')}.pdf`;
                     } else {
                         fileName = `Declaração_${dados.nome.replace(/\s+/g, '_')}.pdf`;
                     }
