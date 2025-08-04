@@ -157,7 +157,7 @@
         <form id="declaracoesForm" onsubmit="return false;" aria-label="Formulário de Declaração de Entidade Pública">
             <div id="aba1" class="tab active" role="tabpanel">
                 <section class="section">
-                    <h3><i class="fas fa-user-edit"></i> Dados do Dirigente da Entidade</h3>
+                    <h3><i class="fas fa-user-edit"></i> Dados do Dirigente do Convênio</h3>
                     <div class="form-row">
                         <div class="half-width">
                             <label for="dirigente">Nome:</label>
@@ -165,8 +165,8 @@
                             <span id="erro-dirigente" class="error-message">Digite apenas letras e espaços.</span>
                         </div>
                         <div class="half-width">
-                            <label for="matricula">Matrícula:</label>
-                            <input type="text" id="matricula" oninput="validarNumeros(this)" required aria-describedby="erro-matricula">
+                            <label for="matricula">Matrícula Funcional:</label>
+                            <input type="text" id="matricula" oninput="validarNumeros(this)" required aria-describedby="erro-matricula" placeholder="Ex: 00123456 ou 00123456-7">
                             <span id="erro-matricula" class="error-message">Digite apenas números.</span>
                         </div>
                     </div>
@@ -691,7 +691,7 @@
                     }
                 };
 
-                const nomeArquivo = `declaracao_${dados.proposta.replace(/\//g, '-')}.pdf`;
+                const nomeArquivo = 'Declarações Consolidadas - Sem prazo de validade.pdf';
                 const pdfDoc = pdfMake.createPdf(docDefinition);
                 pdfDoc.download(nomeArquivo, () => {
                     console.log('PDF download completed:', nomeArquivo);
