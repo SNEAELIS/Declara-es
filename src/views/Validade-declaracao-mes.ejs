@@ -643,7 +643,7 @@ const getDeclaracoes = (opcao, dados, configuracoes) => {
                 precatorios_judiciais: {
                     id: 'precatorios_judiciais',
                     title: 'DECLARAÇÃO DE REGULARIDADE NO PAGAMENTO DE PRECATÓRIOS JUDICIAIS\nINCISO II c/c § 6º DO ART. 29 DA PC 33, DE 2023',
-                    content: `Eu, ${nome}, na condição de ${representanteText}do ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`,
+                    content: `Eu, ${nome}, na condição de ${representanteText} do ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao disposto no inciso II c/c §6º do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} está regular quanto ao pagamento de precatórios judiciais, nos termos do art. 104, do Ato das Disposições Constitucionais Transitórias.`,
                     footer: 'Declaração válida somente no mês da assinatura, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
                 },
                 empresas_publicas: {
@@ -658,20 +658,20 @@ const getDeclaracoes = (opcao, dados, configuracoes) => {
                         ? 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISO XXXI DO ART 29 DA PC 33, DE 2023'
                         : 'DECLARAÇÃO DE REGULARIDADE NO CUMPRIMENTO DE LIMITES\nINCISOS XXIX, XXX e XXXI DO ART 29 DA PC 33, DE 2023',
                     content: (configuracoes.ate65milHabitantes)
-                        ? `Eu, ${nome}, na condição de ${representanteText} do ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se regular:\nI. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
-                        : `Eu, ${nome}, na condição de ${representanteText} do ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`,
+                        ? `Eu, ${nome}, na condição de ${representanteText}  ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao inciso XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se regular:\nI. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`
+                        : `Eu, ${nome}, na condição de ${representanteText}  ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento aos incisos XXIX, XXX e XXXI, do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se regular:\nI. no cumprimento do limite das dívidas consolidada e mobiliária, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000;\nII. no cumprimento do limite de inscrição em restos a pagar, nos termos do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000; e\nIII. no cumprimento do limite de despesa total com pessoal de todos os Poderes e órgãos listados no art. 20 da Lei Complementar nº 101, de 4 de maio de 2000, inclusive as Defensorias Públicas, nos termos do art. 169, § 2º, da Constituição Federal, e do art. 25, § 1º, inciso IV, alínea "c", da Lei Complementar nº 101, de 4 de maio de 2000.`,
                     footer: novoTextoRodapeLongo
                 },
                 precatorios_educacao_regular: {
                     id: 'precatorios_educacao_regular',
                     title: 'DECLARAÇÃO DE REGULARIDADE NA DESTINAÇÃO DOS PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\nINCISO XXXIII DO ART. 29 DA PC 33, DE 2023',
-                    content: `Eu, ${nome}, na condição de ${representanteText} do ${nomeEstadoMunicipio}, CNPJ: ${cnpj}, declaro, sob as penas da lei, que${entityText ? ` o Município de ${entityText}` : ''} encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`,
+                    content: `Eu, ${nome}, na condição de ${representanteText}  ${nomeEstadoMunicipio}, CNPJ: ${cnpj}, declaro, sob as penas da lei, que${entityText ? ` o Município de ${entityText}` : ''} encontra-se regular quanto à destinação dos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 25 de dezembro de 2020, e no art. 3º da Lei nº 14.325, de 12 de abril de 2022.`,
                     footer: 'Declaração válida somente no mês da assinatura, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
                 },
                 precatorios_educacao_ausencia: {
                     id: 'precatorios_educacao_ausencia',
                     title: 'DECLARAÇÃO DE AUSÊNCIA DE PRECATÓRIOS CORRESPONDENTES AO RATEIO DOS PERCENTUAIS DESTINADOS AOS PROFISSIONAIS DO MAGISTÉRIO E AOS DEMAIS PROFISSIONAIS DA EDUCAÇÃO BÁSICA\n§ 16 DO ART. 29 DA PC 33, DE 2023',
-                    content: `Eu, ${nome}, na condição de ${representanteText} do ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 16 do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`,
+                    content: `Eu, ${nome}, na condição de ${representanteText}  ${nomeEstadoMunicipio}, CNPJ nº ${cnpj}, declaro para os devidos fins de celebração de Convênio no âmbito do Ministério do Esporte - MESP, em cumprimento ao § 16 do art. 29 da Portaria Conjunta MGI/MF/CGU Nº 33, de 30 de agosto de 2023, sob as penas da lei, que${entityText ? ` o Município de ${entityText}${addressText}` : ''} encontra-se inexistente da obrigação referente aos precatórios correspondentes ao rateio dos percentuais destinados aos profissionais do magistério e aos demais profissionais da educação básica, estabelecido no art. 47-A, §§ 1º e 2º, da Lei nº 14.113, de 2020, e no art. 3º da Lei nº 14.325, de 2022.`,
                     footer: 'Declaração válida somente no mês da assinatura, juntamente com o comprovante de remessa da Declaração ao Tribunal de Contas'
                 }
             };
@@ -713,60 +713,91 @@ const createDeclarationContent = (declaracao, dados, { withSignature = false } =
         { text: declaracao.content, alignment: 'justify', fontSize: 12, lineHeight: 1.15, margin: [0, 0, 0, 30] }
     ];
 
-    if (withSignature) {
-        contentStack.push({
+if (withSignature) {
+    const meses = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = meses[hoje.getMonth()];
+    const ano = hoje.getFullYear();
+
+    contentStack.push({
+        stack: [
+            { 
+                text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, ${dia} de ${mes} de ${ano}.`, 
+                alignment: 'center', 
+                fontSize: 11, 
+                margin: [0, 20, 0, 10] 
+            },
+            { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
+            { text: dados.nome, alignment: 'center', bold: true, fontSize: 11 },
+            { text: dados.cargo, alignment: 'center', italic: true, fontSize: 11 }
+        ],
+        unbreakable: true
+    });
+}
+    return { stack: contentStack };
+};
+
+const createLastPageContent = (declaracoes, dados) => {
+    function formatarDataAtual() {
+    const meses = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = meses[hoje.getMonth()];
+    const ano = hoje.getFullYear();
+    return `${dia} de ${mes} de ${ano}`;
+}
+return {
+    pageBreak: 'before',
+    stack: [
+        { text: dados.nomeEntidade || 'Entidade não informada', style: 'entityName' },
+        { text: `${dados.endereco || 'Endereço não informado'} - ${dados.cidadeUF || 'Município/UF não informado'} - CEP: ${dados.cep || 'CEP não informado'}`, style: 'entityAddress' },
+        { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 10] },
+        { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 15, 0, 15] },
+        { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', margin: [0, 5, 0, 10] },
+        {
+            table: {
+                headerRows: 1,
+                widths: [40, '*'],
+                body: [
+                    [{ text: 'Página', style: 'tableHeader' }, { text: 'Descrição', style: 'tableHeader' }],
+                    ...declaracoes.map((decl, idx) => [
+                        { text: `${idx + 1}`, alignment: 'center', fontSize: 9 },
+                        { text: decl.title, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9 }
+                    ])
+                ]
+            },
+            layout: {
+                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                vLineWidth: () => 1,
+                hLineColor: () => '#003087',
+                vLineColor: () => '#003087',
+                paddingLeft: () => 5,
+                paddingRight: () => 5,
+                paddingTop: () => 2,
+                paddingBottom: () => 2
+            },
+            margin: [0, 10, 0, 20]
+        },
+        { text: `Por ser verdade, firmo o teor das ${numToWords(declaracoes.length)} (${declaracoes.length}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 10] },
+        {
             stack: [
-                { text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, 06 de agosto de 2025.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+                { text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, ${formatarDataAtual()}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
                 { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
                 { text: dados.nome, alignment: 'center', bold: true, fontSize: 11 },
                 { text: dados.cargo, alignment: 'center', italic: true, fontSize: 11 }
             ],
             unbreakable: true
-        });
-    }
-    return { stack: contentStack };
+        }
+    ]
 };
-
-const createLastPageContent = (declaracoes, dados) => {
-    return {
-        pageBreak: 'before',
-        stack: [
-            { text: dados.nomeEntidade || 'Entidade não informada', style: 'entityName' },
-            { text: `${dados.endereco || 'Endereço não informado'} - ${dados.cidadeUF || 'Município/UF não informado'} - CEP: ${dados.cep || 'CEP não informado'}`, style: 'entityAddress' },
-            { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 10] },
-            { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 15, 0, 15] },
-            { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', margin: [0, 5, 0, 10] },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [40, '*'],
-                    body: [
-                        [{ text: 'Página', style: 'tableHeader' }, { text: 'Descrição', style: 'tableHeader' }],
-                        ...declaracoes.map((decl, idx) => [
-                            { text: `${idx + 1}`, alignment: 'center', fontSize: 9 },
-                            { text: decl.title, linkToPage: idx + 1, decoration: 'underline', color: '#003087', fontSize: 9 }
-                        ])
-                    ]
-                },
-                layout: {
-                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-                    vLineWidth: () => 1, hLineColor: () => '#003087', vLineColor: () => '#003087',
-                    paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 2, paddingBottom: () => 2
-                },
-                margin: [0, 10, 0, 20]
-            },
-            { text: `Por ser verdade, firmo o teor das ${numToWords(declaracoes.length)} (${declaracoes.length}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 10] },
-            {
-                stack: [
-                    { text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, 06 de agosto de 2025.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
-                    { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
-                    { text: dados.nome, alignment: 'center', bold: true, fontSize: 11 },
-                    { text: dados.cargo, alignment: 'center', italic: true, fontSize: 11 }
-                ],
-                unbreakable: true
-            }
-        ]
-    };
 };
 
 const gerarPDFPrincipal = (declaracoes, dados, watermarkImage) => {
