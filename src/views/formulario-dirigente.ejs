@@ -242,11 +242,15 @@
             <div class="form-row">
                 <div class="half-width">
                     <label for="ufEntidade">UF:</label>
-                    <select id="ufEntidade" required></select>
+                    <select id="ufEntidade" disabled required>
+                        <option value="">Selecione a UF</option>
+                    </select>
                 </div>
                 <div class="half-width">
                     <label for="municipioEntidade">Município:</label>
-                    <select id="municipioEntidade" required></select>
+                    <select id="municipioEntidade" disabled required>
+                        <option value="">Selecione o município</option>
+                    </select>
                 </div>
             </div>
             <div class="form-row">
@@ -313,7 +317,7 @@ async function fetchUFs() {
     }
 }
 
-async function populateUFsDropdown() {
+async function populateUFsDropdown(ufSelecionada = '') {
     await fetchUFs();
     const ufSelect = document.getElementById('ufEntidade');
     ufSelect.innerHTML = '<option value="">Selecione a UF</option>';
@@ -321,13 +325,15 @@ async function populateUFsDropdown() {
         const option = document.createElement('option');
         option.value = uf.sigla;
         option.textContent = uf.sigla;
+        if (uf.sigla === ufSelecionada) option.selected = true;
         ufSelect.appendChild(option);
     });
-    ufSelect.addEventListener('change', populateMunicipiosDropdown);
+    if (ufSelecionada) {
+        await populateMunicipiosDropdown(ufSelecionada);
+    }
 }
 
-async function populateMunicipiosDropdown() {
-    const ufSigla = document.getElementById('ufEntidade').value;
+async function populateMunicipiosDropdown(ufSigla = document.getElementById('ufEntidade').value, municipioSelecionado = '') {
     const municipioSelect = document.getElementById('municipioEntidade');
     municipioSelect.innerHTML = '<option value="">Selecione o município</option>';
 
@@ -339,6 +345,7 @@ async function populateMunicipiosDropdown() {
                 const option = document.createElement('option');
                 option.value = municipio.nome;
                 option.textContent = municipio.nome;
+                if (municipio.nome === municipioSelecionado) option.selected = true;
                 municipioSelect.appendChild(option);
             });
         } catch (error) {
@@ -661,9 +668,9 @@ async function getBase64Image(src) {
 }
 
 function getDataAtual() {
-    const hoje = new Date('2025-07-30T14:54:00-03:00');
+    const hoje = new Date(); // <--- Correção: Captura a data e hora atuais
     const dia = String(hoje.getDate()).padStart(2, '0');
-    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0'); 
     const ano = hoje.getFullYear();
     const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
     return `${dia} de ${meses[parseInt(mes) - 1]} de ${ano}`;
@@ -807,7 +814,7 @@ async function gerarPDF() {
             { text: 'a) julgados com contas relativas a parcerias irregulares ou rejeitadas por Tribunal ou Conselho de Contas, em decisão irrecorrível;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
             { text: 'b) inabilitados por falta grave para exercer cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin: [15, 5], alignment: 'justify', lineHeight: 1.2 },
             textoImprobidadeAdministrativa,
-            { text: `\n${municipioEntidade}/${ufEntidade}, ${dataAtual}.`, alignment: 'center', margin: [0, 20], lineHeight: 1.2 },
+            { text: `\n${municipioEntidade}/Na data da assinatura`, alignment: 'center', margin: [0, 20], lineHeight: 1.2 },
             { text: '_______________________________', alignment: 'center', margin: [0, 10] },
             { text: `${nomeRepresentante}`, alignment: 'center', margin: [0, 5] },
             { text: `${cargoRepresentante}`, alignment: 'center', margin: [0, 5] }
@@ -839,19 +846,27 @@ async function fetchCNPJ(cnpj) {
     try {
         const cleanCNPJ = cnpj.replace(/\D/g, '');
         if (cleanCNPJ.length === 14) {
-            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCNPJ}`);
+            const response = await fetch(`https://open.cnpja.com/office/${cleanCNPJ}`);
             const data = await response.json();
-            if (data.status !== 'ERROR') {
-                document.getElementById('nomeEntidade').value = data.razao_social || data.nome;
-                if (data.cep) {
-                    await fetchCEPFromCNPJ(data.cep);
+            if (data.status !== 404) {
+                document.getElementById('nomeEntidade').value = data.company.name || '';
+                const address = data.address;
+                if (address) {
+                    const endereco = `${address.street || ''}, ${address.district || ''}, ${address.city || ''} - ${address.state || ''}, CEP: ${address.zip || ''}`.trim();
+                    document.getElementById('enderecoEntidade').value = endereco;
+                    await populateUFsDropdown(address.state);
+                    await populateMunicipiosDropdown(address.state, address.city);
                 } else {
                     document.getElementById('enderecoEntidade').value = '';
+                    document.getElementById('ufEntidade').innerHTML = '<option value="">Selecione a UF</option>';
+                    document.getElementById('municipioEntidade').innerHTML = '<option value="">Selecione o município</option>';
                 }
             } else {
                 alert('CNPJ inválido ou não encontrado.');
                 document.getElementById('nomeEntidade').value = '';
                 document.getElementById('enderecoEntidade').value = '';
+                document.getElementById('ufEntidade').innerHTML = '<option value="">Selecione a UF</option>';
+                document.getElementById('municipioEntidade').innerHTML = '<option value="">Selecione o município</option>';
             }
         }
     } catch (error) {
@@ -859,21 +874,8 @@ async function fetchCNPJ(cnpj) {
         alert('Erro ao buscar CNPJ. Verifique sua conexão ou o CNPJ informado.');
         document.getElementById('nomeEntidade').value = '';
         document.getElementById('enderecoEntidade').value = '';
-    }
-}
-
-async function fetchCEPFromCNPJ(cep) {
-    try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await response.json();
-        if (!data.erro) {
-            document.getElementById('enderecoEntidade').value = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''} - ${data.uf || ''}, CEP: ${data.cep || ''}`.trim();
-        } else {
-            document.getElementById('enderecoEntidade').value = '';
-        }
-    } catch (error) {
-        console.error('Erro ao buscar endereço:', error);
-        document.getElementById('enderecoEntidade').value = '';
+        document.getElementById('ufEntidade').innerHTML = '<option value="">Selecione a UF</option>';
+        document.getElementById('municipioEntidade').innerHTML = '<option value="">Selecione o município</option>';
     }
 }
 

@@ -131,7 +131,7 @@ async function generatePdfDocDefinition(orderedDeclarationsList = null, letterhe
                 alignment: 'center'
             },
             { text: `Por ser verdade, firmo o teor das declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 20] },
-            { text: `${(formData.municipio || 'São Domingos do Prata').toUpperCase()}/${(formData.uf || 'DF').toUpperCase()}, ${dataExtenso}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
+            { text: `${(formData.municipio || '').toUpperCase()}/${(formData.uf || '').toUpperCase()}, Na data da assinatura.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
             { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
             { text: formData.dirigente || 'Pedro Dias', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
             { text: `${formData.cargoDirigente || 'Presidente'}`, alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
