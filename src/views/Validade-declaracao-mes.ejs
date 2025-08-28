@@ -728,7 +728,7 @@ if (withSignature) {
     contentStack.push({
         stack: [
             { 
-                text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, ${dia} de ${mes} de ${ano}.`, 
+                text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, na data da assinatura eletrônica.`, 
                 alignment: 'center', 
                 fontSize: 11, 
                 margin: [0, 20, 0, 10] 
@@ -790,7 +790,7 @@ return {
         { text: `Por ser verdade, firmo o teor das ${numToWords(declaracoes.length)} (${declaracoes.length}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 10] },
         {
             stack: [
-                { text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, ${formatarDataAtual()}.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+                { text: `${dados.cidadeUF.split('/')[0].toUpperCase()}, na data da assinatura eletrônica.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
                 { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 10, 0, 5] },
                 { text: dados.nome, alignment: 'center', bold: true, fontSize: 11 },
                 { text: dados.cargo, alignment: 'center', italic: true, fontSize: 11 }
