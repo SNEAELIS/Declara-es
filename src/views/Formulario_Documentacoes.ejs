@@ -648,74 +648,91 @@ document.addEventListener('DOMContentLoaded', () => {
     propostaInput.addEventListener('input', () => formatarProposta(propostaInput));
 
     botaoGerarPDF.addEventListener('click', async (event) => {
-        event.preventDefault();
+        event.preventDefault();
 
-        let formIsValid = true;
-        const requiredInputs = declarationForm.querySelectorAll('[required]');
-        requiredInputs.forEach(input => {
-            if (input.value.trim() === '') {
-                toggleErro(input, true, 'Campo obrigatório.');
-                formIsValid = false;
-            } else {
-                if (input.id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
-                    toggleErro(input, true, 'CNPJ inválido ou incompleto (14 dígitos).');
-                    formIsValid = false;
-                } else if (input.id === 'proposta' && !(/^\d{6}\/\d{4}$/.test(input.value))) {
-                    toggleErro(input, true, 'Formato da proposta inválido (ex: 000000/AAAA).');
-                    formIsValid = false;
-                } else {
-                    toggleErro(input, false);
-                }
-            }
-        });
+        let formIsValid = true;
+        const requiredInputs = declarationForm.querySelectorAll('[required]');
+        requiredInputs.forEach(input => {
+            if (input.value.trim() === '') {
+                toggleErro(input, true, 'Campo obrigatório.');
+                formIsValid = false;
+            } else {
+                if (input.id === 'cnpj' && input.value.replace(/\D/g, '').length !== 14) {
+                    toggleErro(input, true, 'CNPJ inválido ou incompleto (14 dígitos).');
+                    formIsValid = false;
+                } else if (input.id === 'proposta' && !(/^\d{6}\/\d{4}$/.test(input.value))) {
+                    toggleErro(input, true, 'Formato da proposta inválido (ex: 000000/AAAA).');
+                    formIsValid = false;
+                } else {
+                    toggleErro(input, false);
+                }
+            }
+        });
 
-        if (cnpjInput.classList.contains('success')) {
-            if (entidadeInput.value.trim() === '') {
-                toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                formIsValid = false;
-            }
-            if (enderecoInput.value.trim() === '') {
-                toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                formIsValid = false;
-            }
-            if (municipioInput.value.trim() === '') {
-                toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                formIsValid = false;
-            }
-            if (ufInput.value.trim() === '') {
-                toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ ou preencha manualmente.');
-                formIsValid = false;
-            }
-        } else if (cnpjInput.value.trim() !== '' && cnpjInput.value.replace(/\D/g, '').length === 14) {
-            if (!entidadeInput.classList.contains('success') || entidadeInput.value.trim() === '' || entidadeInput.value.includes('Buscando')) {
-                toggleErro(entidadeInput, true, 'Dados da entidade não obtidos. Verifique o CNPJ ou conexão.');
-                formIsValid = false;
-            }
-        }
+        if (cnpjInput.classList.contains('success')) {
+            if (entidadeInput.value.trim() === '') {
+                toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (enderecoInput.value.trim() === '') {
+                toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (municipioInput.value.trim() === '') {
+                toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+            if (ufInput.value.trim() === '') {
+                toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ ou preencha manualmente.');
+                formIsValid = false;
+            }
+        } else if (cnpjInput.value.trim() !== '' && cnpjInput.value.replace(/\D/g, '').length === 14) {
+            if (!entidadeInput.classList.contains('success') || entidadeInput.value.trim() === '' || entidadeInput.value.includes('Buscando')) {
+                toggleErro(entidadeInput, true, 'Dados da entidade não obtidos. Verifique o CNPJ ou conexão.');
+                formIsValid = false;
+            }
+        }
 
-        if (!formIsValid) {
-            alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
-            return;
-        }
+        if (!formIsValid) {
+            alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
+            return;
+        }
 
-        const formDataForPdf = {
-            dirigente: dirigenteInput.value,
-            cargoDirigente: cargoInput.value,
-            entidade: entidadeInput.value,
-            cnpj: cnpjInput.value,
-            endereco: enderecoInput.value,
-            uf: ufInput.value,
-            municipio: municipioInput.value,
-            proposta: propostaInput.value
-        };
+        const formDataForPdf = {
+            dirigente: dirigenteInput.value,
+            cargoDirigente: cargoInput.value,
+            entidade: entidadeInput.value,
+            cnpj: cnpjInput.value,
+            endereco: enderecoInput.value,
+            uf: ufInput.value,
+            municipio: municipioInput.value,
+            proposta: propostaInput.value
+        };
+        
+        // --- INÍCIO DA MODIFICAÇÃO PRINCIPAL ---
+        if (typeof generateAllDeclarationsPDF === 'function' && typeof declarations !== 'undefined') {
+            loadingMessage.style.display = 'flex';
 
-        if (typeof generateAllDeclarationsPDF === 'function') {
-            loadingMessage.style.display = 'flex';
-            await openModal(); // Open modal for preview and reordering
-        } else {
-            alert("Erro: Função 'generateAllDeclarationsPDF' não encontrada. Verifique o arquivo script.js");
-        }
-    });
+            // Define as opções de layout padrão que antes eram do modal
+            const PAGE_HEIGHT_POINTS = 841.89;
+            const cmToPoints = (cm) => cm * 28.3465;
+            const layoutOptions = {
+                topMargin: cmToPoints(4.5), // Valor padrão para margem superior
+                footerPosition: PAGE_HEIGHT_POINTS - cmToPoints(5.5) // Valor padrão para margem inferior do rodapé
+            };
+            
+            // Usa a ordem original das declarações
+            const declarationsToGenerate = [...declarations];
+
+            // Chama a função final de geração de PDF diretamente
+            await generateAllDeclarationsPDF(declarationsToGenerate, layoutOptions, formDataForPdf);
+            
+            loadingMessage.style.display = 'none';
+        } else {
+            alert("Erro: Função 'generateAllDeclarationsPDF' ou 'declarations' não encontrada. Verifique o arquivo script.js");
+        }
+        // --- FIM DA MODIFICAÇÃO PRINCIPAL ---
+    });
 
     confirmAndGenerateBtn.addEventListener('click', async () => {
         if (!footerMarginBottomCm || !marginTopCm) {
