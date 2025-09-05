@@ -377,7 +377,7 @@
             },
             {
                 title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico].\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
+                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n.\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
             },
             {
                 title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
@@ -395,7 +395,7 @@
             },
             {
                 title: "DECLARAÇÃO DE TITULARIDADE DO TERRENO",
-                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n- Endereço do Espaço Físico: [enderecoEspacoFisico].\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
+                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], declaro que o terreno destinado à execução do objeto da Proposta nº [proposta] é de domínio público e pertence ao Município de [municipio]/[uf], estando plenamente disponível, apto e compatível para a instalação dos equipamentos previstos. Informo que:\n\n- Nome do Espaço Físico: [nomeEspacoFisico];\n.\n\nEsta declaração é prestada com base em documentação oficial arquivada, e me comprometo a apresentar os títulos de propriedade ou atos administrativos comprobatórios, caso solicitados, nos termos da Lei nº 8.666/1993.`
             },
             {
                 title: "DECLARAÇÃO DE CONFORMIDADE EM ACESSIBILIDADE",
@@ -507,283 +507,271 @@
         validarGerarPDF();
     }
 
-    // Função principal de geração de PDF
-    async function gerarPDF(formData) {
-        if (isGeneratingPDF) {
-            console.warn('PDF generation already in progress.');
+async function gerarPDF(formData) {
+    if (isGeneratingPDF) {
+        console.warn('PDF generation already in progress.');
+        return;
+    }
+
+    isGeneratingPDF = true;
+    const loadingMessage = document.getElementById('loadingMessage');
+    if (loadingMessage) loadingMessage.style.display = 'flex';
+
+    const dados = {
+        ...formData,
+        diaAtual: String(new Date().getDate()).padStart(2, '0'),
+        mesAtual: new Date().toLocaleString('pt-BR', { month: 'long' }),
+        anoAtual: new Date().getFullYear()
+    };
+
+    try {
+        const erros = validarDadosFormulario(dados);
+        if (erros.length > 0) {
+            console.error('Validation errors:', erros);
+            showToast(erros.join(' '), true);
             return;
         }
 
-        isGeneratingPDF = true;
-        const loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) loadingMessage.style.display = 'flex';
+        const letterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+        if (!letterheadImage) throw new Error('Failed to load default letterhead.');
 
-        const dados = {
-            ...formData,
-            diaAtual: String(new Date().getDate()).padStart(2, '0'),
-            mesAtual: new Date().toLocaleString('pt-BR', { month: 'long' }),
-            anoAtual: new Date().getFullYear()
-        };
+        const defaults = { leftRightMargin: 40, topMargin: 120, bottomMargin: 100, footerPosY: 770 }; // Reduzi topMargin para 120
+        const layoutOptions = { topMargin: defaults.topMargin, footerPosition: defaults.footerPosY };
+        const bottomMargin = Math.max(100, 841.89 - layoutOptions.footerPosition - 40);
 
-        try {
-            const erros = validarDadosFormulario(dados);
-            if (erros.length > 0) {
-                console.error('Validation errors:', erros);
-                showToast(erros.join(' '), true);
-                return;
-            }
-
-            const letterheadImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            if (!letterheadImage) throw new Error('Failed to load default letterhead.');
-
-            const defaults = { leftRightMargin: 40, topMargin: 130, bottomMargin: 100, footerPosY: 770 };
-            const layoutOptions = { topMargin: defaults.topMargin, footerPosition: defaults.footerPosY };
-            const bottomMargin = Math.max(100, 841.89 - layoutOptions.footerPosition - 40);
-
-            // Consolidar declarações sem duplicatas
-            const todasDeclaracoes = new Map();
-            declaracoesCompletas.forEach(decl => {
-                const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
-                const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
-                if (!ehSustentabilidade || condicaoSustentabilidade) {
-                    todasDeclaracoes.set(decl.title, decl);
-                }
-            });
-
-            const opcaoBase = dados.opcaoSelecao.replace(/_mais65mil/g, '');
-            const declaracoesEspecificasArray = declaracoesEspecificas[opcaoBase] || [];
-            declaracoesEspecificasArray.forEach(decl => {
+        // Consolidar declarações sem duplicatas
+        const todasDeclaracoes = new Map();
+        declaracoesCompletas.forEach(decl => {
+            const ehSustentabilidade = decl.title === "DECLARAÇÃO DE SUSTENTABILIDADE DO OBJETO";
+            const condicaoSustentabilidade = dados.opcaoSelecao.startsWith('00SL') || dados.opcaoSelecao.startsWith('20JP');
+            if (!ehSustentabilidade || condicaoSustentabilidade) {
                 todasDeclaracoes.set(decl.title, decl);
-            });
+            }
+        });
 
-            // Incluir Declaração de Adimplência para 00SL_comissao ou 20JP_comissao com município > 65 mil
-            if ((dados.municipioMais65mil00SL && dados.opcaoSelecao === '00SL_comissao') || (dados.municipioMais65mil20JP && dados.opcaoSelecao === '20JP_comissao')) {
-                const adimplencia = {
-                    title: "DECLARAÇÃO DE ADIMPLÊNCIA",
-                    content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
+        const opcaoBase = dados.opcaoSelecao.replace(/_mais65mil/g, '');
+        const declaracoesEspecificasArray = declaracoesEspecificas[opcaoBase] || [];
+        declaracoesEspecificasArray.forEach(decl => {
+            todasDeclaracoes.set(decl.title, decl);
+        });
+
+        if ((dados.municipioMais65mil00SL && dados.opcaoSelecao === '00SL_comissao') || (dados.municipioMais65mil20JP && dados.opcaoSelecao === '20JP_comissao')) {
+            const adimplencia = {
+                title: "DECLARAÇÃO DE ADIMPLÊNCIA",
+                content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
+            };
+            todasDeclaracoes.set(adimplencia.title, adimplencia);
+        }
+
+        const declaracoesParaIncluir = Array.from(todasDeclaracoes.values());
+
+        let currentPage = 1;
+        const pageNumbers = new Map();
+
+        const allPagesContent = declaracoesParaIncluir.map((decl, index) => {
+            let content = substituirPlaceholders(decl.content, dados);
+            const headerStack = [
+                { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 15, 0, 5] },
+                { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 8] },
+                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 20] }
+            ];
+
+            if (['00SL_emendas', '00SL_comissao'].includes(opcaoBase) && 
+                decl.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && 
+                dados.espacosFisicos.length > 0) {
+                
+                const linhasPrimeiraPagina = 5;
+                const linhasSegundaPagina = 15;
+
+                const gruposEspacos = [];
+                gruposEspacos.push(dados.espacosFisicos.slice(0, linhasPrimeiraPagina)); // 5 linhas na página 9
+                if (dados.espacosFisicos.length > linhasPrimeiraPagina) {
+                    gruposEspacos.push(dados.espacosFisicos.slice(linhasPrimeiraPagina, linhasPrimeiraPagina + linhasSegundaPagina));
+                }
+                if (dados.espacosFisicos.length > linhasPrimeiraPagina + linhasSegundaPagina) {
+                    const linhasPorPaginaRestante = 20;
+                    for (let i = linhasPrimeiraPagina + linhasSegundaPagina; i < dados.espacosFisicos.length; i += linhasPorPaginaRestante) {
+                        gruposEspacos.push(dados.espacosFisicos.slice(i, i + linhasPorPaginaRestante));
+                    }
+                }
+
+                const partesTabela = gruposEspacos.map((grupo, grupoIndex) => {
+                    const isPrimeiraParte = grupoIndex === 0;
+                    
+                    return {
+                        stack: [
+                            ...(isPrimeiraParte ? [{
+                                text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(),
+                                alignment: 'justify',
+                                fontSize: 12,
+                                lineHeight: 1.15,
+                                margin: [0, 0, 0, 5]
+                            }] : []),
+                            {
+                                table: {
+                                    widths: ['*', '*'],
+                                    body: [
+                                        [
+                                            { text: 'Nome do Espaço Físico', bold: true, fontSize: 10, fillColor: '#e6e6e6' },
+                                            { text: 'Endereço do Espaço Físico', bold: true, fontSize: 10, fillColor: '#e6e6e6' }
+                                        ],
+                                        ...grupo.map(espaco => [
+                                            { text: espaco.nome || '', fontSize: 10 },
+                                            { text: espaco.endereco || '', fontSize: 10 }
+                                        ])
+                                    ]
+                                },
+                                layout: {
+                                    hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1 : 0.5,
+                                    vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 1 : 0.5,
+                                    hLineColor: (i, node) => (i === 0 || i === node.table.body.length) ? '#003087' : '#cccccc',
+                                    vLineColor: (i, node) => (i === 0 || i === node.table.widths.length) ? '#003087' : '#cccccc',
+                                    paddingLeft: () => 5,
+                                    paddingRight: () => 5,
+                                    paddingTop: () => 3,
+                                    paddingBottom: () => 3
+                                },
+                                margin: [0, 65, 0, 10],
+                                pageBreak: !isPrimeiraParte ? 'before' : undefined
+                            }
+                        ]
+                    };
+                });
+
+                pageNumbers.set(decl.title, currentPage);
+                currentPage += gruposEspacos.length;
+
+                return {
+                    margin: [defaults.leftRightMargin, layoutOptions.topMargin, defaults.leftRightMargin, bottomMargin],
+                    stack: [
+                        ...headerStack,
+                        { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
+                        ...partesTabela
+                    ],
+                    pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined
                 };
-                todasDeclaracoes.set(adimplencia.title, adimplencia);
             }
 
-            const declaracoesParaIncluir = Array.from(todasDeclaracoes.values());
+            pageNumbers.set(decl.title, currentPage);
+            currentPage++;
 
-            // Calcula o número de páginas antes de gerar o conteúdo
-            let currentPage = 1;
-            const pageNumbers = new Map();
-
-            const allPagesContent = declaracoesParaIncluir.map((decl, index) => {
-                let content = substituirPlaceholders(decl.content, dados);
-                const headerStack = [
-                    { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
-                    { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
-                    { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] }
-                ];
-
-                // Configuração especial para a declaração de titularidade do terreno
-                if (['00SL_emendas', '00SL_comissao'].includes(opcaoBase) && 
-                    decl.title === "DECLARAÇÃO DE TITULARIDADE DO TERRENO" && 
-                    dados.espacosFisicos.length > 0) {
-                    
-                    // Calcula quantas linhas cabem por página (ajuste este valor conforme necessário)
-                    const linhasPorPagina = 5;
-                    const totalPaginasTabela = Math.ceil(dados.espacosFisicos.length / linhasPorPagina);
-                    
-                    // Divide os espaços físicos em grupos por página
-                    const gruposEspacos = [];
-                    for (let i = 0; i < dados.espacosFisicos.length; i += linhasPorPagina) {
-                        gruposEspacos.push(dados.espacosFisicos.slice(i, i + linhasPorPagina));
-                    }
-
-                    // Cria um array de conteúdos para cada parte da tabela
-                    const partesTabela = gruposEspacos.map((grupo, grupoIndex) => {
-                        const isPrimeiraParte = grupoIndex === 0;
-                        
-                        return {
-                            stack: [
-                                // Na primeira parte, inclui o texto introdutório
-                                ...(isPrimeiraParte ? [{
-                                    text: content.replace(/Informo que:\n\n- Nome do Espaço Físico:.*?(?=\n|$)/s, '').trim(),
-                                    alignment: 'justify',
-                                    fontSize: 12,
-                                    lineHeight: 1.15,
-                                    margin: [0, 0, 0, 5]
-                                }] : []),
-                                
-                                // Tabela para esta parte
-                                {
-                                    table: {
-                                        widths: ['*', '*'],
-                                        body: [
-                                            // Cabeçalho da tabela (incluído em cada parte)
-                                            [
-                                                { text: 'Nome do Espaço Físico', bold: true, fontSize: 10 }, 
-                                                { text: 'Endereço do Espaço Físico', bold: true, fontSize: 10 }
-                                            ],
-                                            // Linhas de dados
-                                            ...grupo.map(espaco => [
-                                                { text: espaco.nome, fontSize: 10 },
-                                                { text: espaco.endereco, fontSize: 10 }
-                                            ])
-                                        ]
-                                    },
-                                    layout: {
-                                        hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1 : 0.5,
-                                        vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 1 : 0.5,
-                                        hLineColor: (i, node) => (i === 0 || i === node.table.body.length) ? '#003087' : '#cccccc',
-                                        vLineColor: (i, node) => (i === 0 || i === node.table.widths.length) ? '#003087' : '#cccccc',
-                                        paddingLeft: () => 5,
-                                        paddingRight: () => 5,
-                                        paddingTop: () => 5,
-                                        paddingBottom: () => 5
-                                    },
-                                    margin: [0, 5, 0, 30],
-                                    // Quebra de página antes, exceto para a primeira parte
-                                    pageBreak: !isPrimeiraParte ? 'before' : undefined
-                                }
-                            ]
-                        };
-                    });
-
-                    // Atualiza o contador de páginas
-                    pageNumbers.set(decl.title, currentPage);
-                    currentPage += totalPaginasTabela;
-
-                    // Retorna todas as partes da tabela como conteúdo da declaração
-                    return {
-                        margin: [defaults.leftRightMargin, layoutOptions.topMargin, defaults.leftRightMargin, bottomMargin],
-                        stack: [
-                            ...headerStack,
-                            { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
-                            ...partesTabela
-                        ],
-                        // Quebra de página após a declaração (exceto a última)
-                        pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined
-                    };
-                }
-
-                // Para declarações normais (não é a de titularidade do terreno)
-                pageNumbers.set(decl.title, currentPage);
-                currentPage++;
-
- // Transforma o texto da declaração em parágrafos inquebráveis
-const formattedContent = {
-    stack: content.split('\n\n').map(p => ({
-        text: p.trim(),
-        alignment: 'justify',
-        fontSize: 12,
-        lineHeight: 1.15,
-        margin: [0, 0, 0, 12], // Adiciona um espaçamento elegante entre parágrafos
-        unbreakable: true // Impede que o parágrafo seja quebrado entre páginas
-    }))
-};
-
-return {
-    pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined,
-    margin: [defaults.leftRightMargin, layoutOptions.topMargin, defaults.leftRightMargin, bottomMargin],
-    stack: [
-        ...headerStack,
-        { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 30] },
-        formattedContent // Usa o novo conteúdo formatado
-    ]
-};
-            }).concat({
-                pageBreak: 'before',
-                margin: [defaults.leftRightMargin, 100.249, defaults.leftRightMargin, bottomMargin],
-                stack: [
-                    { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 2] },
-                    { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 5] },
-                    { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 25] },
-                    { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 40, 0, 15] },
-                    { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
-                    {
-                        table: {
-                            headerRows: 1,
-                            widths: [40, '*'],
-                            body: [
-                                [{ text: 'Página', style: 'tableHeader' }, { text: '', style: 'tableHeader' }],
-                                ...declaracoesParaIncluir.map((decl, idx) => [
-                                    { text: `${pageNumbers.get(decl.title)}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
-                                    { text: ` ${substituirPlaceholders(decl.title, dados)}`, linkToPage: pageNumbers.get(decl.title), decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
-                                ])
-                            ]
-                        },
-                        layout: {
-                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-                            vLineWidth: () => 1,
-                            hLineColor: () => '#003087',
-                            vLineColor: () => '#003087',
-                            paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 2, paddingBottom: () => 2
-                        },
-                        margin: [0, 5, 0, 5],
-                        alignment: 'center'
-                    },
-                    { text: `Por ser verdade, firmo o teor das ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 20] },
-                    { text: `${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()}, na data da assinatura eletrônica.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
-                    { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
-                    { text: dados.dirigente || 'Nome não informado', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
-                    { text: dados.cargoDirigente || 'Cargo não informado', alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
-                ]
-            });
-
-            const docDefinition = {
-                pageSize: 'A4',
-                pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
-                background: letterheadImage ? { image: letterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
-                footer: (currentPage, pageCount) => ({
-                    margin: [40, 0, 40, 0],
-                    stack: [
-                        {
-                            columns: [
-                                { 
-                                    text: currentPage < pageCount 
-                                        ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
-                                        : `Documento composto por ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
-                                    fontSize: 8.5, color: '#555555', alignment: 'left' 
-                                },
-                                { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
-                            ]
-                        },
-                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
-                    ]
-                }),
-                content: allPagesContent,
-                styles: {
-                    header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
-                    subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
-                    tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
-                },
-                defaultStyle: { font: 'Roboto', alignment: 'justify' },
-                permissions: {
-                    printing: 'highResolution',
-                    modifying: false,
-                    copying: false,
-                    annotating: false,
-                    fillingForms: false,
-                    contentAccessibility: false,
-                    documentAssembly: false
-                }
+            const formattedContent = {
+                stack: content.split('\n\n').map(p => ({
+                    text: p.trim(),
+                    alignment: 'justify',
+                    fontSize: 12,
+                    lineHeight: 1.15,
+                    margin: [0, 0, 0, 10],
+                    unbreakable: true
+                }))
             };
 
-            const nomeArquivo = 'Declarações Consolidadas - Sem prazo de validade.pdf';
-            const pdfDoc = pdfMake.createPdf(docDefinition);
-            pdfDoc.download(nomeArquivo, () => {
-                console.log('PDF download completed:', nomeArquivo);
-                showToast('PDF gerado com sucesso!');
-                isGeneratingPDF = false;
-            }, (error) => {
-                console.error('Error downloading PDF:', error);
-                showToast('Erro ao gerar PDF: ' + error.message, true);
-                isGeneratingPDF = false;
-            });
-        } catch (error) {
-            console.error('Error generating PDF:', error);
+            return {
+                pageBreak: index < declaracoesParaIncluir.length - 1 ? 'after' : undefined,
+                margin: [defaults.leftRightMargin, layoutOptions.topMargin, defaults.leftRightMargin, bottomMargin],
+                stack: [
+                    ...headerStack,
+                    { text: `\n${substituirPlaceholders(decl.title, dados)}`, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
+                    formattedContent
+                ]
+            };
+        }).concat({
+            pageBreak: 'before',
+            margin: [defaults.leftRightMargin, 100, defaults.leftRightMargin, bottomMargin],
+            stack: [
+                { text: (dados.entidade || 'Entidade não informada').toUpperCase(), bold: true, alignment: 'center', fontSize: 14, margin: [0, 0, 0, 5] },
+                { text: `${(dados.endereco || 'Endereço não informado').toUpperCase()} - ${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()} - CEP: ${dados.cep || 'CEP não informado'}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 8] },
+                { canvas: [{ type: 'line', x1: 70, y1: 15, x2: 445, y2: 15, lineWidth: 0.5, lineColor: '#cccccc' }], margin: [0, 0, 0, 20] },
+                { text: 'DECLARAÇÕES REFERENCIAIS', style: 'header', alignment: 'center', margin: [0, 30, 0, 15] },
+                { text: 'Relação das declarações contidas neste documento, assinadas eletronicamente na presente página.', style: 'subheader', alignment: 'justify', margin: [0, 5, 0, 5] },
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: [40, '*'],
+                        body: [
+                            [{ text: 'Página', style: 'tableHeader' }, { text: '', style: 'tableHeader' }],
+                            ...declaracoesParaIncluir.map((decl, idx) => [
+                                { text: `${pageNumbers.get(decl.title)}`, alignment: 'center', fontSize: 9, fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' },
+                                { text: ` ${substituirPlaceholders(decl.title, dados)}`, linkToPage: pageNumbers.get(decl.title), decoration: 'underline', color: '#003087', fontSize: 9, alignment: 'left', fillColor: idx % 2 === 0 ? '#F5F6F5' : '#FFFFFF' }
+                            ])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+                        vLineWidth: () => 1,
+                        hLineColor: () => '#003087',
+                        vLineColor: () => '#003087',
+                        paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 2, paddingBottom: () => 2
+                    },
+                    margin: [0, 5, 0, 5],
+                    alignment: 'center'
+                },
+                { text: `Por ser verdade, firmo o teor das ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações que compõem este arquivo:`, alignment: 'justify', fontSize: 11, margin: [0, 20, 0, 20] },
+                { text: `${(dados.municipio || 'Município não informado').toUpperCase()}/${(dados.uf || 'UF não informada').toUpperCase()}, na data da assinatura eletrônica.`, alignment: 'center', fontSize: 11, margin: [0, 20, 0, 20] },
+                { text: '__________________________________________', alignment: 'center', fontSize: 11, margin: [0, 20, 0, 10] },
+                { text: dados.dirigente || 'Nome não informado', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 10] },
+                { text: dados.cargoDirigente || 'Cargo não informado', alignment: 'center', italic: true, fontSize: 11, margin: [0, 0, 0, 10] }
+            ]
+        });
+
+        const docDefinition = {
+            pageSize: 'A4',
+            pageMargins: [defaults.leftRightMargin, 0, defaults.leftRightMargin, bottomMargin],
+            background: letterheadImage ? { image: letterheadImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 }, opacity: 1.0 } : null,
+            footer: (currentPage, pageCount) => ({
+                margin: [40, 0, 40, 0],
+                stack: [
+                    {
+                        columns: [
+                            { 
+                                text: currentPage < pageCount 
+                                    ? 'A assinatura eletrônica será realizada exclusivamente na última página, sendo considerada válida para todas as páginas anteriores.' 
+                                    : `Documento composto por ${declaracoesParaIncluir.length} (${numeroParaExtenso(declaracoesParaIncluir.length)}) declarações, assinado eletronicamente nesta página, com validade jurídica para o conjunto.`, 
+                                fontSize: 8.5, color: '#555555', alignment: 'left' 
+                            },
+                            { text: `Página ${currentPage} de ${pageCount}`, fontSize: 8.5, color: '#555555', alignment: 'right' }
+                        ]
+                    },
+                    { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 1, lineColor: '#003087' }] }
+                ]
+            }),
+            content: allPagesContent,
+            styles: {
+                header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center' },
+                subheader: { fontSize: 10, italic: true, color: '#333333', alignment: 'justify' },
+                tableHeader: { fontSize: 10, bold: true, color: '#FFFFFF', fillColor: '#003087', alignment: 'center' }
+            },
+            defaultStyle: { font: 'Roboto', alignment: 'justify' },
+            permissions: {
+                printing: 'highResolution',
+                modifying: false,
+                copying: false,
+                annotating: false,
+                fillingForms: false,
+                contentAccessibility: false,
+                documentAssembly: false
+            }
+        };
+
+        const nomeArquivo = 'Declarações Consolidadas - Sem prazo de validade.pdf';
+        const pdfDoc = pdfMake.createPdf(docDefinition);
+        pdfDoc.download(nomeArquivo, () => {
+            console.log('PDF download completed:', nomeArquivo);
+            showToast('PDF gerado com sucesso!');
+            isGeneratingPDF = false;
+        }, (error) => {
+            console.error('Error downloading PDF:', error);
             showToast('Erro ao gerar PDF: ' + error.message, true);
             isGeneratingPDF = false;
-        } finally {
-            if (loadingMessage) loadingMessage.style.display = 'none';
-        }
+        });
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        showToast('Erro ao gerar PDF: ' + error.message, true);
+        isGeneratingPDF = false;
+    } finally {
+        if (loadingMessage) loadingMessage.style.display = 'none';
     }
-
+}
     // Função de validação do formulário
     function validarDadosFormulario(dados) {
         const camposObrigatorios = ['dirigente', 'matricula', 'cargoDirigente', 'proposta', 'cnpj', 'entidade', 'endereco', 'uf', 'municipio', 'cep', 'opcaoSelecao'];
