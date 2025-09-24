@@ -555,7 +555,8 @@ async function gerarPDF(formData) {
             todasDeclaracoes.set(decl.title, decl);
         });
 
-        if ((dados.municipioMais65mil00SL && dados.opcaoSelecao === '00SL_comissao') || (dados.municipioMais65mil20JP && dados.opcaoSelecao === '20JP_comissao')) {
+        if ((dados.municipioMais65mil00SL && dados.opcaoSelecao.startsWith('00SL_comissao')) || 
+            (dados.municipioMais65mil20JP && dados.opcaoSelecao.startsWith('20JP_comissao'))) {
             const adimplencia = {
                 title: "DECLARAÇÃO DE ADIMPLÊNCIA",
                 content: `Eu, [dirigente], matrícula [matricula], na condição de representante legal do(a) [entidade], CNPJ nº [cnpj], DECLARO, no uso das atribuições que me foram delegadas e sob as penas da lei, que a presente Entidade não está inadimplente com a União, incluindo, mas não se limitando a, contribuições previstas nos artigos 195 e 239 da Constituição Federal (seguridade social, PIS/PASEP e FGTS), bem como obrigações decorrentes de convênios, contratos, acordos, ajustes, subvenções sociais, contribuições e auxílios previamente celebrados com a Administração Pública Federal. Esta declaração está baseada em certidões negativas atualizadas, arquivadas na [entidade], e me comprometo a apresentá-las quando requisitadas, nos termos da Lei nº 14.133/2021.`
