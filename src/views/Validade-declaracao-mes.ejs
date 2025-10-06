@@ -39,6 +39,32 @@
             --shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
+        #confirmationPopup ul li {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        #confirmationPopup ul li::before {
+            content: '\f15c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        #confirmationPopup h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        #confirmationPopup button {
+            margin: 0 10px;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -378,6 +404,14 @@
         <button id="closePopupBtn">Fechar</button>
     </div>
     <div id="overlay" class="overlay" aria-hidden="true"></div>
+    
+    <div id="confirmationPopup" class="popup" role="alert" aria-hidden="true">
+    <h3>Arquivos a serem baixados</h3>
+    <p>Os seguintes documentos serão gerados:</p>
+    <ul id="fileList" style="list-style-type: none; padding: 0; margin: 15px 0; text-align: left;"></ul>
+    <button id="confirmDownloadBtn"><i class="fa-solid fa-check"></i> Ciente</button>
+    <button id="cancelPopupBtn">Cancelar</button>
+    </div>
 
     <footer>
         <p>© 2025 Ministério do Esporte | <a href="https://www.esporte.gov.br" target="_blank" rel="noopener noreferrer">Visite nosso site</a></p>
@@ -884,8 +918,8 @@ const gerarPDFDeclaracaoSeparada = (declaracao, dados, watermarkImage) => {
 };
 
 const processarGeracaoPDFs = async () => {
-    toggleLoading(true, 'Gerando documento(s)...');
     try {
+        // Coleta de dados do formulário
         const dados = {
             nome: document.getElementById('nomeResponsavel')?.value.trim() || '',
             cargo: document.getElementById('cargo')?.value || '',
@@ -898,6 +932,7 @@ const processarGeracaoPDFs = async () => {
             nomeEntidade: nomeEntidadeGlobal || document.getElementById('nomeEstadoMunicipio')?.value.trim() || ''
         };
 
+        // Coleta de configurações (checkboxes)
         const configuracoes = {
             possuiAreaGestora: document.getElementById('possuiAreaGestora')?.checked || false,
             apresentaraCertidoes: document.getElementById('apresentaraCertidoes')?.checked || false,
@@ -905,19 +940,23 @@ const processarGeracaoPDFs = async () => {
             regularPrecatorios: document.getElementById('regularPrecatorios')?.checked || false
         };
 
+        // Tipos de declaração selecionados
         const declaracaoTipos = Array.from(document.querySelectorAll('input[name="declaracaoTipo"]:checked')).map(cb => cb.value);
 
         if (declaracaoTipos.length === 0) {
             throw new Error('Nenhum tipo de declaração foi selecionado na Aba 2.');
         }
 
+        // Geração das declarações requeridas
         let todasDeclaracoesRequeridas = [];
         declaracaoTipos.forEach(opcao => {
             todasDeclaracoesRequeridas.push(...getDeclaracoes(opcao, dados, configuracoes));
         });
 
+        // Remoção de duplicatas por ID
         todasDeclaracoesRequeridas = [...new Map(todasDeclaracoesRequeridas.map(item => [item.id, item])).values()];
 
+        // Separação em arquivos principais e separados
         const declaracoesParaArquivoPrincipal = [];
         const declaracoesParaArquivoSeparado = [];
 
@@ -929,13 +968,68 @@ const processarGeracaoPDFs = async () => {
             }
         });
 
+        // Geração da lista de nomes de arquivos para exibição
+        const fileNames = [];
+        if (declaracoesParaArquivoPrincipal.length > 0) {
+            fileNames.push(`Declarações_COM_Envio_ao_TCE_${dados.nome.replace(/\s+/g, '_')}.pdf`);
+        }
+        if (declaracoesParaArquivoSeparado.length > 0) {
+            // Mesmo nome para todos os arquivos de área gestora (pode ser ajustado se necessário)
+            fileNames.push(`Declaração_de_Área_Gestora_e_Inexistência_de_Legislação_${dados.nome.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // Elementos do popup de confirmação
+        const confirmationPopup = document.getElementById('confirmationPopup');
+        const fileList = document.getElementById('fileList');
+        const confirmDownloadBtn = document.getElementById('confirmDownloadBtn');
+        const cancelPopupBtn = document.getElementById('cancelPopupBtn');
+
+        // Preenchimento da lista de arquivos
+        fileList.innerHTML = fileNames.map(name => `<li>${name}</li>`).join('');
+        confirmationPopup.classList.add('show');
+        overlay.classList.add('show');
+
+        // Função para fechar o popup
+        const closeConfirmationPopup = () => {
+            confirmationPopup.classList.remove('show');
+            overlay.classList.remove('show');
+        };
+
+        // Aguardar confirmação do usuário com Promise
+        await new Promise((resolve, reject) => {
+            const onConfirm = () => {
+                closeConfirmationPopup();
+                cleanup();
+                resolve();
+            };
+
+            const onCancel = () => {
+                closeConfirmationPopup();
+                cleanup();
+                reject(new Error('Geração de PDFs cancelada pelo usuário.'));
+            };
+
+            const cleanup = () => {
+                confirmDownloadBtn.removeEventListener('click', onConfirm);
+                cancelPopupBtn.removeEventListener('click', onCancel);
+            };
+
+            confirmDownloadBtn.addEventListener('click', onConfirm, { once: true });
+            cancelPopupBtn.addEventListener('click', onCancel, { once: true });
+        });
+
+        // Iniciar geração dos PDFs após confirmação
+        toggleLoading(true, 'Gerando documento(s)...');
         const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
         let pdfsGerados = 0;
 
+        // Geração do PDF principal
         if (declaracoesParaArquivoPrincipal.length > 0) {
             await gerarPDFPrincipal(declaracoesParaArquivoPrincipal, dados, watermarkImage);
             pdfsGerados++;
         }
+
+        // Geração dos PDFs separados
         if (declaracoesParaArquivoSeparado.length > 0) {
             for (const decl of declaracoesParaArquivoSeparado) {
                 await gerarPDFDeclaracaoSeparada(decl, dados, watermarkImage);
@@ -943,6 +1037,7 @@ const processarGeracaoPDFs = async () => {
             }
         }
 
+        // Exibir popup de sucesso se PDFs foram gerados
         if (pdfsGerados > 0) {
             showPopup();
         } else {
@@ -956,7 +1051,6 @@ const processarGeracaoPDFs = async () => {
         toggleLoading(false);
     }
 };
-
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (validateTab(tabs[tabs.length - 1])) {
