@@ -796,26 +796,43 @@
             }
         }
 
-        async function fetchAddressData() {
-            const cep = document.getElementById('cep').value.replace(/\D/g, '');
-            const enderecoInput = document.getElementById('endereco');
-            if (cep.length !== 8) return;
-            
-            enderecoInput.value = 'Buscando endereço...';
-            try {
-                const proxyUrl = 'https://corsproxy.io/?';
-                const apiUrl = `https://viacep.com.br/ws/${cep}/json/`;
-                const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
-                const data = await response.json();
-                
-                if (data.erro) throw new Error('CEP não encontrado.');
-                
-                enderecoInput.value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
-            } catch (err) {
-                alert(`Erro ao consultar CEP: ${err.message}`);
-                enderecoInput.value = '';
-            }
-        }
+async function fetchAddressData() {
+         const cep = document.getElementById('cep').value.replace(/\D/g, '');
+         const enderecoInput = document.getElementById('endereco');
+         if (cep.length !== 8) {
+            // Limpa o campo se o CEP for inválido, para evitar confusão.
+            enderecoInput.value = '';
+            return;
+         }
+         
+         enderecoInput.value = 'Buscando endereço...';
+         try {
+             // URL da API direta, sem proxy
+             const apiUrl = `https://brasilapi.com.br/api/cep/v1/${cep}`;
+             const response = await fetch(apiUrl);
+             
+             if (!response.ok) {
+                 // Captura erros como 404 (CEP não encontrado) ou outros problemas de rede.
+                 throw new Error(`CEP não encontrado ou erro na rede (status: ${response.status}).`);
+             }
+
+             const data = await response.json();
+             
+             // A BrasilAPI não tem um campo "erro" como a ViaCEP, 
+             // ela retorna um erro 404 que é capturado acima.
+             
+             // Monta o endereço com os campos corretos da BrasilAPI
+             enderecoInput.value = `${data.street}, ${data.neighborhood}, ${data.city} - ${data.state}`;
+             
+             // Opcional: Focar no campo de número após preencher o endereço
+             document.getElementById('numero').focus();
+
+         } catch (err) {
+             console.error("Erro detalhado ao consultar CEP:", err); // Log para depuração
+             alert(`Erro ao consultar CEP: ${err.message}`);
+             enderecoInput.value = '';
+         }
+     }
 
         function formatDateToBrazilian(dateStr) {
             if (!dateStr) return '';
