@@ -403,199 +403,187 @@
         </div>
     </header>
 
-    <div class="container">
-        <h2>Atestado de Capacidade Técnica</h2>
-        <form id="atestadoForm" onsubmit="event.preventDefault(); generatePDF();">
-            
-            <div class="form-section">
-                <div class="form-grid">
-                    <div class="input-container full-width">
-                        <label for="tipoAtestado">Tipo de Atestado <span style="color: red;">*</span></label>
-                        <select id="tipoAtestado" required onchange="updateAnnexFields()">
-                            <option value="" disabled selected>Selecione um atestado</option>
-                            <option value="termoFomento">Termo de Fomento</option>
-                            <option value="convenio">Convênio</option>
-                        </select>
-                    </div>
-                    <div class="input-container">
-                        <label for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
-                        <input type="text" id="nomeDirigente" placeholder="Nome completo" required oninput="validateLettersOnly(this)">
-                    </div>
-                    <div class="input-container">
-                        <label for="cargoDirigente">Cargo do Dirigente <span style="color: red;">*</span></label>
-                        <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" required oninput="validateLettersOnly(this)">
-                    </div>
-                </div>
-            </div>
-    
-            <div class="form-section">
-                <div class="form-grid">
-                    <div class="input-container">
-                        <label for="cnpj">CNPJ da Entidade <span style="color: red;">*</span></label>
-                        <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required onblur="fetchEntityData()">
-                    </div>
-                    <div class="input-container">
-                        <label for="nomeEntidade">Nome da Entidade <span style="color: red;">*</span></label>
-                        <input type="text" id="nomeEntidade" placeholder="Preenchido via CNPJ" required readonly>
-                    </div>
-                    <div class="input-container">
-                        <label for="cep">CEP <span style="color: red;">*</span></label>
-                        <input type="text" id="cep" placeholder="00000-000" required onblur="fetchAddressData()">
-                    </div>
-                    <div class="input-container">
-                        <label for="endereco">Endereço <span style="color: red;">*</span></label>
-                        <input type="text" id="endereco" placeholder="Preenchido via CEP" required readonly>
-                    </div>
-                    <div class="input-container">
-                        <label for="numero">Número <span style="color: red;">*</span></label>
-                        <input type="text" id="numero" placeholder="Ex: 123, S/N" required>
-                    </div>
-                    <div class="input-container">
-                        <label for="complemento">Complemento</label>
-                        <input type="text" id="complemento" placeholder="Ex: Bloco A">
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Declarações obrigatórias - Emenda Parlamentar e entidade privada -->
-            <div class="form-section highlight-section">
-                <h3>Declarações Obrigatórias – Emenda Parlamentar e Entidade Privada</h3>
-                
-                <div class="input-container full-width checkbox-container">
-                    <label>
-                        <input type="checkbox" id="capacidadeNaoConfunde" name="capacidadeNaoConfunde" required>
-                        Declaro que a capacidade técnica já instalada <strong>não se confunde</strong> com a que será realizada com os recursos desta parceria.
-                    </label>
-                    <span class="required-label">*obrigatório</span>
-                </div>
-    
-                <div class="input-container full-width checkbox-container">
-                    <label>
-                        <input type="checkbox" id="declaracaoEspecificacoes" name="declaracaoEspecificacoes" required>
-                        Declaro, para os devidos fins, cumprir <strong>integralmente</strong> as 3 especificações abaixo:
-                    </label>
-                    <span class="required-label">*obrigatório – Emenda Parlamentar e entidade privada</span>
-                </div>
-    
-                <div class="specifications-list">
-                    <div class="input-container full-width">
-                        <p>1. Em atendimento à <strong>ADPF nº 854/2024 do STF</strong>, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.</p>
-                        <div id="attachments-adpf854" class="attachments-container"></div>
-                    </div>
-    
-                    <div class="input-container full-width">
-                        <p>2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.</p>
-                    </div>
-    
-                    <div class="input-container full-width">
-                        <p>3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.</p>
-                    </div>
-                </div>
-    
+<div class="container">
+    <h2>Atestado de Capacidade Técnica</h2>
+    <!-- Adicionei novalidate aqui para desativar a validação nativa -->
+    <form id="atestadoForm" novalidate onsubmit="event.preventDefault(); generatePDF();">
+        
+        <div class="form-section">
+            <div class="form-grid">
                 <div class="input-container full-width">
-                    <h4>A OSC já realizou ações no estado alcançado pela emenda parlamentar? <span style="color: red;">*</span></h4>
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="acoesNoEstado" value="sim" required> Sim
-                        </label>
-                        <label>
-                            <input type="radio" name="acoesNoEstado" value="nao" required> Não
-                        </label>
-                    </div>
+                    <label for="tipoAtestado">Tipo de Atestado <span style="color: red;">*</span></label>
+                    <select id="tipoAtestado" required onchange="updateAnnexFields()">
+                        <option value="" disabled selected>Selecione um atestado</option>
+                        <option value="termoFomento">Termo de Fomento</option>
+                        <option value="convenio">Convênio</option>
+                    </select>
                 </div>
-    
-                <div class="input-container full-width" id="detalhesAcoesEstado" style="display: none;">
-                    <label for="quaisAcoesEstado">Se sim, quais?</label>
-                    <textarea id="quaisAcoesEstado" rows="3" placeholder="Descreva brevemente as ações realizadas..."></textarea>
-                    <div id="attachments-acoesEstado" class="attachments-container"></div>
+                <div class="input-container">
+                    <label for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeDirigente" placeholder="Nome completo" required oninput="validateLettersOnly(this)">
                 </div>
-            </div>
-    
-            <!-- Instrumentos de Parceria Anteriores -->
-            <div class="form-section highlight-section">
-                <h3>Instrumentos de Parceria Anteriores (quando houver)</h3>
-                <div class="form-grid">
-                    <div class="input-container full-width">
-                        <label for="numeroProposta">Número da Proposta Atual <span style="color: red;">*</span></label>
-                        <input type="text" id="numeroProposta" placeholder="Ex: 004947/2024" required>
-                    </div>
-                    
+                <div class="input-container">
+                    <label for="cargoDirigente">Cargo do Dirigente <span style="color: red;">*</span></label>
+                    <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" required oninput="validateLettersOnly(this)">
                 </div>
             </div>
-    
-            <!-- Elementos Complementares de Comprovação da Capacidade Técnica -->
-            <div class="form-section">
-                <h3>Elementos Complementares de Comprovação da Capacidade Técnica <span style="color: red;">* Obrigatório</span></h3>
-                <div class="checkbox-list">
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="relatorios">
-                        Relatórios de prestações de contas aprovadas por órgão(s) público(s)
-                    </label>
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="publicacoes">
-                        Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto
-                    </label>
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="declaracoes">
-                        Declarações de participação em conselhos, redes, fóruns ou articulações temáticas
-                    </label>
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="certificados">
-                        Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação
-                    </label>
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="relatoriosAnuais">
-                        Relatórios anuais de atividades demonstrando atuação continuada no campo temático
-                    </label>
-                    <label>
-                        <input type="checkbox" name="elementosComplementares" value="nenhum" id="nenhumElementos">
-                        Não possuo nenhum dos elementos acima
-                    </label>
-                </div>
-            </div>
-    
-            <!-- Comprovação Institucional, Técnica, Operacional e Material -->
-            <div class="form-section">
-                <h3>Comprovação Institucional, Técnica, Operacional e Material <span style="color: red;">* Obrigatório</span></h3>
-                <p>Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar <strong>obrigatoriamente um</strong>):</p>
-                
-                <div class="radio-list">
-                    <label>
-                        <input type="radio" name="comprovacaoTipo" value="fotos" required>
-                        Fotografias datadas das atividades/projetos executados
-                    </label>
-                    <label>
-                        <input type="radio" name="comprovacaoTipo" value="audiovisuais">
-                        Registros audiovisuais (links ou arquivos digitais)
-                    </label>
-                    <label>
-                        <input type="radio" name="comprovacaoTipo" value="listas">
-                        Listas de presença, relatórios de execução ou registros de monitoramento
-                    </label>
-                    <label>
-                        <input type="radio" name="comprovacaoTipo" value="outros">
-                        Outros documentos comprobatórios pertinentes (ex. currículos)
-                    </label>
-                </div>
-    
-                <div class="input-container full-width" style="margin-top: 16px;">
-                    <div id="attachments-comprovacaoMaterial" class="attachments-container"></div>
-                </div>
-            </div>
-    
-            <div id="annexSectionContainer" class="form-section">
-                <h3>Anexos Gerais / Adicionais</h3>
-                <p class="instruction-text">
-                    <strong>Orientação:</strong> Imagens (PNG/JPEG) até 5MB e PDFs até 10MB.
-                </p>
-                <div id="annexAccordionContainer"></div>
-                <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">+ Adicionar Bloco de Anexo</button>
-            </div>
-    
-            <button type="submit" id="generatePdfBtn" class="generate-btn">Gerar PDF do Atestado</button>
-        </form>
-    </div>
+        </div>
 
+        <div class="form-section">
+            <div class="form-grid">
+                <div class="input-container">
+                    <label for="cnpj">CNPJ da Entidade <span style="color: red;">*</span></label>
+                    <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required onblur="fetchEntityData()">
+                </div>
+                <div class="input-container">
+                    <label for="nomeEntidade">Nome da Entidade <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeEntidade" placeholder="Preenchido via CNPJ" required readonly>
+                </div>
+                <div class="input-container">
+                    <label for="cep">CEP <span style="color: red;">*</span></label>
+                    <input type="text" id="cep" placeholder="00000-000" required onblur="fetchAddressData()">
+                </div>
+                <div class="input-container">
+                    <label for="endereco">Endereço <span style="color: red;">*</span></label>
+                    <input type="text" id="endereco" placeholder="Preenchido via CEP" required readonly>
+                </div>
+                <div class="input-container">
+                    <label for="numero">Número <span style="color: red;">*</span></label>
+                    <input type="text" id="numero" placeholder="Ex: 123, S/N" required>
+                </div>
+                <div class="input-container">
+                    <label for="complemento">Complemento</label>
+                    <input type="text" id="complemento" placeholder="Ex: Bloco A">
+                </div>
+            </div>
+        </div>
+
+        <!-- === SEÇÃO EXCLUSIVA DO TERMO DE FOMENTO (sem required nos campos ocultos) === -->
+        <div id="declaracoesObrigatorias" class="form-section highlight-section" style="display: none;">
+            <h3>Declarações Obrigatórias – Emenda Parlamentar e Entidade Privada</h3>
+            
+            <div class="input-container full-width checkbox-container">
+                <label>
+                    <input type="checkbox" id="capacidadeNaoConfunde" name="capacidadeNaoConfunde">
+                    Declaro que a capacidade técnica já instalada <strong>não se confunde</strong> com a que será realizada com os recursos desta parceria.
+                </label>
+            </div>
+
+            <div class="input-container full-width checkbox-container">
+                <label>
+                    <input type="checkbox" id="declaracaoEspecificacoes" name="declaracaoEspecificacoes">
+                    Declaro, para os devidos fins, cumprir <strong>integralmente</strong> as 3 especificações abaixo:
+                </label>
+            </div>
+
+            <div class="specifications-list">
+                <div class="input-container full-width">
+                    <p>1. Em atendimento à <strong>ADPF nº 854/2024 do STF</strong>, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.</p>
+                </div>
+
+                <div class="input-container full-width">
+                    <p>2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.</p>
+                </div>
+
+                <div class="input-container full-width">
+                    <p>3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.</p>
+                </div>
+            </div>
+
+            <div class="input-container full-width">
+                <h4>A OSC já realizou ações no estado alcançado pela emenda parlamentar?</h4>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="acoesNoEstado" value="sim"> Sim
+                    </label>
+                    <label>
+                        <input type="radio" name="acoesNoEstado" value="nao"> Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-container full-width" id="detalhesAcoesEstado" style="display: none;">
+                <label for="quaisAcoesEstado">Se sim, quais?</label>
+                <textarea id="quaisAcoesEstado" rows="3" placeholder="Descreva brevemente as ações realizadas..."></textarea>
+            </div>
+
+            <!-- Elementos Complementares (sem required) -->
+            <h4>Elementos Complementares de Comprovação da Capacidade Técnica</h4>
+            <div class="checkbox-list">
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="relatorios">
+                    Relatórios de prestações de contas aprovadas por órgão(s) público(s)
+                </label>
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="publicacoes">
+                    Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto
+                </label>
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="declaracoes">
+                    Declarações de participação em conselhos, redes, fóruns ou articulações temáticas
+                </label>
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="certificados">
+                    Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação
+                </label>
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="relatoriosAnuais">
+                    Relatórios anuais de atividades demonstrando atuação continuada no campo temático
+                </label>
+                <label>
+                    <input type="checkbox" name="elementosComplementares" value="nenhum" id="nenhumElementos">
+                    Não possuo nenhum dos elementos acima
+                </label>
+            </div>
+
+            <!-- Comprovação Institucional, Técnica, Operacional e Material (sem required) -->
+            <h4>Comprovação Institucional, Técnica, Operacional e Material</h4>
+            <p>Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar <strong>um ou mais</strong>):</p>
+            
+            <div class="radio-list">
+                <label>
+                    <input type="checkbox" name="comprovacaoTipo" value="fotos">
+                    Fotografias datadas das atividades/projetos executados
+                </label>
+                <label>
+                    <input type="checkbox" name="comprovacaoTipo" value="audiovisuais">
+                    Registros audiovisuais (links ou arquivos digitais)
+                </label>
+                <label>
+                    <input type="checkbox" name="comprovacaoTipo" value="listas">
+                    Listas de presença, relatórios de execução ou registros de monitoramento
+                </label>
+                <label>
+                    <input type="checkbox" name="comprovacaoTipo" value="outros">
+                    Outros documentos comprobatórios pertinentes (ex. currículos)
+                </label>
+            </div>
+        </div>
+        <!-- FIM DA SEÇÃO EXCLUSIVA DO TERMO DE FOMENTO -->
+
+        <!-- Campos comuns a todas as modalidades -->
+        <div class="form-section highlight-section">
+            <div class="form-grid">
+                <div class="input-container full-width">
+                    <label for="numeroProposta">Número da Proposta Atual <span style="color: red;">*</span></label>
+                    <input type="text" id="numeroProposta" placeholder="Ex: 004947/2024" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anexos Gerais / Adicionais -->
+        <div id="annexSectionContainer" class="form-section">
+            <h3>Anexos Gerais / Adicionais</h3>
+            <p class="instruction-text">
+                <strong>Orientação:</strong> Imagens (PNG/JPEG) até 5MB e PDFs até 10MB.
+            </p>
+            <div id="annexAccordionContainer"></div>
+            <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">+ Adicionar Bloco de Anexo</button>
+        </div>
+
+        <button type="submit" id="generatePdfBtn" class="generate-btn">Gerar PDF do Atestado</button>
+    </form>
+</div>
     <footer>
         <p>© 2026 Ministério do Esporte. Todos os direitos reservados.</p>
     </footer>
@@ -633,6 +621,7 @@
         applyTheme(theme);
     });
 
+    // Configuração do PDF.js worker
     if (typeof pdfjsLib !== 'undefined') {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
@@ -662,13 +651,34 @@
 
         setupAccordionListener();
 
-        // Mostrar/esconder campo "Se sim, quais?"
+        // Mostrar/esconder "Se sim, quais?" das ações no estado
         const acoesRadio = document.querySelectorAll('input[name="acoesNoEstado"]');
         acoesRadio.forEach(radio => {
             radio.addEventListener('change', () => {
                 document.getElementById('detalhesAcoesEstado').style.display = radio.value === 'sim' ? 'block' : 'none';
             });
         });
+
+        // Controle de visibilidade da seção Declarações Obrigatórias
+        const tipoAtestadoSelect = document.getElementById('tipoAtestado');
+        const declaracoesSection = document.getElementById('declaracoesObrigatorias');
+
+        if (declaracoesSection) {
+            declaracoesSection.style.display = 'none';
+        }
+
+        function toggleDeclaracoes() {
+            if (declaracoesSection) {
+                declaracoesSection.style.display = (tipoAtestadoSelect.value === 'termoFomento') ? 'block' : 'none';
+            }
+        }
+
+        tipoAtestadoSelect.addEventListener('change', () => {
+            toggleDeclaracoes();
+            updateAnnexFields();
+        });
+
+        toggleDeclaracoes();
     });
 
     function checkLibrariesLoaded() {
@@ -727,9 +737,13 @@
                         <label for="nomeProjeto-${newAnnexId}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
                         <input type="text" id="nomeProjeto-${newAnnexId}" placeholder="Digite o nome do projeto/ação" required>
                     </div>
+        `;
+
+        if (tipoAtestado === 'termoFomento') {
+            annexFieldsHTML += `
                     <div class="input-container full-width">
-                        <label for="tipoParceriaAnterior-${newAnnexId}">Tipo de Parceria Anterior <span style="color: red;">*</span></label>
-                        <select id="tipoParceriaAnterior-${newAnnexId}" required onchange="toggleParceriaFields(${newAnnexId})">
+                        <label for="tipoParceriaAnterior-${newAnnexId}">Tipo de Parceria Anterior</label>
+                        <select id="tipoParceriaAnterior-${newAnnexId}" onchange="toggleParceriaFields(${newAnnexId})">
                             <option value="nenhum" selected>Nenhum / Não se aplica</option>
                             <option value="convenio">Convênio</option>
                             <option value="termoFomento">Termo de Fomento</option>
@@ -738,13 +752,17 @@
                         </select>
                     </div>
                     <div class="input-container parceria-anterior-fields" id="parceriaFields-${newAnnexId}" style="display: none;">
-                        <label for="nrAnoAnterior-${newAnnexId}">Nº / Ano (Anterior) <span style="color: red;">*</span></label>
+                        <label for="nrAnoAnterior-${newAnnexId}">Nº / Ano (Anterior)</label>
                         <input type="text" id="nrAnoAnterior-${newAnnexId}" placeholder="Ex: 123/2023">
                     </div>
                     <div class="input-container parceria-anterior-fields full-width" id="orgaoFields-${newAnnexId}" style="display: none;">
-                        <label for="orgaoAnterior-${newAnnexId}">Órgão/Entidade Parceira Anterior <span style="color: red;">*</span></label>
+                        <label for="orgaoAnterior-${newAnnexId}">Órgão/Entidade Parceira Anterior</label>
                         <input type="text" id="orgaoAnterior-${newAnnexId}" placeholder="Digite o órgão ou entidade parceira anterior">
                     </div>
+            `;
+        }
+
+        annexFieldsHTML += `
                     <div class="input-container">
                         <label for="entidadesParceiras-${newAnnexId}">Entidades Parceiras <span style="color: red;">*</span></label>
                         <input type="text" id="entidadesParceiras-${newAnnexId}" placeholder="Digite as entidades parceiras" required>
@@ -771,15 +789,16 @@
                 </div>
             `;
         }
+
         if (tipoAtestado === 'termoFomento') {
             annexFieldsHTML += `
                 <div class="input-container full-width">
                     <label for="estruturasFisicas-${newAnnexId}">Estruturas Físicas <span style="color: red;">*</span></label>
-                    <input type="text" id="estruturasFisicas-${newAnnexId}" placeholder="Descreva as estruturas físicas" required>
+                    <input type="text" id="estruturasFisicas-${newAnnexId}" placeholder="Descreva as estruturas físicas (sede, locais de ação, etc.)" required>
                 </div>
                 <div class="input-container full-width">
                     <label for="qualificacaoPessoal-${newAnnexId}">Qualificação Profissional <span style="color: red;">*</span></label>
-                    <textarea id="qualificacaoPessoal-${newAnnexId}" placeholder="Descreva a qualificação do pessoal" required></textarea>
+                    <textarea id="qualificacaoPessoal-${newAnnexId}" placeholder="Descreva a qualificação e experiência do corpo técnico (voluntário ou contratado)" required></textarea>
                 </div>
             `;
         }
@@ -815,13 +834,9 @@
         if (tipo === 'nenhum') {
             fields.style.display = 'none';
             orgaoFields.style.display = 'none';
-            document.getElementById(`nrAnoAnterior-${annexId}`).required = false;
-            document.getElementById(`orgaoAnterior-${annexId}`).required = false;
         } else {
             fields.style.display = 'block';
             orgaoFields.style.display = 'block';
-            document.getElementById(`nrAnoAnterior-${annexId}`).required = true;
-            document.getElementById(`orgaoAnterior-${annexId}`).required = true;
         }
     }
 
@@ -965,13 +980,12 @@
     function formatDateToBrazilian(dateStr) {
         if (!dateStr) return '';
         const [year, month, day] = dateStr.split('-');
-        return `${day}/${month}/${year}`;
+        return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
     }
 
-    // Função auxiliar para desenhar checkbox marcado
     function drawCheckbox(doc, x, y, checked) {
         doc.setDrawColor(0);
-        doc.rect(x, y - 4, 5, 5); // quadrado
+        doc.rect(x, y - 4, 5, 5);
         if (checked) {
             doc.setFontSize(10);
             doc.text('X', x + 1.5, y);
@@ -1010,17 +1024,20 @@
                 return margin;
             };
 
+            const tipoAtestadoValue = document.getElementById('tipoAtestado').value;
+            const tipoAtestadoText = document.getElementById('tipoAtestado').options[document.getElementById('tipoAtestado').selectedIndex].text || "Não informado";
+
             // =====================================
-            // PÁGINA 1 – ATESTADO DE CAPACIDADE TÉCNICA
+            // PÁGINA 1 – ATESTADO PRINCIPAL
             // =====================================
             addWatermarkToPage();
 
             doc.setFontSize(18);
             doc.setFont("helvetica", "bold");
             doc.setTextColor(0, 51, 102);
-            doc.text("ATESTADO DE CAPACIDADE TÉCNICA", pageWidth / 2, yPos + 25, { align: "center" }); // Lowered by increasing +15 to +25
+            doc.text("ATESTADO DE CAPACIDADE TÉCNICA", pageWidth / 2, yPos + 25, { align: "center" });
 
-            yPos += 45; // Adjusted from 35 to make space
+            yPos += 45;
 
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
@@ -1028,17 +1045,17 @@
 
             const nomeDirigente = document.getElementById('nomeDirigente').value.trim() || "________________________________";
             const cargoDirigente = document.getElementById('cargoDirigente').value.trim() || "________________________________";
-            const tipoAtestado = document.getElementById('tipoAtestado').options[document.getElementById('tipoAtestado').selectedIndex].text || "________________________________";
             const nomeEntidade = document.getElementById('nomeEntidade').value.trim() || "_______________________________________________";
             const cnpj = document.getElementById('cnpj').value.trim() || "__.___.___/____-__";
             const endereco = document.getElementById('endereco').value.trim() || "";
             const numero = document.getElementById('numero').value.trim() || "";
             const complemento = document.getElementById('complemento').value.trim() || "";
             const cep = document.getElementById('cep').value.trim() || "";
-            const enderecoCompleto = [endereco, numero, complemento].filter(Boolean).join(", ") + (cep ? `, CEP nº ${cep}` : "");
+            const enderecoCompleto = [endereco, numero, complemento].filter(Boolean).join(", ") + (cep ? `, CEP ${cep}` : "");
             const numeroProposta = document.getElementById('numeroProposta').value.trim() || "___________";
 
-            const introText = `Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestado} no âmbito do Ministério do Esporte - MESP, que, ${nomeEntidade}, inscrito(a) no CNPJ sob o nº ${cnpj}, situado(a) no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroProposta}, em atendimento ao art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025), considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`;
+            // TEXTO ANTIGO RESTAURADO (com LDO 2025)
+            const introText = `Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestadoText} no âmbito do Ministério do Esporte - MESP, que a entidade ${nomeEntidade}, inscrita no CNPJ sob o nº ${cnpj}, situada no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroProposta}, em atendimento ao art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025), considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`;
 
             const introLines = doc.splitTextToSize(introText, pageWidth - margin * 2);
             doc.text(introLines, margin, yPos);
@@ -1047,154 +1064,181 @@
             doc.text("Declaração emitida com base nas comprovações anexas.", margin, yPos);
             yPos += 25;
 
+    
+            // Assinatura na página 1 → SOMENTE PARA CONVÊNIO
+            if (tipoAtestadoValue === 'convenio') {
+                const sigX = (pageWidth - 100) / 2;
+                doc.line(sigX, yPos, sigX + 100, yPos);
+                yPos += 8;
 
-            // =====================================
-            // PÁGINA 2 – DECLARAÇÕES OBRIGATÓRIAS (sem as declarações removidas)
-            // =====================================
-            yPos = addNewPdfPage();
-            yPos += 10; // Additional space to lower the title
+                doc.setFontSize(12);
+                doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
+                yPos += 7;
+                doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
+                yPos += 15;
 
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 51, 102);
-            doc.text("DECLARAÇÕES OBRIGATÓRIAS", pageWidth / 2, yPos, { align: "center" });
-            yPos += 15; // Reduced from 20
-
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(0);
-
-            // Ações no estado
-            doc.text("A OSC já realizou ações no estado alcançado pela emenda parlamentar? *obrigatório*", margin, yPos);
-            yPos += 8;
-
-            const acoesSimChecked = document.querySelector('input[name="acoesNoEstado"][value="sim"]').checked;
-            drawCheckbox(doc, margin + 5, yPos, acoesSimChecked);
-            doc.text("Sim", margin + 12, yPos);
-            yPos += 6;
-
-            const acoesNaoChecked = document.querySelector('input[name="acoesNoEstado"][value="nao"]').checked;
-            drawCheckbox(doc, margin + 5, yPos, acoesNaoChecked);
-            doc.text("Não", margin + 12, yPos);
-            yPos += 10;
-
-            // Se sim, quais?
-            if (acoesSimChecked) {
-                const quais = document.getElementById('quaisAcoesEstado').value.trim() || "Não informado";
-                doc.text("Se sim, quais? " + quais, margin + 5, yPos);
-                yPos += 10;
+                doc.setFontSize(10);
+                doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
             }
 
-            // Elementos Complementares
-            yPos += 5;
-            doc.setFont("helvetica", "bold");
-            doc.text("Elementos Complementares de Comprovação da Capacidade Técnica *Obrigatório*", margin, yPos);
-            yPos += 10;
-            doc.setFont("helvetica", "normal");
+            // =====================================
+            // PÁGINA 2 – DECLARAÇÕES OBRIGATÓRIAS (somente Termo de Fomento)
+            // =====================================
+            if (tipoAtestadoValue === 'termoFomento') {
+                yPos = addNewPdfPage();
+                yPos += 10;
 
-            const elementos = document.querySelectorAll('input[name="elementosComplementares"]');
-            const textosElementos = [
-                "Relatórios de prestações de contas aprovadas por órgão(s) público(s)",
-                "Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto",
-                "Declarações de participação em conselhos, redes, fóruns ou articulações temáticas",
-                "Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação",
-                "Relatórios anuais de atividades demonstrando atuação continuada no campo temático",
-                "Não possuo nenhum dos elementos acima"
-            ];
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 51, 102);
+                doc.text("DECLARAÇÕES OBRIGATÓRIAS", pageWidth / 2, yPos, { align: "center" });
+                yPos += 15;
 
-            elementos.forEach((el, idx) => {
-                drawCheckbox(doc, margin + 5, yPos, el.checked);
-                doc.text(textosElementos[idx], margin + 15, yPos);
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(0);
+
+                doc.text("Declaro, para os devidos fins, cumprir integralmente as 3 especificações abaixo:", margin, yPos);
+                yPos += 10;
+
+                doc.text("1. Em atendimento à ADPF nº 854/2024 do STF, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+                yPos += 18;
+
+                doc.text("2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+                yPos += 12;
+
+                doc.text("3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+                yPos += 12;
+
+                doc.text("A OSC já realizou ações no estado alcançado pela emenda parlamentar? *", margin, yPos);
                 yPos += 8;
-            });
 
-            // Comprovação Material
-            yPos += 10;
-            doc.setFont("helvetica", "bold");
-            doc.text("Comprovação Institucional, Técnica, Operacional e Material *Obrigatório*", margin, yPos);
-            yPos += 10;
-            doc.setFont("helvetica", "normal");
+                const acoesSimChecked = document.querySelector('input[name="acoesNoEstado"][value="sim"]').checked;
+                drawCheckbox(doc, margin + 5, yPos, acoesSimChecked);
+                doc.text("Sim", margin + 12, yPos);
+                yPos += 6;
 
-            doc.text("Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar obrigatoriamente um):", margin, yPos, { maxWidth: pageWidth - margin * 2 });
-            yPos += 12;
+                const acoesNaoChecked = document.querySelector('input[name="acoesNoEstado"][value="nao"]').checked;
+                drawCheckbox(doc, margin + 5, yPos, acoesNaoChecked);
+                doc.text("Não", margin + 12, yPos);
+                yPos += 10;
 
-            const compTypes = document.querySelectorAll('input[name="comprovacaoTipo"]');
-            const textosComp = [
-                "Fotografias datadas das atividades/projetos executados",
-                "Registros audiovisuais (links ou arquivos digitais)",
-                "Listas de presença, relatórios de execução ou registros de monitoramento",
-                "Outros documentos comprobatórios pertinentes (ex. currículos)"
-            ];
+                if (acoesSimChecked) {
+                    const quais = document.getElementById('quaisAcoesEstado').value.trim() || "Não informado";
+                    doc.text("Se sim, quais? " + quais, margin + 5, yPos);
+                    yPos += 10;
+                }
 
-            compTypes.forEach((el, idx) => {
-                drawCheckbox(doc, margin + 5, yPos, el.checked);
-                doc.text(textosComp[idx], margin + 15, yPos);
+                yPos += 5;
+                doc.setFont("helvetica", "bold");
+                doc.text("Elementos Complementares de Comprovação da Capacidade Técnica *Obrigatório*", margin, yPos);
+                yPos += 10;
+                doc.setFont("helvetica", "normal");
+
+                const elementos = document.querySelectorAll('input[name="elementosComplementares"]');
+                const textosElementos = [
+                    "Relatórios de prestações de contas aprovadas por órgão(s) público(s)",
+                    "Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto",
+                    "Declarações de participação em conselhos, redes, fóruns ou articulações temáticas",
+                    "Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação",
+                    "Relatórios anuais de atividades demonstrando atuação continuada no campo temático",
+                    "Não possuo nenhum dos elementos acima"
+                ];
+
+                elementos.forEach((el, idx) => {
+                    drawCheckbox(doc, margin + 5, yPos, el.checked);
+                    doc.text(textosElementos[idx], margin + 15, yPos);
+                    yPos += 8;
+                });
+
+                yPos += 10;
+                doc.setFont("helvetica", "bold");
+                doc.text("Comprovação Institucional, Técnica, Operacional e Material *Obrigatório*", margin, yPos);
+                yPos += 10;
+                doc.setFont("helvetica", "normal");
+
+                doc.text("Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar obrigatoriamente um):", margin, yPos, { maxWidth: pageWidth - margin * 2 });
+                yPos += 12;
+
+                const compTypes = document.querySelectorAll('input[name="comprovacaoTipo"]');
+                const textosComp = [
+                    "Fotografias datadas das atividades/projetos executados",
+                    "Registros audiovisuais (links ou arquivos digitais)",
+                    "Listas de presença, relatórios de execução ou registros de monitoramento",
+                    "Outros documentos comprobatórios pertinentes (ex. currículos)"
+                ];
+
+                compTypes.forEach((el, idx) => {
+                    drawCheckbox(doc, margin + 5, yPos, el.checked);
+                    doc.text(textosComp[idx], margin + 15, yPos);
+                    yPos += 8;
+                });
+            }
+
+            // =====================================
+            // PÁGINA 3 – IDONEIDADE E RESPONSABILIDADE (somente Termo de Fomento)
+            // =====================================
+            if (tipoAtestadoValue === 'termoFomento') {
+                yPos = addNewPdfPage();
+                yPos += 10;
+
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 51, 102);
+                doc.text("DECLARAÇÃO DE IDONEIDADE E RESPONSABILIDADE", pageWidth / 2, yPos, { align: "center" });
+                yPos += 15;
+
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(0);
+
+                const declarationText = [
+                    "Declaramos que as atividades descritas foram executadas com qualidade, regularidade e aderência ao objeto pactuado, não havendo, até a presente data, fatos que desabonem a conduta ou a capacidade técnica, operacional e institucional da OSC.",
+                    "",
+                    "A entidade emitente assume integral responsabilidade pela veracidade, completude e fidedignidade das informações prestadas, que são declaradas sob fé pública, estando ciente de que a omissão de informações relevantes, a prestação de informações falsas ou a apresentação de documentos inidôneos caracterizam infração administrativa grave, sujeitando-se o declarante e a entidade emitente às sanções administrativas, civis e penais cabíveis, inclusive aquelas previstas na legislação penal, na Lei nº 8.429/1992 (quando aplicável), na Lei nº 13.019/2014, Decreto nº 8.726/2016 e demais normas correlatas, sem prejuízo de outras medidas legais pertinentes.",
+                    "",
+                    "A constatação, a qualquer tempo, de omissão dolosa ou culposa, inexatidão relevante, falsidade ideológica ou material nas informações e documentos apresentados neste atestado ensejará, independentemente de outras cominações legais:",
+                    "I – a nulidade do atestado para todos os fins;",
+                    "II – a impugnação ou rescisão da parceria, se já celebrada;",
+                    "III – a comunicação aos órgãos de controle interno e externo competentes;",
+                    "IV – o encaminhamento para apuração de responsabilidade administrativa, civil e penal da autoridade signatária e da entidade emitente.",
+                    "",
+                    "Parágrafo único. A aplicação das medidas acima ocorrerá sem prejuízo da adoção de outras providências sancionatórias cabíveis, inclusive reparação de danos ao erário.",
+                    "",
+                    "Cientificamo-nos de que o órgão concedente poderá, a qualquer tempo, diligenciar para verificar a autenticidade e a veracidade das informações e documentos apresentados."
+                ];
+
+                declarationText.forEach(paragraph => {
+                    if (paragraph.trim() === "") {
+                        yPos += 6;
+                        return;
+                    }
+                    const lines = doc.splitTextToSize(paragraph, pageWidth - margin * 2);
+                    if (yPos + (lines.length * 6) > pageHeight - margin - 40) {
+                        yPos = addNewPdfPage();
+                        yPos += 20;
+                    }
+                    doc.text(lines, margin, yPos);
+                    yPos += lines.length * 6 + 2;
+                });
+
+                yPos += 30;
+                const sigX = (pageWidth - 100) / 2;
+                doc.line(sigX, yPos, sigX + 100, yPos);
                 yPos += 8;
-            });
+
+                doc.setFontSize(12);
+                doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
+                yPos += 7;
+                doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
+                yPos += 15;
+
+                doc.setFontSize(10);
+                doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
+            }
 
             // =====================================
-            // PÁGINA 3 – DECLARAÇÃO DE IDONEIDADE E RESPONSABILIDADE
-            // =====================================
-            yPos = addNewPdfPage();
-            yPos += 10; // Additional space to lower the title
-
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 51, 102);
-            doc.text("DECLARAÇÃO DE IDONEIDADE E RESPONSABILIDADE", pageWidth / 2, yPos, { align: "center" });
-            yPos += 15; // Reduced from 20
-
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(0);
-
-            const declarationText = [
-                "Declaramos que as atividades descritas foram executadas com qualidade, regularidade e aderência ao objeto pactuado, não havendo, até a presente data, fatos que desabonem a conduta ou a capacidade técnica, operacional e institucional da OSC.",
-                "",
-                "A entidade emitente assume integral responsabilidade pela veracidade, completude e fidedignidade das informações prestadas, que são declaradas sob fé pública, estando ciente de que a omissão de informações relevantes, a prestação de informações falsas ou a apresentação de documentos inidôneos caracterizam infração administrativa grave, sujeitando-se o declarante e a entidade emitente às sanções administrativas, civis e penais cabíveis, inclusive aquelas previstas na legislação penal, na Lei nº 8.429/1992 (quando aplicável), na Lei nº 13.019/2014, Decreto nº 8.726/2016 e demais normas correlatas, sem prejuízo de outras medidas legais pertinentes.",
-                "",
-                "A constatação, a qualquer tempo, de omissão dolosa ou culposa, inexatidão relevante, falsidade ideológica ou material nas informações e documentos apresentados neste atestado ensejará, independentemente de outras cominações legais:",
-                "I – a nulidade do atestado para todos os fins;",
-                "II – a impugnação ou rescisão da parceria, se já celebrada;",
-                "III – a comunicação aos órgãos de controle interno e externo competentes;",
-                "IV – o encaminhamento para apuração de responsabilidade administrativa, civil e penal da autoridade signatária e da entidade emitente.",
-                "",
-                "Parágrafo único. A aplicação das medidas acima ocorrerá sem prejuízo da adoção de outras providências sancionatórias cabíveis, inclusive reparação de danos ao erário.",
-                "",
-                "Cientificamo-nos de que o órgão concedente poderá, a qualquer tempo, diligenciar para verificar a autenticidade e a veracidade das informações e documentos apresentados."
-            ];
-
-            declarationText.forEach(paragraph => {
-                if (paragraph.trim() === "") {
-                    yPos += 6; // Reduced from 8
-                    return;
-                }
-                const lines = doc.splitTextToSize(paragraph, pageWidth - margin * 2);
-                if (yPos + (lines.length * 6) > pageHeight - margin - 40) {
-                    yPos = addNewPdfPage();
-                    yPos += 20;
-                }
-                doc.text(lines, margin, yPos);
-                yPos += lines.length * 6 + 2; // Reduced from +4
-            });
-
-            // Assinatura
-            yPos += 30;
-            const sigX = (pageWidth - 100) / 2;
-            doc.line(sigX, yPos, sigX + 100, yPos);
-            yPos += 8;
-
-            doc.setFontSize(12);
-            doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
-            yPos += 7;
-            doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
-            yPos += 15;
-
-            doc.setFontSize(10);
-            doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
-
-            // =====================================
-            // Anexos / Histórico (páginas seguintes, incluindo Instrumentos de Parceria Anteriores)
+            // ANEXOS / HISTÓRICO
             // =====================================
             if (annexOrder.length === 0) {
                 yPos = addNewPdfPage(true);
@@ -1208,32 +1252,27 @@
                 doc.text('HISTÓRICO', margin, yPos);
                 yPos += 10;
                 doc.setFontSize(12);
-                doc.text('Instrumentos de Parceria Anteriores (quando houver): Não foram fornecidos.', margin, yPos);
+                doc.text('Nenhum anexo/histórico informado.', margin, yPos);
             } else {
                 for (const i of annexOrder) {
                     yPos = addNewPdfPage(true);
                     yPos += 30;
                     doc.setFontSize(18);
                     doc.setTextColor(0, 0, 255);
-                    doc.text('ANEXO', pageWidth / 2, yPos, { align: 'center' });
+                    doc.text('ANEXO ' + i, pageWidth / 2, yPos, { align: 'center' });
                     doc.setTextColor(0, 0, 0);
                     yPos += 15;
                     doc.setFontSize(14);
-                    doc.text('HISTÓRICO', margin, yPos);
+                    doc.text('HISTÓRICO DO PROJETO/AÇÃO', margin, yPos);
                     yPos += 10;
                     doc.setFontSize(12);
 
                     const nomeProjeto = document.getElementById(`nomeProjeto-${i}`)?.value || 'Não informado';
-                    const tipoParceriaAnterior = document.getElementById(`tipoParceriaAnterior-${i}`)?.options[document.getElementById(`tipoParceriaAnterior-${i}`).selectedIndex].text || 'Não informado';
-                    const nrAnoAnterior = document.getElementById(`nrAnoAnterior-${i}`)?.value || 'Não informado';
-                    const orgaoAnterior = document.getElementById(`orgaoAnterior-${i}`)?.value || 'Não informado';
                     const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`)?.value || 'Não informado';
                     const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`)?.value || 'Não informado';
                     const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`)?.value || 'Não informado';
                     const dataInicio = formatDateToBrazilian(document.getElementById(`dataInicio-${i}`)?.value);
                     const dataTermino = formatDateToBrazilian(document.getElementById(`dataTermino-${i}`)?.value);
-                    const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
-                    const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
 
                     const addTextSection = (label, value) => {
                         if (!value || value.trim() === '') return;
@@ -1245,7 +1284,7 @@
                             yPos = addNewPdfPage(true);
                             yPos += 30;
                             doc.setFontSize(14);
-                            doc.text('HISTÓRICO', margin, yPos);
+                            doc.text('HISTÓRICO (continuação)', margin, yPos);
                             yPos += 10;
                             doc.setFontSize(12);
                         }
@@ -1260,30 +1299,33 @@
                     };
 
                     addTextSection('Nome do Projeto/Ação:', nomeProjeto);
-                    if (tipoParceriaAnterior !== 'Nenhum / Não se aplica') {
-                        addTextSection('Tipo de Parceria Anterior:', tipoParceriaAnterior);
-                        addTextSection('Nº / Ano (Anterior):', nrAnoAnterior);
-                        addTextSection('Órgão/Entidade Parceira Anterior:', orgaoAnterior);
-                    } else {
-                        addTextSection('Instrumentos de Parceria Anteriores (quando houver):', 'Não foram fornecidos.');
-                    }
                     addTextSection('Entidades Parceiras:', entidadesParceiras);
                     addTextSection('Número de Beneficiados:', numeroBeneficiados);
                     addTextSection('Data de Início:', dataInicio);
                     addTextSection('Data de Término:', dataTermino);
                     addTextSection('Ações/Atividades Desenvolvidas:', atividadesDesenvolvidas);
 
-                    const tipoAtestadoValue = document.getElementById('tipoAtestado').value;
                     if (tipoAtestadoValue === 'termoFomento') {
+                        const tipoParceriaAnteriorSelect = document.getElementById(`tipoParceriaAnterior-${i}`);
+                        const tipoParceriaAnteriorText = tipoParceriaAnteriorSelect ? tipoParceriaAnteriorSelect.options[tipoParceriaAnteriorSelect.selectedIndex].text : 'Não informado';
+
+                        addTextSection('Tipo de Parceria Anterior:', tipoParceriaAnteriorText);
+
+                        addTextSection('Nº / Ano (Anterior):', document.getElementById(`nrAnoAnterior-${i}`)?.value || 'Não informado');
+                        addTextSection('Órgão/Entidade Parceira Anterior:', document.getElementById(`orgaoAnterior-${i}`)?.value || 'Não informado');
+
+                        const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
+                        const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
+
                         addTextSection('Estruturas Físicas:', estruturasFisicas);
                         addTextSection('Qualificação Profissional:', qualificacaoPessoal);
                     }
 
-                    // Renderização de arquivos
+                    // Arquivos comprobatórios
                     yPos = addNewPdfPage(true);
                     yPos += 30;
                     doc.setFontSize(12);
-                    doc.text('- Documentos Comprobatórios:', margin, yPos);
+                    doc.text('Documentos Comprobatórios do Anexo ' + i + ':', margin, yPos);
                     yPos += 10;
 
                     let filesToRenderInPDF = [];
@@ -1291,93 +1333,99 @@
                     for (const type of evidenceTypes) {
                         const inputs = document.querySelectorAll(`input[id^="${type}-${i}-"]`);
                         inputs.forEach(input => {
-                            if (input.files) {
-                                Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file }));
+                            if (input.files && input.files.length > 0) {
+                                Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file, type }));
                             }
                         });
                     }
 
-                    for (const { file } of filesToRenderInPDF) {
-                        if (file.type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            const imgData = await new Promise((resolve) => {
-                                reader.onload = () => resolve(reader.result);
-                                reader.readAsDataURL(file);
-                            });
-                            const img = new Image();
-                            img.src = imgData;
-                            await new Promise((resolve) => { img.onload = resolve; });
+                    if (filesToRenderInPDF.length === 0) {
+                        doc.text('Nenhum arquivo anexado neste bloco.', margin + 5, yPos);
+                        yPos += 10;
+                    } else {
+                        for (const { file } of filesToRenderInPDF) {
+                            if (file.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                const imgData = await new Promise((resolve) => {
+                                    reader.onload = () => resolve(reader.result);
+                                    reader.readAsDataURL(file);
+                                });
+                                const img = new Image();
+                                img.src = imgData;
+                                await new Promise((resolve) => { img.onload = resolve; });
 
-                            const maxWidth = pageWidth - 2 * margin;
-                            const maxHeight = pageHeight - (margin * 2) - 40;
-                            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-                            const finalHeight = img.height * ratio;
-                            const finalWidth = img.width * ratio;
-                            const captionHeight = 15;
+                                const maxWidth = pageWidth - 2 * margin;
+                                const maxHeight = pageHeight - (margin * 2) - 40;
+                                const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                                const finalHeight = img.height * ratio;
+                                const finalWidth = img.width * ratio;
+                                const captionHeight = 15;
 
-                            if (yPos + finalHeight + captionHeight > pageHeight - margin) {
-                                yPos = addNewPdfPage(true);
-                                yPos += 30;
-                                doc.setFontSize(12);
-                                doc.text('- Documentos Comprobatórios (continuação):', margin, yPos);
-                                yPos += 10;
-                            }
+                                if (yPos + finalHeight + captionHeight > pageHeight - margin) {
+                                    yPos = addNewPdfPage(true);
+                                    yPos += 30;
+                                    doc.setFontSize(12);
+                                    doc.text('Documentos Comprobatórios (continuação):', margin, yPos);
+                                    yPos += 10;
+                                }
 
-                            doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
-                            yPos += finalHeight + 5;
-                            doc.setFontSize(9);
-                            doc.setTextColor(100, 100, 100);
-                            doc.text(`Arquivo: ${file.name}`, pageWidth / 2, yPos, { align: 'center' });
-                            doc.setTextColor(0, 0, 0);
-                            yPos += 10;
-                            doc.setFontSize(12);
-
-                        } else if (file.type === 'application/pdf') {
-                            const pdfBytes = await file.arrayBuffer();
-                            const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
-
-                            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                                yPos = addNewPdfPage(true);
-                                yPos += 25;
-
-                                doc.setFontSize(10);
+                                doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
+                                yPos += finalHeight + 5;
+                                doc.setFontSize(9);
                                 doc.setTextColor(100, 100, 100);
-                                doc.text(`Documento Anexo: ${file.name} (Pág. ${pageNum}/${pdf.numPages})`, margin, yPos);
-                                yPos += 5;
+                                doc.text(`Arquivo: ${file.name} (${file.type})`, pageWidth / 2, yPos, { align: 'center' });
+                                doc.setTextColor(0, 0, 0);
+                                yPos += 10;
+                                doc.setFontSize(12);
 
-                                const page = await pdf.getPage(pageNum);
-                                const highResScale = 2.0;
-                                const viewport = page.getViewport({ scale: highResScale });
+                            } else if (file.type === 'application/pdf') {
+                                const pdfBytes = await file.arrayBuffer();
+                                const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
 
-                                const canvas = document.createElement('canvas');
-                                canvas.height = viewport.height;
-                                canvas.width = viewport.width;
-                                const context = canvas.getContext('2d');
+                                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                                    yPos = addNewPdfPage(true);
+                                    yPos += 25;
 
-                                await page.render({ canvasContext: context, viewport }).promise;
+                                    doc.setFontSize(10);
+                                    doc.setTextColor(100, 100, 100);
+                                    doc.text(`Documento Anexo: ${file.name} (Página ${pageNum}/${pdf.numPages})`, margin, yPos);
+                                    yPos += 5;
 
-                                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                                    const page = await pdf.getPage(pageNum);
+                                    const highResScale = 2.0;
+                                    const viewport = page.getViewport({ scale: highResScale });
 
-                                const maxWidth = pageWidth - (2 * margin);
-                                const maxHeight = pageHeight - yPos - margin;
-                                const scaleRatio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
+                                    const canvas = document.createElement('canvas');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+                                    const context = canvas.getContext('2d');
 
-                                const finalWidth = viewport.width * scaleRatio;
-                                const finalHeight = viewport.height * scaleRatio;
-                                const xCentered = (pageWidth - finalWidth) / 2;
+                                    await page.render({ canvasContext: context, viewport }).promise;
 
-                                doc.addImage(imgData, 'JPEG', xCentered, yPos, finalWidth, finalHeight, undefined, 'FAST');
+                                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
 
-                                canvas.width = 0;
-                                canvas.height = 0;
-                                yPos += finalHeight + 10;
+                                    const maxWidth = pageWidth - (2 * margin);
+                                    const maxHeight = pageHeight - yPos - margin;
+                                    const scaleRatio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
+
+                                    const finalWidth = viewport.width * scaleRatio;
+                                    const finalHeight = viewport.height * scaleRatio;
+                                    const xCentered = (pageWidth - finalWidth) / 2;
+
+                                    doc.addImage(imgData, 'JPEG', xCentered, yPos, finalWidth, finalHeight, undefined, 'FAST');
+
+                                    canvas.width = 0;
+                                    canvas.height = 0;
+                                    yPos += finalHeight + 10;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s+/g, '_')}.pdf`;
+            // Nome do arquivo PDF
+            const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s+/g, '_')}_${tipoAtestadoValue}_${new Date().toISOString().slice(0,10)}.pdf`;
             doc.save(pdfName);
             alert('PDF gerado com sucesso!');
 
@@ -1388,7 +1436,6 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
     }
-</script>
 </script>
 </body>
 </html>
