@@ -405,39 +405,53 @@
 
 <div class="container">
     <h2>Atestado de Capacidade Técnica</h2>
-    <!-- Adicionei novalidate aqui para desativar a validação nativa -->
+
     <form id="atestadoForm" novalidate onsubmit="event.preventDefault(); generatePDF();">
-        
+
+        <!-- Tipo de Atestado -->
         <div class="form-section">
             <div class="form-grid">
                 <div class="input-container full-width">
                     <label for="tipoAtestado">Tipo de Atestado <span style="color: red;">*</span></label>
-                    <select id="tipoAtestado" required onchange="updateAnnexFields()">
-                        <option value="" disabled selected>Selecione um atestado</option>
+                    <select id="tipoAtestado" required onchange="toggleFormFields()">
+                        <option value="" disabled selected>Selecione o tipo</option>
                         <option value="termoFomento">Termo de Fomento</option>
                         <option value="convenio">Convênio</option>
                     </select>
                 </div>
+            </div>
+        </div>
+
+        <!-- Dados do Dirigente / Prefeito -->
+        <div class="form-section" id="dirigenteSection">
+            <div class="form-grid">
                 <div class="input-container">
-                    <label for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
+                    <label id="labelNomeDirigente" for="nomeDirigente">Nome do Dirigente <span style="color: red;">*</span></label>
                     <input type="text" id="nomeDirigente" placeholder="Nome completo" required oninput="validateLettersOnly(this)">
                 </div>
-                <div class="input-container">
+
+                <div class="input-container" id="cargoContainer">
                     <label for="cargoDirigente">Cargo do Dirigente <span style="color: red;">*</span></label>
-                    <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" required oninput="validateLettersOnly(this)">
+                    <input type="text" id="cargoDirigente" placeholder="Ex: Presidente" oninput="validateLettersOnly(this)">
+                </div>
+
+                <div class="input-container" id="matriculaContainer" style="display:none;">
+                    <label for="matriculaFuncional">Matrícula Funcional <span style="color: red;">*</span></label>
+                    <input type="text" id="matriculaFuncional" placeholder="Ex: 123456" maxlength="20">
                 </div>
             </div>
         </div>
 
+        <!-- Dados da Entidade -->
         <div class="form-section">
             <div class="form-grid">
                 <div class="input-container">
-                    <label for="cnpj">CNPJ da Entidade <span style="color: red;">*</span></label>
+                    <label id="labelCNPJ" for="cnpj">CNPJ <span style="color: red;">*</span></label>
                     <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required onblur="fetchEntityData()">
                 </div>
                 <div class="input-container">
                     <label for="nomeEntidade">Nome da Entidade <span style="color: red;">*</span></label>
-                    <input type="text" id="nomeEntidade" placeholder="Preenchido via CNPJ" required readonly>
+                    <input type="text" id="nomeEntidade" placeholder="Preenchido automaticamente" required readonly>
                 </div>
                 <div class="input-container">
                     <label for="cep">CEP <span style="color: red;">*</span></label>
@@ -445,7 +459,7 @@
                 </div>
                 <div class="input-container">
                     <label for="endereco">Endereço <span style="color: red;">*</span></label>
-                    <input type="text" id="endereco" placeholder="Preenchido via CEP" required readonly>
+                    <input type="text" id="endereco" placeholder="Preenchido automaticamente" required readonly>
                 </div>
                 <div class="input-container">
                     <label for="numero">Número <span style="color: red;">*</span></label>
@@ -453,115 +467,77 @@
                 </div>
                 <div class="input-container">
                     <label for="complemento">Complemento</label>
-                    <input type="text" id="complemento" placeholder="Ex: Bloco A">
+                    <input type="text" id="complemento" placeholder="Ex: Bloco A, Sala 01">
                 </div>
             </div>
         </div>
 
-        <!-- === SEÇÃO EXCLUSIVA DO TERMO DE FOMENTO (sem required nos campos ocultos) === -->
+        <!-- SEÇÃO EXCLUSIVA – TERMO DE FOMENTO -->
         <div id="declaracoesObrigatorias" class="form-section highlight-section" style="display: none;">
             <h3>Declarações Obrigatórias – Emenda Parlamentar e Entidade Privada</h3>
-            
-            <div class="input-container full-width checkbox-container">
+
+            <div class="input-container full-width checkbox-container required-check">
                 <label>
-                    <input type="checkbox" id="capacidadeNaoConfunde" name="capacidadeNaoConfunde">
+                    <input type="checkbox" id="capacidadeNaoConfunde" name="capacidadeNaoConfunde" required>
                     Declaro que a capacidade técnica já instalada <strong>não se confunde</strong> com a que será realizada com os recursos desta parceria.
                 </label>
             </div>
 
-            <div class="input-container full-width checkbox-container">
+            <div class="input-container full-width checkbox-container required-check">
                 <label>
-                    <input type="checkbox" id="declaracaoEspecificacoes" name="declaracaoEspecificacoes">
+                    <input type="checkbox" id="declaracaoEspecificacoes" name="declaracaoEspecificacoes" required>
                     Declaro, para os devidos fins, cumprir <strong>integralmente</strong> as 3 especificações abaixo:
                 </label>
             </div>
 
             <div class="specifications-list">
-                <div class="input-container full-width">
-                    <p>1. Em atendimento à <strong>ADPF nº 854/2024 do STF</strong>, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.</p>
-                </div>
-
-                <div class="input-container full-width">
-                    <p>2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.</p>
-                </div>
-
-                <div class="input-container full-width">
-                    <p>3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.</p>
-                </div>
+                <p>1. Em atendimento à <strong>ADPF nº 854/2024 do STF</strong>, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.</p>
+                <p>2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.</p>
+                <p>3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.</p>
             </div>
 
-            <div class="input-container full-width">
-                <h4>A OSC já realizou ações no estado alcançado pela emenda parlamentar?</h4>
+            <div class="input-container full-width required-radio">
+                <h4>A OSC já realizou ações no estado alcançado pela emenda parlamentar? <span style="color:red">*</span></h4>
                 <div class="radio-group">
-                    <label>
-                        <input type="radio" name="acoesNoEstado" value="sim"> Sim
-                    </label>
-                    <label>
-                        <input type="radio" name="acoesNoEstado" value="nao"> Não
-                    </label>
+                    <label><input type="radio" name="acoesNoEstado" value="sim" required> Sim</label>
+                    <label><input type="radio" name="acoesNoEstado" value="nao" required> Não</label>
                 </div>
             </div>
 
-            <div class="input-container full-width" id="detalhesAcoesEstado" style="display: none;">
+            <div class="input-container full-width" id="detalhesAcoesEstado" style="display:none;">
                 <label for="quaisAcoesEstado">Se sim, quais?</label>
                 <textarea id="quaisAcoesEstado" rows="3" placeholder="Descreva brevemente as ações realizadas..."></textarea>
             </div>
 
-            <!-- Elementos Complementares (sem required) -->
-            <h4>Elementos Complementares de Comprovação da Capacidade Técnica</h4>
-            <div class="checkbox-list">
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="relatorios">
-                    Relatórios de prestações de contas aprovadas por órgão(s) público(s)
-                </label>
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="publicacoes">
-                    Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto
-                </label>
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="declaracoes">
-                    Declarações de participação em conselhos, redes, fóruns ou articulações temáticas
-                </label>
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="certificados">
-                    Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação
-                </label>
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="relatoriosAnuais">
-                    Relatórios anuais de atividades demonstrando atuação continuada no campo temático
-                </label>
-                <label>
-                    <input type="checkbox" name="elementosComplementares" value="nenhum" id="nenhumElementos">
-                    Não possuo nenhum dos elementos acima
-                </label>
+            <div class="input-container full-width required-radio">
+                <h4>A entidade declara que possui abrangência nacional em seu estatuto social? <span style="color:red">*</span></h4>
+                <div class="radio-group">
+                    <label><input type="radio" name="abrangenciaNacional" value="sim" required> Sim</label>
+                    <label><input type="radio" name="abrangenciaNacional" value="nao" required> Não</label>
+                </div>
             </div>
 
-            <!-- Comprovação Institucional, Técnica, Operacional e Material (sem required) -->
-            <h4>Comprovação Institucional, Técnica, Operacional e Material</h4>
-            <p>Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar <strong>um ou mais</strong>):</p>
-            
-            <div class="radio-list">
-                <label>
-                    <input type="checkbox" name="comprovacaoTipo" value="fotos">
-                    Fotografias datadas das atividades/projetos executados
-                </label>
-                <label>
-                    <input type="checkbox" name="comprovacaoTipo" value="audiovisuais">
-                    Registros audiovisuais (links ou arquivos digitais)
-                </label>
-                <label>
-                    <input type="checkbox" name="comprovacaoTipo" value="listas">
-                    Listas de presença, relatórios de execução ou registros de monitoramento
-                </label>
-                <label>
-                    <input type="checkbox" name="comprovacaoTipo" value="outros">
-                    Outros documentos comprobatórios pertinentes (ex. currículos)
-                </label>
+            <h4>Elementos Complementares de Comprovação da Capacidade Técnica <span style="color:red">*</span></h4>
+            <div class="checkbox-list" id="elementosComplementaresGroup">
+                <label><input type="checkbox" name="elementosComplementares" value="relatorios"> Relatórios de prestações de contas aprovadas por órgão(s) público(s)</label>
+                <label><input type="checkbox" name="elementosComplementares" value="publicacoes"> Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto</label>
+                <label><input type="checkbox" name="elementosComplementares" value="declaracoes"> Declarações de participação em conselhos, redes, fóruns ou articulações temáticas</label>
+                <label><input type="checkbox" name="elementosComplementares" value="certificados"> Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação</label>
+                <label><input type="checkbox" name="elementosComplementares" value="relatoriosAnuais"> Relatórios anuais de atividades demonstrando atuação continuada no campo temático</label>
+                <label><input type="checkbox" name="elementosComplementares" value="nenhum" id="nenhumElementos"> Não possuo nenhum dos elementos acima</label>
+            </div>
+
+            <h4>Comprovação Institucional, Técnica, Operacional e Material <span style="color:red">*</span></h4>
+            <p>Marque pelo menos um dos itens abaixo:</p>
+            <div class="checkbox-list" id="comprovacaoTipoGroup">
+                <label><input type="checkbox" name="comprovacaoTipo" value="fotos"> Fotografias datadas das atividades/projetos executados</label>
+                <label><input type="checkbox" name="comprovacaoTipo" value="audiovisuais"> Registros audiovisuais (links ou arquivos digitais)</label>
+                <label><input type="checkbox" name="comprovacaoTipo" value="listas"> Listas de presença, relatórios de execução ou registros de monitoramento</label>
+                <label><input type="checkbox" name="comprovacaoTipo" value="outros"> Outros documentos comprobatórios pertinentes (ex. currículos)</label>
             </div>
         </div>
-        <!-- FIM DA SEÇÃO EXCLUSIVA DO TERMO DE FOMENTO -->
 
-        <!-- Campos comuns a todas as modalidades -->
+        <!-- Campos comuns -->
         <div class="form-section highlight-section">
             <div class="form-grid">
                 <div class="input-container full-width">
@@ -571,14 +547,34 @@
             </div>
         </div>
 
-        <!-- Anexos Gerais / Adicionais -->
+        <!-- Anexos – comportamento diferente por tipo -->
         <div id="annexSectionContainer" class="form-section">
-            <h3>Anexos Gerais / Adicionais</h3>
-            <p class="instruction-text">
+            <h3 id="annexTitle">Anexos / Histórico / Adendo</h3>
+            <p class="instruction-text" id="annexInstruction">
                 <strong>Orientação:</strong> Imagens (PNG/JPEG) até 5MB e PDFs até 10MB.
             </p>
-            <div id="annexAccordionContainer"></div>
-            <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()">+ Adicionar Bloco de Anexo</button>
+
+            <!-- Modo Termo de Fomento (blocos múltiplos obrigatórios) -->
+            <div id="annexAccordionContainer" style="display:none;"></div>
+            <button type="button" class="add-annex-btn" id="addAnnexBtn" onclick="addAnnex()" style="display:none;">+ Adicionar Bloco de Anexo</button>
+
+            <!-- Modo Convênio (observação + 1 arquivo opcional) -->
+            <div id="convenioObservacaoContainer" style="display:none;">
+                <div class="input-container full-width">
+                    <label for="observacoesConvenio">Observações sobre comprovação de capacidade técnica (opcional – máx. 250 caracteres)</label>
+                    <textarea id="observacoesConvenio" rows="4" maxlength="250" placeholder="Descreva aqui evidências, histórico resumido, adendo, etc..."></textarea>
+                    <div class="char-counter"><span id="charCount">0</span>/250</div>
+                </div>
+
+                <!-- Novo campo: arquivo opcional para Convênio -->
+                <div class="input-container full-width">
+                    <label for="adendoConvenio">Adendo ou documento comprobatório adicional (opcional – 1 arquivo)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="adendoConvenio" accept="image/png,image/jpeg,application/pdf" onchange="validateSingleFile(this)">
+                    </div>
+                    <small style="color: #555;">PDF, PNG ou JPEG • Máx. 10 MB (PDF) ou 5 MB (imagem)</small>
+                </div>
+            </div>
         </div>
 
         <button type="submit" id="generatePdfBtn" class="generate-btn">Gerar PDF do Atestado</button>
@@ -598,187 +594,228 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
 
 <script>
-    // Theme switcher
-    const themeToggle = document.getElementById('themeToggle');
-    const themeSwitcherLabel = document.querySelector('.theme-switcher-label');
-    const currentTheme = localStorage.getItem('theme');
-    const applyTheme = (theme) => {
-        document.body.setAttribute('data-theme', theme);
-        if (theme === 'dark') {
-            themeToggle.checked = true;
-            themeSwitcherLabel.textContent = 'Modo Claro';
-        } else {
-            themeToggle.checked = false;
-            themeSwitcherLabel.textContent = 'Modo Escuro';
-        }
-    };
-    if (currentTheme) {
-        applyTheme(currentTheme);
+// ================================================
+// Theme switcher
+// ================================================
+const themeToggle = document.getElementById('themeToggle');
+const themeSwitcherLabel = document.querySelector('.theme-switcher-label');
+const currentTheme = localStorage.getItem('theme');
+
+const applyTheme = (theme) => {
+    document.body.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+        themeToggle.checked = true;
+        themeSwitcherLabel.textContent = 'Modo Claro';
+    } else {
+        themeToggle.checked = false;
+        themeSwitcherLabel.textContent = 'Modo Escuro';
     }
-    themeToggle.addEventListener('change', () => {
-        let theme = themeToggle.checked ? 'dark' : 'light';
-        localStorage.setItem('theme', theme);
-        applyTheme(theme);
+};
+
+if (currentTheme) applyTheme(currentTheme);
+
+themeToggle.addEventListener('change', () => {
+    let theme = themeToggle.checked ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+});
+
+// ================================================
+// Configuração PDF.js worker
+// ================================================
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+let annexCount = 0;
+let fileCounters = {};
+let annexOrder = [];
+let jspdfLoaded = false;
+let pdfjsLoaded = false;
+
+// ================================================
+// Inicialização ao carregar a página
+// ================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Carregamento das bibliotecas jsPDF e PDF.js
+    const jspdfScript = document.querySelector('script[src*="jspdf.umd.min.js"]');
+    const pdfjsScript = document.querySelector('script[src*="pdf.min.js"]');
+
+    if (jspdfScript) {
+        jspdfScript.onload = () => { jspdfLoaded = true; checkLibrariesLoaded(); };
+        jspdfScript.onerror = () => alert("Erro ao carregar jsPDF.");
+    }
+
+    if (pdfjsScript) {
+        pdfjsScript.onload = () => { pdfjsLoaded = true; checkLibrariesLoaded(); };
+        pdfjsScript.onerror = () => alert("Erro ao carregar PDF.js.");
+    }
+
+    document.getElementById('generatePdfBtn').disabled = true;
+    setTimeout(checkLibrariesLoaded, 800);
+
+    // Configura listener de accordion para os blocos de anexo
+    setupAccordionListener();
+
+    // Mostra/esconde detalhes das ações no estado (Termo de Fomento)
+    document.querySelectorAll('input[name="acoesNoEstado"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('detalhesAcoesEstado').style.display = 
+                radio.value === 'sim' ? 'block' : 'none';
+        });
     });
 
-    // Configuração do PDF.js worker
-    if (typeof pdfjsLib !== 'undefined') {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    // Contador de caracteres para observações do Convênio
+    const obsTextarea = document.getElementById('observacoesConvenio');
+    if (obsTextarea) {
+        const charCountSpan = document.getElementById('charCount');
+        obsTextarea.addEventListener('input', () => {
+            charCountSpan.textContent = obsTextarea.value.length;
+        });
     }
 
-    let annexCount = 0;
-    let fileCounters = {};
-    let annexOrder = [];
-    let jspdfLoaded = false;
-    let pdfjsLoaded = false;
+    // Evento principal: mudança de tipo de atestado
+    document.getElementById('tipoAtestado').addEventListener('change', toggleFormFields);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const jspdfScript = document.querySelector('script[src*="jspdf.umd.min.js"]');
-        const pdfjsScript = document.querySelector('script[src*="pdf.min.js"]');
+    // Inicializa o formulário com base no tipo selecionado (ou vazio)
+    toggleFormFields();
+});
 
-        if (jspdfScript) {
-            jspdfScript.onload = () => { jspdfLoaded = true; checkLibrariesLoaded(); };
-            jspdfScript.onerror = () => { console.error("Falha ao carregar jsPDF."); alert("Erro ao carregar jsPDF."); };
-        }
-
-        if (pdfjsScript) {
-            pdfjsScript.onload = () => { pdfjsLoaded = true; checkLibrariesLoaded(); };
-            pdfjsScript.onerror = () => { console.error("Falha ao carregar PDF.js."); alert("Erro ao carregar PDF.js."); };
-        }
-
-        document.getElementById('generatePdfBtn').disabled = true;
-        setTimeout(checkLibrariesLoaded, 500);
-
-        setupAccordionListener();
-
-        // Mostrar/esconder "Se sim, quais?" das ações no estado
-        const acoesRadio = document.querySelectorAll('input[name="acoesNoEstado"]');
-        acoesRadio.forEach(radio => {
-            radio.addEventListener('change', () => {
-                document.getElementById('detalhesAcoesEstado').style.display = radio.value === 'sim' ? 'block' : 'none';
-            });
-        });
-
-        // Controle de visibilidade da seção Declarações Obrigatórias
-        const tipoAtestadoSelect = document.getElementById('tipoAtestado');
-        const declaracoesSection = document.getElementById('declaracoesObrigatorias');
-
-        if (declaracoesSection) {
-            declaracoesSection.style.display = 'none';
-        }
-
-        function toggleDeclaracoes() {
-            if (declaracoesSection) {
-                declaracoesSection.style.display = (tipoAtestadoSelect.value === 'termoFomento') ? 'block' : 'none';
-            }
-        }
-
-        tipoAtestadoSelect.addEventListener('change', () => {
-            toggleDeclaracoes();
-            updateAnnexFields();
-        });
-
-        toggleDeclaracoes();
-    });
-
-    function checkLibrariesLoaded() {
-        if (typeof window.jspdf !== 'undefined') jspdfLoaded = true;
-        if (typeof pdfjsLib !== 'undefined') pdfjsLoaded = true;
-        if (jspdfLoaded && pdfjsLoaded) {
-            document.getElementById('generatePdfBtn').disabled = false;
-        }
+// Verifica se as bibliotecas estão carregadas para habilitar o botão
+function checkLibrariesLoaded() {
+    if (typeof window.jspdf !== 'undefined') jspdfLoaded = true;
+    if (typeof pdfjsLib !== 'undefined') pdfjsLoaded = true;
+    if (jspdfLoaded && pdfjsLoaded) {
+        document.getElementById('generatePdfBtn').disabled = false;
     }
+}
 
-    function updateAnnexFields() {
+// Alterna visibilidade e obrigatoriedade de campos conforme tipo de atestado
+function toggleFormFields() {
+    const tipo = document.getElementById('tipoAtestado').value;
+    const isTermoFomento = tipo === 'termoFomento';
+    const isConvenio    = tipo === 'convenio';
+
+    // Nome do dirigente / prefeito
+    document.getElementById('labelNomeDirigente').textContent = isConvenio ? "Nome do Prefeito *" : "Nome do Dirigente *";
+
+    // Cargo e Matrícula
+    document.getElementById('cargoContainer').style.display = isConvenio ? 'none' : 'block';
+    document.getElementById('matriculaContainer').style.display = isConvenio ? 'block' : 'none';
+    document.getElementById('cargoDirigente').required = !isConvenio;
+    document.getElementById('matriculaFuncional').required = isConvenio;
+
+    // Label do CNPJ
+    document.getElementById('labelCNPJ').textContent = isConvenio ? "CNPJ *" : "CNPJ da Entidade *";
+
+    // Seção de declarações obrigatórias (somente Termo de Fomento)
+    document.getElementById('declaracoesObrigatorias').style.display = isTermoFomento ? 'block' : 'none';
+
+    // Seção de anexos / adendo
+    const accordionContainer = document.getElementById('annexAccordionContainer');
+    const addAnnexButton     = document.getElementById('addAnnexBtn');
+    const observacaoContainer = document.getElementById('convenioObservacaoContainer');
+    const annexTitle         = document.getElementById('annexTitle');
+    const annexInstruction   = document.getElementById('annexInstruction');
+
+    if (isTermoFomento) {
+        accordionContainer.style.display = 'block';
+        addAnnexButton.style.display = 'inline-block';
+        observacaoContainer.style.display = 'none';
+        annexTitle.textContent = "Anexos / Histórico (obrigatório ao menos 1 bloco)";
+        annexInstruction.style.display = 'block';
+    } else if (isConvenio) {
+        accordionContainer.style.display = 'none';
+        addAnnexButton.style.display = 'none';
+        observacaoContainer.style.display = 'block';
+        annexTitle.textContent = "Observações / Adendo (opcional)";
+        annexInstruction.style.display = 'none';
+        // Limpa blocos antigos ao mudar para Convênio
         document.getElementById('annexAccordionContainer').innerHTML = '';
+        annexOrder = [];
         annexCount = 0;
         fileCounters = {};
-        annexOrder = [];
+    } else {
+        // Nenhum tipo selecionado
+        accordionContainer.style.display = 'none';
+        addAnnexButton.style.display = 'none';
+        observacaoContainer.style.display = 'none';
+    }
+}
+
+// Listener para abrir/fechar os painéis de anexo
+function setupAccordionListener() {
+    const container = document.getElementById('annexAccordionContainer');
+    container.addEventListener('click', function(event) {
+        const header = event.target.closest('.annex-accordion-header');
+        if (!header || event.target.classList.contains('remove-annex-section-btn')) return;
+        header.classList.toggle('active');
+        const panel = header.nextElementSibling;
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    });
+}
+
+// Adiciona um novo bloco de anexo (somente Termo de Fomento)
+function addAnnex() {
+    const tipo = document.getElementById('tipoAtestado').value;
+    if (tipo !== 'termoFomento') {
+        alert('Anexos em blocos são permitidos apenas para Termo de Fomento.');
+        return;
     }
 
-    function setupAccordionListener() {
-        const container = document.getElementById('annexAccordionContainer');
-        container.addEventListener('click', function(event) {
-            const header = event.target.closest('.annex-accordion-header');
-            if (!header || event.target.classList.contains('remove-annex-section-btn')) return;
-            header.classList.toggle('active');
-            const panel = header.nextElementSibling;
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        });
-    }
+    annexCount++;
+    let newAnnexId = annexCount;
 
-    function addAnnex() {
-        const tipoAtestado = document.getElementById('tipoAtestado').value;
-        if (!tipoAtestado) {
-            alert('Selecione o Tipo de Atestado primeiro.');
-            return;
-        }
+    annexOrder.push(newAnnexId);
+    fileCounters[newAnnexId] = { fotos: 1, materiais: 1, midia: 1, instrumentos: 1 };
 
-        let newAnnexId = 1;
-        while (document.getElementById(`annex-accordion-${newAnnexId}`)) {
-            newAnnexId++;
-        }
+    const annexWrapper = document.createElement('div');
+    annexWrapper.classList.add('annex-accordion-item');
+    annexWrapper.id = `annex-accordion-${newAnnexId}`;
 
-        annexOrder.push(newAnnexId);
-        fileCounters[newAnnexId] = { fotos: 1, materiais: 1, midia: 1, instrumentos: 1 };
+    let annexFieldsHTML = `
+        <div class="annex-accordion-header">
+            <span class="annex-title">Anexo ${newAnnexId}</span>
+            <button type="button" class="remove-annex-section-btn" onclick="removeAnnex(${newAnnexId}, event)">Remover</button>
+        </div>
+        <div class="annex-accordion-panel">
+            <div class="form-grid">
+                <div class="input-container full-width">
+                    <label for="nomeProjeto-${newAnnexId}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
+                    <input type="text" id="nomeProjeto-${newAnnexId}" placeholder="Digite o nome do projeto/ação" required>
+                </div>
 
-        const annexWrapper = document.createElement('div');
-        annexWrapper.classList.add('annex-accordion-item');
-        annexWrapper.id = `annex-accordion-${newAnnexId}`;
+                <div class="input-container full-width">
+                    <label for="tipoParceriaAnterior-${newAnnexId}">Tipo de Parceria Anterior</label>
+                    <select id="tipoParceriaAnterior-${newAnnexId}" onchange="toggleParceriaFields(${newAnnexId})">
+                        <option value="nenhum" selected>Nenhum / Não se aplica</option>
+                        <option value="convenio">Convênio</option>
+                        <option value="termoFomento">Termo de Fomento</option>
+                        <option value="termoColaboracao">Termo de Colaboração</option>
+                        <option value="contrato">Contrato</option>
+                    </select>
+                </div>
+                <div class="input-container parceria-anterior-fields" id="parceriaFields-${newAnnexId}" style="display: none;">
+                    <label for="nrAnoAnterior-${newAnnexId}">Nº / Ano (Anterior)</label>
+                    <input type="text" id="nrAnoAnterior-${newAnnexId}" placeholder="Ex: 123/2023">
+                </div>
+                <div class="input-container parceria-anterior-fields full-width" id="orgaoFields-${newAnnexId}" style="display: none;">
+                    <label for="orgaoAnterior-${newAnnexId}">Órgão/Entidade Parceira Anterior</label>
+                    <input type="text" id="orgaoAnterior-${newAnnexId}" placeholder="Digite o órgão ou entidade parceira anterior">
+                </div>
 
-        let annexFieldsHTML = `
-            <div class="annex-accordion-header">
-                <span class="annex-title">Anexo ${newAnnexId}</span>
-                <button type="button" class="remove-annex-section-btn" onclick="removeAnnex(${newAnnexId}, event)">Remover</button>
-            </div>
-            <div class="annex-accordion-panel">
-                <div class="form-grid">
-                    <div class="input-container full-width">
-                        <label for="nomeProjeto-${newAnnexId}">Nome do Projeto/Ação <span style="color: red;">*</span></label>
-                        <input type="text" id="nomeProjeto-${newAnnexId}" placeholder="Digite o nome do projeto/ação" required>
-                    </div>
-        `;
-
-        if (tipoAtestado === 'termoFomento') {
-            annexFieldsHTML += `
-                    <div class="input-container full-width">
-                        <label for="tipoParceriaAnterior-${newAnnexId}">Tipo de Parceria Anterior</label>
-                        <select id="tipoParceriaAnterior-${newAnnexId}" onchange="toggleParceriaFields(${newAnnexId})">
-                            <option value="nenhum" selected>Nenhum / Não se aplica</option>
-                            <option value="convenio">Convênio</option>
-                            <option value="termoFomento">Termo de Fomento</option>
-                            <option value="termoColaboracao">Termo de Colaboração</option>
-                            <option value="contrato">Contrato</option>
-                        </select>
-                    </div>
-                    <div class="input-container parceria-anterior-fields" id="parceriaFields-${newAnnexId}" style="display: none;">
-                        <label for="nrAnoAnterior-${newAnnexId}">Nº / Ano (Anterior)</label>
-                        <input type="text" id="nrAnoAnterior-${newAnnexId}" placeholder="Ex: 123/2023">
-                    </div>
-                    <div class="input-container parceria-anterior-fields full-width" id="orgaoFields-${newAnnexId}" style="display: none;">
-                        <label for="orgaoAnterior-${newAnnexId}">Órgão/Entidade Parceira Anterior</label>
-                        <input type="text" id="orgaoAnterior-${newAnnexId}" placeholder="Digite o órgão ou entidade parceira anterior">
-                    </div>
-            `;
-        }
-
-        annexFieldsHTML += `
-                    <div class="input-container">
-                        <label for="entidadesParceiras-${newAnnexId}">Entidades Parceiras <span style="color: red;">*</span></label>
-                        <input type="text" id="entidadesParceiras-${newAnnexId}" placeholder="Digite as entidades parceiras" required>
-                    </div>
-                    <div class="input-container">
-                        <label for="numeroBeneficiados-${newAnnexId}">Número de Beneficiados <span style="color: red;">*</span></label>
-                        <input type="number" id="numeroBeneficiados-${newAnnexId}" placeholder="Digite o número de beneficiados" required min="1">
-                    </div>
-                    <div class="input-container full-width">
-                        <label for="atividadesDesenvolvidas-${newAnnexId}">Ações/Atividades Desenvolvidas <span style="color: red;">*</span></label>
-                        <textarea id="atividadesDesenvolvidas-${newAnnexId}" placeholder="Descreva as atividades" required></textarea>
-                    </div>
-        `;
-
-        if (tipoAtestado === 'termoFomento' || tipoAtestado === 'convenio') {
-            annexFieldsHTML += `
+                <div class="input-container">
+                    <label for="entidadesParceiras-${newAnnexId}">Entidades Parceiras <span style="color: red;">*</span></label>
+                    <input type="text" id="entidadesParceiras-${newAnnexId}" placeholder="Digite as entidades parceiras" required>
+                </div>
+                <div class="input-container">
+                    <label for="numeroBeneficiados-${newAnnexId}">Número de Beneficiados <span style="color: red;">*</span></label>
+                    <input type="number" id="numeroBeneficiados-${newAnnexId}" placeholder="Digite o número de beneficiados" required min="1">
+                </div>
+                <div class="input-container full-width">
+                    <label for="atividadesDesenvolvidas-${newAnnexId}">Ações/Atividades Desenvolvidas <span style="color: red;">*</span></label>
+                    <textarea id="atividadesDesenvolvidas-${newAnnexId}" placeholder="Descreva as atividades" required></textarea>
+                </div>
                 <div class="input-container">
                     <label for="dataInicio-${newAnnexId}">Data de Início <span style="color: red;">*</span></label>
                     <input type="date" id="dataInicio-${newAnnexId}" required>
@@ -787,11 +824,6 @@
                     <label for="dataTermino-${newAnnexId}">Data de Término <span style="color: red;">*</span></label>
                     <input type="date" id="dataTermino-${newAnnexId}" required>
                 </div>
-            `;
-        }
-
-        if (tipoAtestado === 'termoFomento') {
-            annexFieldsHTML += `
                 <div class="input-container full-width">
                     <label for="estruturasFisicas-${newAnnexId}">Estruturas Físicas <span style="color: red;">*</span></label>
                     <input type="text" id="estruturasFisicas-${newAnnexId}" placeholder="Descreva as estruturas físicas (sede, locais de ação, etc.)" required>
@@ -800,642 +832,847 @@
                     <label for="qualificacaoPessoal-${newAnnexId}">Qualificação Profissional <span style="color: red;">*</span></label>
                     <textarea id="qualificacaoPessoal-${newAnnexId}" placeholder="Descreva a qualificação e experiência do corpo técnico (voluntário ou contratado)" required></textarea>
                 </div>
-            `;
-        }
+    `;
 
-        const fileSections = [
-            { type: 'fotos', label: 'Fotos Comprobatórias <span style="color: red;">*</span>', required: true },
-            { type: 'materiais', label: 'Materiais de Divulgação (Opcional)', required: false },
-            { type: 'midia', label: 'Relatórios de Mídia (Opcional)', required: false },
-            { type: 'instrumentos', label: 'Outros Instrumentos (Opcional)', required: false }
-        ];
+    const fileSections = [
+        { type: 'fotos', label: 'Fotos Comprobatórias <span style="color: red;">*</span>', required: true },
+        { type: 'materiais', label: 'Materiais de Divulgação (Opcional)', required: false },
+        { type: 'midia', label: 'Relatórios de Mídia (Opcional)', required: false },
+        { type: 'instrumentos', label: 'Outros Instrumentos (Opcional)', required: false }
+    ];
 
-        fileSections.forEach(({ type, label, required }) => {
-            annexFieldsHTML += `
-                <div class="file-section full-width" id="${type}-${newAnnexId}-container">
-                    <label for="${type}-${newAnnexId}-1">${label}</label>
-                    <div class="file-input-wrapper" id="wrapper-${type}-${newAnnexId}-1">
-                        <input type="file" id="${type}-${newAnnexId}-1" accept="image/png,image/jpeg,application/pdf" multiple ${required ? 'required' : ''} onchange="validateMixedFiles(this)">
-                    </div>
-                    <button type="button" class="add-btn" onclick="addMoreFiles('${type}', ${newAnnexId})">Adicionar Mais Arquivos</button>
+    fileSections.forEach(({ type, label, required }) => {
+        annexFieldsHTML += `
+            <div class="file-section full-width" id="${type}-${newAnnexId}-container">
+                <label for="${type}-${newAnnexId}-1">${label}</label>
+                <div class="file-input-wrapper" id="wrapper-${type}-${newAnnexId}-1">
+                    <input type="file" id="${type}-${newAnnexId}-1" accept="image/png,image/jpeg,application/pdf" multiple ${required ? 'required' : ''} onchange="validateMixedFiles(this)">
                 </div>
-            `;
+                <button type="button" class="add-btn" onclick="addMoreFiles('${type}', ${newAnnexId})">Adicionar Mais Arquivos</button>
+            </div>
+        `;
+    });
+
+    annexFieldsHTML += `</div></div>`;
+    annexWrapper.innerHTML = annexFieldsHTML;
+    document.getElementById('annexAccordionContainer').appendChild(annexWrapper);
+}
+
+function toggleParceriaFields(annexId) {
+    const tipo = document.getElementById(`tipoParceriaAnterior-${annexId}`).value;
+    const fields = document.getElementById(`parceriaFields-${annexId}`);
+    const orgaoFields = document.getElementById(`orgaoFields-${annexId}`);
+    if (tipo === 'nenhum') {
+        fields.style.display = 'none';
+        orgaoFields.style.display = 'none';
+    } else {
+        fields.style.display = 'block';
+        orgaoFields.style.display = 'block';
+    }
+}
+
+function removeAnnex(id, event) {
+    event.stopPropagation();
+    const annexToRemove = document.getElementById(`annex-accordion-${id}`);
+    if (annexToRemove) {
+        annexToRemove.remove();
+        const index = annexOrder.indexOf(id);
+        if (index > -1) {
+            annexOrder.splice(index, 1);
+        }
+        delete fileCounters[id];
+    }
+}
+
+// Validação do arquivo único opcional do Convênio (adendo)
+function validateSingleFile(input) {
+    const file = input.files[0];
+    if (!file) return; // ok, campo opcional
+
+    const validTypes = ['image/png', 'image/jpeg', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+        alert('Apenas arquivos PNG, JPEG ou PDF são permitidos para o adendo.');
+        input.value = '';
+        return;
+    }
+
+    const maxSize = file.type === 'application/pdf' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        alert(`O arquivo excede o tamanho máximo permitido (${file.type === 'application/pdf' ? '10 MB' : '5 MB'}).`);
+        input.value = '';
+        return;
+    }
+}
+
+// ================================================
+// Funções auxiliares (mantidas do código original)
+// ================================================
+
+async function getBase64ImageFromUrl(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Falha ao carregar imagem');
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
         });
+    } catch (err) {
+        console.error("Erro em getBase64ImageFromUrl:", err);
+        return null;
+    }
+}
 
-        annexFieldsHTML += `</div></div>`;
-        annexWrapper.innerHTML = annexFieldsHTML;
-        document.getElementById('annexAccordionContainer').appendChild(annexWrapper);
+function validateLettersOnly(input) {
+    input.value = input.value.replace(/[^a-zA-Z\sÀ-ú]/g, '');
+}
+
+function addMoreFiles(type, annexId) {
+    const container = document.getElementById(`${type}-${annexId}-container`);
+    const fileInputs = container.querySelectorAll('input[type="file"]');
+
+    if (fileInputs.length >= 5) {
+        alert('Limite de 5 campos de arquivo por seção atingido.');
+        return;
     }
 
-    function toggleParceriaFields(annexId) {
-        const tipo = document.getElementById(`tipoParceriaAnterior-${annexId}`).value;
-        const fields = document.getElementById(`parceriaFields-${annexId}`);
-        const orgaoFields = document.getElementById(`orgaoFields-${annexId}`);
-        if (tipo === 'nenhum') {
-            fields.style.display = 'none';
-            orgaoFields.style.display = 'none';
-        } else {
-            fields.style.display = 'block';
-            orgaoFields.style.display = 'block';
+    const newIndex = fileInputs.length + 1;
+
+    const inputWrapper = document.createElement('div');
+    inputWrapper.classList.add('file-input-wrapper');
+    inputWrapper.id = `wrapper-${type}-${annexId}-${newIndex}`;
+
+    const newInput = document.createElement('input');
+    newInput.type = 'file';
+    newInput.id = `${type}-${annexId}-${newIndex}`;
+    newInput.accept = 'image/png,image/jpeg,application/pdf';
+    newInput.multiple = true;
+    newInput.onchange = (e) => validateMixedFiles(e.target);
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.classList.add('remove-btn');
+    removeButton.textContent = 'Remover';
+    removeButton.onclick = () => inputWrapper.remove();
+
+    inputWrapper.appendChild(newInput);
+    inputWrapper.appendChild(removeButton);
+
+    const addButton = container.querySelector('.add-btn');
+    container.insertBefore(inputWrapper, addButton);
+}
+
+function validateMixedFiles(input) {
+    const files = input.files;
+    if (files.length > 5) {
+        alert('Você pode selecionar no máximo 5 arquivos de uma vez.');
+        input.value = '';
+        return;
+    }
+    const validImageTypes = ['image/png', 'image/jpeg'];
+    const validPdfType = 'application/pdf';
+    for (let file of files) {
+        if (!validImageTypes.includes(file.type) && file.type !== validPdfType) {
+            alert('Apenas arquivos PNG, JPEG e PDF são aceitos.');
+            input.value = ''; return;
+        }
+        if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
+            alert(`O arquivo de imagem "${file.name}" excede 5MB.`);
+            input.value = ''; return;
+        }
+        if (file.type === validPdfType && file.size > 10 * 1024 * 1024) {
+            alert(`O arquivo PDF "${file.name}" excede 10MB.`);
+            input.value = ''; return;
         }
     }
+}
 
-    function removeAnnex(id, event) {
-        event.stopPropagation();
-        const annexToRemove = document.getElementById(`annex-accordion-${id}`);
-        if (annexToRemove) {
-            annexToRemove.remove();
-            const index = annexOrder.indexOf(id);
-            if (index > -1) {
-                annexOrder.splice(index, 1);
-            }
-            delete fileCounters[id];
-        }
+async function fetchEntityData() {
+    const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
+    const nomeEntidadeInput = document.getElementById('nomeEntidade');
+    if (cnpj.length !== 14) return;
+
+    nomeEntidadeInput.value = 'Buscando dados...';
+    try {
+        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.razao_social) throw new Error(data.message || 'CNPJ inválido.');
+
+        nomeEntidadeInput.value = data.razao_social || 'Não encontrado';
+        document.getElementById('cep').value = data.cep || '';
+        if (data.cep) fetchAddressData();
+
+    } catch (err) {
+        alert(`Erro ao consultar CNPJ: ${err.message}`);
+        nomeEntidadeInput.value = '';
+    }
+}
+
+async function fetchAddressData() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    const enderecoInput = document.getElementById('endereco');
+    if (cep.length !== 8) {
+        enderecoInput.value = '';
+        return;
     }
 
-    async function getBase64ImageFromUrl(url) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Falha ao carregar imagem');
-            const blob = await response.blob();
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        } catch (err) {
-            console.error("Erro em getBase64ImageFromUrl:", err);
-            return null;
-        }
+    enderecoInput.value = 'Buscando endereço...';
+    try {
+        const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`);
+        if (!response.ok) throw new Error(`Erro na consulta (status ${response.status})`);
+        const data = await response.json();
+        enderecoInput.value = `${data.street || ''}, ${data.neighborhood || ''}, ${data.city || ''} - ${data.state || ''}`;
+        document.getElementById('numero').focus();
+    } catch (err) {
+        alert(`Erro ao consultar CEP: ${err.message}`);
+        enderecoInput.value = '';
+    }
+}
+
+function formatDateToBrazilian(dateStr) {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+}
+
+function drawCheckbox(doc, x, y, checked) {
+    doc.setDrawColor(0);
+    doc.rect(x, y - 4, 5, 5);
+    if (checked) {
+        doc.setFontSize(10);
+        doc.text('X', x + 1.5, y);
+    }
+}
+
+// ================================================
+// Geração do PDF - Função principal
+// ================================================
+async function generatePDF() {
+    const tipo = document.getElementById('tipoAtestado').value;
+    if (!tipo) {
+        alert('Selecione o Tipo de Atestado primeiro.');
+        return;
     }
 
-    function validateLettersOnly(input) {
-        input.value = input.value.replace(/[^a-zA-Z\sÀ-ú]/g, '');
+    // Validações gerais obrigatórias
+    if (!document.getElementById('nomeDirigente').value.trim()) {
+        alert('Preencha o Nome do Dirigente / Prefeito.');
+        return;
+    }
+    if (!document.getElementById('cnpj').value.trim()) {
+        alert('Preencha o CNPJ.');
+        return;
+    }
+    if (!document.getElementById('nomeEntidade').value.trim()) {
+        alert('O nome da entidade não foi preenchido (verifique o CNPJ).');
+        return;
+    }
+    if (!document.getElementById('cep').value.trim()) {
+        alert('Preencha o CEP.');
+        return;
+    }
+    if (!document.getElementById('endereco').value.trim()) {
+        alert('Preencha o endereço.');
+        return;
+    }
+    if (!document.getElementById('numero').value.trim()) {
+        alert('Preencha o número do endereço.');
+        return;
+    }
+    if (!document.getElementById('numeroProposta').value.trim()) {
+        alert('Preencha o Número da Proposta Atual.');
+        return;
     }
 
-    function addMoreFiles(type, annexId) {
-        const container = document.getElementById(`${type}-${annexId}-container`);
-        const fileInputs = container.querySelectorAll('input[type="file"]');
-
-        if (fileInputs.length >= 5) {
-            alert('Limite de 5 campos de arquivo por seção atingido.');
+    // Validações específicas por tipo
+    if (tipo === 'convenio') {
+        if (!document.getElementById('matriculaFuncional').value.trim()) {
+            alert('Preencha a Matrícula Funcional do Prefeito.');
             return;
         }
-
-        const newIndex = fileInputs.length + 1;
-
-        const inputWrapper = document.createElement('div');
-        inputWrapper.classList.add('file-input-wrapper');
-        inputWrapper.id = `wrapper-${type}-${annexId}-${newIndex}`;
-
-        const newInput = document.createElement('input');
-        newInput.type = 'file';
-        newInput.id = `${type}-${annexId}-${newIndex}`;
-        newInput.accept = 'image/png,image/jpeg,application/pdf';
-        newInput.multiple = true;
-        newInput.onchange = (e) => validateMixedFiles(e.target);
-
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.classList.add('remove-btn');
-        removeButton.textContent = 'Remover';
-        removeButton.onclick = () => inputWrapper.remove();
-
-        inputWrapper.appendChild(newInput);
-        inputWrapper.appendChild(removeButton);
-
-        const addButton = container.querySelector('.add-btn');
-        container.insertBefore(inputWrapper, addButton);
     }
 
-    function validateMixedFiles(input) {
-        const files = input.files;
-        if (files.length > 5) {
-            alert('Você pode selecionar no máximo 5 arquivos de uma vez.');
-            input.value = '';
+    if (tipo === 'termoFomento') {
+        if (!document.getElementById('cargoDirigente').value.trim()) {
+            alert('Preencha o Cargo do Dirigente.');
             return;
         }
-        const validImageTypes = ['image/png', 'image/jpeg'];
-        const validPdfType = 'application/pdf';
-        for (let file of files) {
-            if (!validImageTypes.includes(file.type) && file.type !== validPdfType) {
-                alert('Apenas arquivos PNG, JPEG e PDF são aceitos.');
-                input.value = ''; return;
-            }
-            if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
-                alert(`O arquivo de imagem "${file.name}" excede 5MB.`);
-                input.value = ''; return;
-            }
-            if (file.type === validPdfType && file.size > 10 * 1024 * 1024) {
-                alert(`O arquivo PDF "${file.name}" excede 10MB.`);
-                input.value = ''; return;
-            }
-        }
-    }
-
-    async function fetchEntityData() {
-        const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
-        const nomeEntidadeInput = document.getElementById('nomeEntidade');
-        if (cnpj.length !== 14) return;
-
-        nomeEntidadeInput.value = 'Buscando dados...';
-        try {
-            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-            const data = await response.json();
-
-            if (!response.ok || !data.razao_social) throw new Error(data.message || 'CNPJ inválido.');
-
-            nomeEntidadeInput.value = data.razao_social || 'Não encontrado';
-            document.getElementById('cep').value = data.cep || '';
-            if (data.cep) fetchAddressData();
-
-        } catch (err) {
-            alert(`Erro ao consultar CNPJ: ${err.message}`);
-            nomeEntidadeInput.value = '';
-        }
-    }
-
-    async function fetchAddressData() {
-        const cep = document.getElementById('cep').value.replace(/\D/g, '');
-        const enderecoInput = document.getElementById('endereco');
-        if (cep.length !== 8) {
-            enderecoInput.value = '';
+        if (annexOrder.length === 0) {
+            alert('No Termo de Fomento é obrigatório adicionar pelo menos um bloco de anexo/histórico.');
             return;
         }
-
-        enderecoInput.value = 'Buscando endereço...';
-        try {
-            const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`);
-            if (!response.ok) throw new Error(`Erro na consulta (status ${response.status})`);
-            const data = await response.json();
-            enderecoInput.value = `${data.street || ''}, ${data.neighborhood || ''}, ${data.city || ''} - ${data.state || ''}`;
-            document.getElementById('numero').focus();
-        } catch (err) {
-            alert(`Erro ao consultar CEP: ${err.message}`);
-            enderecoInput.value = '';
+        if (!document.getElementById('capacidadeNaoConfunde').checked) {
+            alert('Marque a declaração: "capacidade técnica já instalada não se confunde".');
+            return;
+        }
+        if (!document.getElementById('declaracaoEspecificacoes').checked) {
+            alert('Marque a declaração de cumprimento das 3 especificações.');
+            return;
+        }
+        if (!document.querySelector('input[name="acoesNoEstado"]:checked')) {
+            alert('Informe se a OSC já realizou ações no estado.');
+            return;
+        }
+        if (!document.querySelector('input[name="abrangenciaNacional"]:checked')) {
+            alert('Informe se a entidade possui abrangência nacional no estatuto.');
+            return;
+        }
+        const elemCompChecked = document.querySelectorAll('input[name="elementosComplementares"]:checked').length;
+        if (elemCompChecked === 0) {
+            alert('Marque pelo menos um item em Elementos Complementares.');
+            return;
+        }
+        const compChecked = document.querySelectorAll('input[name="comprovacaoTipo"]:checked').length;
+        if (compChecked === 0) {
+            alert('Marque pelo menos um item em Comprovação Institucional/Técnica/Operacional.');
+            return;
         }
     }
 
-    function formatDateToBrazilian(dateStr) {
-        if (!dateStr) return '';
-        const [year, month, day] = dateStr.split('-');
-        return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-    }
+    // =============================================
+    // Início da geração do PDF
+    // =============================================
+    document.getElementById('loadingOverlay').style.display = 'flex';
 
-    function drawCheckbox(doc, x, y, checked) {
-        doc.setDrawColor(0);
-        doc.rect(x, y - 4, 5, 5);
-        if (checked) {
-            doc.setFontSize(10);
-            doc.text('X', x + 1.5, y);
-        }
-    }
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    async function generatePDF() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-
+        const watermarkImageUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
+        let watermarkBase64 = null;
         try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            watermarkBase64 = await getBase64ImageFromUrl(watermarkImageUrl);
+        } catch (e) {
+            console.warn("Marca d'água não carregada");
+        }
 
-            const watermarkImageUrl = 'https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg';
-            let watermarkBase64 = null;
-            try {
-                watermarkBase64 = await getBase64ImageFromUrl(watermarkImageUrl);
-            } catch (e) {
-                console.warn("Marca d'água não carregada");
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 20;
+        let yPos = margin;
+
+        const addWatermarkToPage = () => {
+            if (watermarkBase64) {
+                doc.addImage(watermarkBase64, 'JPEG', 0, 0, pageWidth, pageHeight, undefined, 'FAST', 0, 0.18);
             }
+        };
 
-            const pageWidth = 210;
-            const pageHeight = 297;
-            const margin = 20;
-            let yPos = margin;
+        const addNewPdfPage = (addWatermark = true) => {
+            doc.addPage();
+            if (addWatermark) addWatermarkToPage();
+            return margin;
+        };
 
-            const addWatermarkToPage = () => {
-                if (watermarkBase64) {
-                    doc.addImage(watermarkBase64, 'JPEG', 0, 0, pageWidth, pageHeight, undefined, 'FAST', 0, 0.18);
-                }
-            };
+        addWatermarkToPage();
 
-            const addNewPdfPage = (addWatermark = true) => {
-                doc.addPage();
-                if (addWatermark) addWatermarkToPage();
-                return margin;
-            };
+        // Cabeçalho principal
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 51, 102);
+        doc.text("ATESTADO DE CAPACIDADE TÉCNICA", pageWidth / 2, yPos + 25, { align: "center" });
 
-            const tipoAtestadoValue = document.getElementById('tipoAtestado').value;
-            const tipoAtestadoText = document.getElementById('tipoAtestado').options[document.getElementById('tipoAtestado').selectedIndex].text || "Não informado";
+        yPos += 45;
 
-            // =====================================
-            // PÁGINA 1 – ATESTADO PRINCIPAL
-            // =====================================
-            addWatermarkToPage();
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0);
 
-            doc.setFontSize(18);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 51, 102);
-            doc.text("ATESTADO DE CAPACIDADE TÉCNICA", pageWidth / 2, yPos + 25, { align: "center" });
+        const nomeDirigente   = document.getElementById('nomeDirigente').value.trim() || "________________________________";
+        const cargoDirigente  = tipo === 'termoFomento' ? (document.getElementById('cargoDirigente').value.trim() || "________________________________") : "Prefeito";
+        const matrícula       = tipo === 'convenio' ? (document.getElementById('matriculaFuncional').value.trim() || "Não informada") : "";
+        const nomeEntidade    = document.getElementById('nomeEntidade').value.trim() || "_______________________________________________";
+        const cnpj            = document.getElementById('cnpj').value.trim() || "__.___.___/____-__";
+        const endereco        = document.getElementById('endereco').value.trim() || "";
+        const numero          = document.getElementById('numero').value.trim() || "";
+        const complemento     = document.getElementById('complemento').value.trim() || "";
+        const cep             = document.getElementById('cep').value.trim() || "";
+        const enderecoCompleto = [endereco, numero, complemento].filter(Boolean).join(", ") + (cep ? `, CEP ${cep}` : "");
+        const numeroProposta  = document.getElementById('numeroProposta').value.trim() || "___________";
 
-            yPos += 45;
+        let signatario = nomeDirigente;
+        if (tipo === 'termoFomento' && cargoDirigente) signatario += `, ${cargoDirigente}`;
+        if (tipo === 'convenio' && matrícula) signatario += ` (Matrícula funcional: ${matrícula})`;
+
+        const introText = `Eu, ${signatario}, ATESTO, para fins de formalização de ${document.getElementById('tipoAtestado').options[document.getElementById('tipoAtestado').selectedIndex].text} no âmbito do Ministério do Esporte - MESP, que a entidade ${nomeEntidade}, inscrita no CNPJ sob o nº ${cnpj}, situada no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroProposta}, em atendimento ao art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025), considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo ou adendo.`;
+
+        const introLines = doc.splitTextToSize(introText, pageWidth - margin * 2);
+        doc.text(introLines, margin, yPos);
+        yPos += introLines.length * 7 + 12;
+
+        doc.text("Declaração emitida com base nas comprovações anexas.", margin, yPos);
+        yPos += 25;
+
+        // Assinatura na página 1 → SOMENTE PARA CONVÊNIO
+        if (tipo === 'convenio') {
+            const sigX = (pageWidth - 100) / 2;
+            doc.line(sigX, yPos, sigX + 100, yPos);
+            yPos += 8;
 
             doc.setFontSize(12);
+            doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
+            yPos += 7;
+            doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
+            yPos += 7;
+            doc.text(`Matrícula funcional: ${matrícula}`, pageWidth / 2, yPos, { align: "center" });
+            yPos += 15;
+
+            doc.setFontSize(10);
+            doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
+        }
+
+        // =============================================
+        // PÁGINA 2 – DECLARAÇÕES OBRIGATÓRIAS (somente Termo de Fomento)
+        // =============================================
+        if (tipo === 'termoFomento') {
+            yPos = addNewPdfPage();
+            yPos += 10;
+
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 51, 102);
+            doc.text("DECLARAÇÕES OBRIGATÓRIAS", pageWidth / 2, yPos, { align: "center" });
+            yPos += 15;
+
+            doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
             doc.setTextColor(0);
 
-            const nomeDirigente = document.getElementById('nomeDirigente').value.trim() || "________________________________";
-            const cargoDirigente = document.getElementById('cargoDirigente').value.trim() || "________________________________";
-            const nomeEntidade = document.getElementById('nomeEntidade').value.trim() || "_______________________________________________";
-            const cnpj = document.getElementById('cnpj').value.trim() || "__.___.___/____-__";
-            const endereco = document.getElementById('endereco').value.trim() || "";
-            const numero = document.getElementById('numero').value.trim() || "";
-            const complemento = document.getElementById('complemento').value.trim() || "";
-            const cep = document.getElementById('cep').value.trim() || "";
-            const enderecoCompleto = [endereco, numero, complemento].filter(Boolean).join(", ") + (cep ? `, CEP ${cep}` : "");
-            const numeroProposta = document.getElementById('numeroProposta').value.trim() || "___________";
+            doc.text("Declaro, para os devidos fins, cumprir integralmente as 3 especificações abaixo:", margin, yPos);
+            yPos += 10;
 
-            // TEXTO ANTIGO RESTAURADO (com LDO 2025)
-            const introText = `Eu, ${nomeDirigente}, ${cargoDirigente}, ATESTO, para fins de formalização de ${tipoAtestadoText} no âmbito do Ministério do Esporte - MESP, que a entidade ${nomeEntidade}, inscrita no CNPJ sob o nº ${cnpj}, situada no ${enderecoCompleto}, possui capacidade técnica e operacional para executar o objeto apresentado na Proposta nº ${numeroProposta}, em atendimento ao art. 33, inciso V, da Lei 13.019 de 2014 e art. 89, inciso XI, da Lei nº 15.080 de 30 de dezembro de 2024 (LDO 2025), considerando as experiências adquiridas na(s) execução de projeto(s)/ação(es) na(s) área(s) esportivo/educacional/social, devidamente especificada(s) no Histórico anexo.`;
+            doc.text("1. Em atendimento à ADPF nº 854/2024 do STF, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+            yPos += 18;
 
-            const introLines = doc.splitTextToSize(introText, pageWidth - margin * 2);
-            doc.text(introLines, margin, yPos);
-            yPos += introLines.length * 7 + 12;
+            doc.text("2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+            yPos += 12;
 
-            doc.text("Declaração emitida com base nas comprovações anexas.", margin, yPos);
-            yPos += 25;
+            doc.text("3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
+            yPos += 12;
 
-    
-            // Assinatura na página 1 → SOMENTE PARA CONVÊNIO
-            if (tipoAtestadoValue === 'convenio') {
-                const sigX = (pageWidth - 100) / 2;
-                doc.line(sigX, yPos, sigX + 100, yPos);
-                yPos += 8;
+            doc.text("A OSC já realizou ações no estado alcançado pela emenda parlamentar? *", margin, yPos);
+            yPos += 8;
 
-                doc.setFontSize(12);
-                doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
-                yPos += 7;
-                doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
-                yPos += 15;
+            const acoesSimChecked = document.querySelector('input[name="acoesNoEstado"][value="sim"]').checked;
+            drawCheckbox(doc, margin + 5, yPos, acoesSimChecked);
+            doc.text("Sim", margin + 12, yPos);
+            yPos += 6;
 
-                doc.setFontSize(10);
-                doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
+            const acoesNaoChecked = document.querySelector('input[name="acoesNoEstado"][value="nao"]').checked;
+            drawCheckbox(doc, margin + 5, yPos, acoesNaoChecked);
+            doc.text("Não", margin + 12, yPos);
+            yPos += 10;
+
+            if (acoesSimChecked) {
+                const quais = document.getElementById('quaisAcoesEstado').value.trim() || "Não informado";
+                doc.text("Se sim, quais? " + quais, margin + 5, yPos);
+                yPos += 10;
             }
 
-            // =====================================
-            // PÁGINA 2 – DECLARAÇÕES OBRIGATÓRIAS (somente Termo de Fomento)
-            // =====================================
-            if (tipoAtestadoValue === 'termoFomento') {
-                yPos = addNewPdfPage();
-                yPos += 10;
+            yPos += 5;
+            doc.text("A entidade declara que possui abrangência nacional em seu estatuto social? *", margin, yPos);
+            yPos += 8;
 
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(0, 51, 102);
-                doc.text("DECLARAÇÕES OBRIGATÓRIAS", pageWidth / 2, yPos, { align: "center" });
-                yPos += 15;
+            const abrangSimChecked = document.querySelector('input[name="abrangenciaNacional"][value="sim"]').checked;
+            drawCheckbox(doc, margin + 5, yPos, abrangSimChecked);
+            doc.text("Sim", margin + 12, yPos);
+            yPos += 6;
 
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "normal");
-                doc.setTextColor(0);
+            const abrangNaoChecked = document.querySelector('input[name="abrangenciaNacional"][value="nao"]').checked;
+            drawCheckbox(doc, margin + 5, yPos, abrangNaoChecked);
+            doc.text("Não", margin + 12, yPos);
+            yPos += 10;
 
-                doc.text("Declaro, para os devidos fins, cumprir integralmente as 3 especificações abaixo:", margin, yPos);
-                yPos += 10;
+            yPos += 5;
+            doc.setFont("helvetica", "bold");
+            doc.text("Elementos Complementares de Comprovação da Capacidade Técnica *Obrigatório*", margin, yPos);
+            yPos += 10;
+            doc.setFont("helvetica", "normal");
 
-                doc.text("1. Em atendimento à ADPF nº 854/2024 do STF, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
-                yPos += 18;
+            const elementos = document.querySelectorAll('input[name="elementosComplementares"]');
+            const textosElementos = [
+                "Relatórios de prestações de contas aprovadas por órgão(s) público(s)",
+                "Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto",
+                "Declarações de participação em conselhos, redes, fóruns ou articulações temáticas",
+                "Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação",
+                "Relatórios anuais de atividades demonstrando atuação continuada no campo temático",
+                "Não possuo nenhum dos elementos acima"
+            ];
 
-                doc.text("2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
-                yPos += 12;
-
-                doc.text("3. É vedada a contratação integral do corpo técnico mediante terceirização das ações.", margin + 5, yPos, { maxWidth: pageWidth - margin * 2 - 5 });
-                yPos += 12;
-
-                doc.text("A OSC já realizou ações no estado alcançado pela emenda parlamentar? *", margin, yPos);
+            elementos.forEach((el, idx) => {
+                drawCheckbox(doc, margin + 5, yPos, el.checked);
+                doc.text(textosElementos[idx], margin + 15, yPos);
                 yPos += 8;
+            });
 
-                const acoesSimChecked = document.querySelector('input[name="acoesNoEstado"][value="sim"]').checked;
-                drawCheckbox(doc, margin + 5, yPos, acoesSimChecked);
-                doc.text("Sim", margin + 12, yPos);
-                yPos += 6;
+            yPos += 10;
+            doc.setFont("helvetica", "bold");
+            doc.text("Comprovação Institucional, Técnica, Operacional e Material *Obrigatório*", margin, yPos);
+            yPos += 10;
+            doc.setFont("helvetica", "normal");
 
-                const acoesNaoChecked = document.querySelector('input[name="acoesNoEstado"][value="nao"]').checked;
-                drawCheckbox(doc, margin + 5, yPos, acoesNaoChecked);
-                doc.text("Não", margin + 12, yPos);
-                yPos += 10;
+            doc.text("Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar obrigatoriamente um):", margin, yPos, { maxWidth: pageWidth - margin * 2 });
+            yPos += 12;
 
-                if (acoesSimChecked) {
-                    const quais = document.getElementById('quaisAcoesEstado').value.trim() || "Não informado";
-                    doc.text("Se sim, quais? " + quais, margin + 5, yPos);
-                    yPos += 10;
+            const compTypes = document.querySelectorAll('input[name="comprovacaoTipo"]');
+            const textosComp = [
+                "Fotografias datadas das atividades/projetos executados",
+                "Registros audiovisuais (links ou arquivos digitais)",
+                "Listas de presença, relatórios de execução ou registros de monitoramento",
+                "Outros documentos comprobatórios pertinentes (ex. currículos)"
+            ];
+
+            compTypes.forEach((el, idx) => {
+                drawCheckbox(doc, margin + 5, yPos, el.checked);
+                doc.text(textosComp[idx], margin + 15, yPos);
+                yPos += 8;
+            });
+        }
+
+        // =============================================
+        // PÁGINA 3 – IDONEIDADE E RESPONSABILIDADE (somente Termo de Fomento)
+        // =============================================
+        if (tipo === 'termoFomento') {
+            yPos = addNewPdfPage();
+            yPos += 10;
+
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 51, 102);
+            doc.text("DECLARAÇÃO DE IDONEIDADE E RESPONSABILIDADE", pageWidth / 2, yPos, { align: "center" });
+            yPos += 15;
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(0);
+
+            const declarationText = [
+                "Declaramos que as atividades descritas foram executadas com qualidade, regularidade e aderência ao objeto pactuado, não havendo, até a presente data, fatos que desabonem a conduta ou a capacidade técnica, operacional e institucional da OSC.",
+                "",
+                "A entidade emitente assume integral responsabilidade pela veracidade, completude e fidedignidade das informações prestadas, que são declaradas sob fé pública, estando ciente de que a omissão de informações relevantes, a prestação de informações falsas ou a apresentação de documentos inidôneos caracterizam infração administrativa grave, sujeitando-se o declarante e a entidade emitente às sanções administrativas, civis e penais cabíveis, inclusive aquelas previstas na legislação penal, na Lei nº 8.429/1992 (quando aplicável), na Lei nº 13.019/2014, Decreto nº 8.726/2016 e demais normas correlatas, sem prejuízo de outras medidas legais pertinentes.",
+                "",
+                "A constatação, a qualquer tempo, de omissão dolosa ou culposa, inexatidão relevante, falsidade ideológica ou material nas informações e documentos apresentados neste atestado ensejará, independentemente de outras cominações legais:",
+                "I – a nulidade do atestado para todos os fins;",
+                "II – a impugnação ou rescisão da parceria, se já celebrada;",
+                "III – a comunicação aos órgãos de controle interno e externo competentes;",
+                "IV – o encaminhamento para apuração de responsabilidade administrativa, civil e penal da autoridade signatária e da entidade emitente.",
+                "",
+                "Parágrafo único. A aplicação das medidas acima ocorrerá sem prejuízo da adoção de outras providências sancionatórias cabíveis, inclusive reparação de danos ao erário.",
+                "",
+                "Cientificamo-nos de que o órgão concedente poderá, a qualquer tempo, diligenciar para verificar a autenticidade e a veracidade das informações e documentos apresentados."
+            ];
+
+            declarationText.forEach(paragraph => {
+                if (paragraph.trim() === "") {
+                    yPos += 6;
+                    return;
                 }
+                const lines = doc.splitTextToSize(paragraph, pageWidth - margin * 2);
+                if (yPos + (lines.length * 6) > pageHeight - margin - 40) {
+                    yPos = addNewPdfPage();
+                    yPos += 20;
+                }
+                doc.text(lines, margin, yPos);
+                yPos += lines.length * 6 + 2;
+            });
 
-                yPos += 5;
-                doc.setFont("helvetica", "bold");
-                doc.text("Elementos Complementares de Comprovação da Capacidade Técnica *Obrigatório*", margin, yPos);
-                yPos += 10;
-                doc.setFont("helvetica", "normal");
+            yPos += 30;
+            const sigX = (pageWidth - 100) / 2;
+            doc.line(sigX, yPos, sigX + 100, yPos);
+            yPos += 8;
 
-                const elementos = document.querySelectorAll('input[name="elementosComplementares"]');
-                const textosElementos = [
-                    "Relatórios de prestações de contas aprovadas por órgão(s) público(s)",
-                    "Publicações temáticas, pesquisas, materiais didáticos ou técnicos relacionados ao objeto",
-                    "Declarações de participação em conselhos, redes, fóruns ou articulações temáticas",
-                    "Certificados, premiações ou títulos recebidos pela OSC em sua área de atuação",
-                    "Relatórios anuais de atividades demonstrando atuação continuada no campo temático",
-                    "Não possuo nenhum dos elementos acima"
-                ];
+            doc.setFontSize(12);
+            doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
+            yPos += 7;
+            doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
+            yPos += 15;
 
-                elementos.forEach((el, idx) => {
-                    drawCheckbox(doc, margin + 5, yPos, el.checked);
-                    doc.text(textosElementos[idx], margin + 15, yPos);
-                    yPos += 8;
-                });
+            doc.setFontSize(10);
+            doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
+        }
 
-                yPos += 10;
-                doc.setFont("helvetica", "bold");
-                doc.text("Comprovação Institucional, Técnica, Operacional e Material *Obrigatório*", margin, yPos);
-                yPos += 10;
-                doc.setFont("helvetica", "normal");
-
-                doc.text("Para reforço da capacidade técnica e operacional, integram o presente atestado os seguintes anexos comprobatórios (marcar obrigatoriamente um):", margin, yPos, { maxWidth: pageWidth - margin * 2 });
-                yPos += 12;
-
-                const compTypes = document.querySelectorAll('input[name="comprovacaoTipo"]');
-                const textosComp = [
-                    "Fotografias datadas das atividades/projetos executados",
-                    "Registros audiovisuais (links ou arquivos digitais)",
-                    "Listas de presença, relatórios de execução ou registros de monitoramento",
-                    "Outros documentos comprobatórios pertinentes (ex. currículos)"
-                ];
-
-                compTypes.forEach((el, idx) => {
-                    drawCheckbox(doc, margin + 5, yPos, el.checked);
-                    doc.text(textosComp[idx], margin + 15, yPos);
-                    yPos += 8;
-                });
-            }
-
-            // =====================================
-            // PÁGINA 3 – IDONEIDADE E RESPONSABILIDADE (somente Termo de Fomento)
-            // =====================================
-            if (tipoAtestadoValue === 'termoFomento') {
-                yPos = addNewPdfPage();
-                yPos += 10;
-
-                doc.setFontSize(16);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(0, 51, 102);
-                doc.text("DECLARAÇÃO DE IDONEIDADE E RESPONSABILIDADE", pageWidth / 2, yPos, { align: "center" });
-                yPos += 15;
-
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "normal");
-                doc.setTextColor(0);
-
-                const declarationText = [
-                    "Declaramos que as atividades descritas foram executadas com qualidade, regularidade e aderência ao objeto pactuado, não havendo, até a presente data, fatos que desabonem a conduta ou a capacidade técnica, operacional e institucional da OSC.",
-                    "",
-                    "A entidade emitente assume integral responsabilidade pela veracidade, completude e fidedignidade das informações prestadas, que são declaradas sob fé pública, estando ciente de que a omissão de informações relevantes, a prestação de informações falsas ou a apresentação de documentos inidôneos caracterizam infração administrativa grave, sujeitando-se o declarante e a entidade emitente às sanções administrativas, civis e penais cabíveis, inclusive aquelas previstas na legislação penal, na Lei nº 8.429/1992 (quando aplicável), na Lei nº 13.019/2014, Decreto nº 8.726/2016 e demais normas correlatas, sem prejuízo de outras medidas legais pertinentes.",
-                    "",
-                    "A constatação, a qualquer tempo, de omissão dolosa ou culposa, inexatidão relevante, falsidade ideológica ou material nas informações e documentos apresentados neste atestado ensejará, independentemente de outras cominações legais:",
-                    "I – a nulidade do atestado para todos os fins;",
-                    "II – a impugnação ou rescisão da parceria, se já celebrada;",
-                    "III – a comunicação aos órgãos de controle interno e externo competentes;",
-                    "IV – o encaminhamento para apuração de responsabilidade administrativa, civil e penal da autoridade signatária e da entidade emitente.",
-                    "",
-                    "Parágrafo único. A aplicação das medidas acima ocorrerá sem prejuízo da adoção de outras providências sancionatórias cabíveis, inclusive reparação de danos ao erário.",
-                    "",
-                    "Cientificamo-nos de que o órgão concedente poderá, a qualquer tempo, diligenciar para verificar a autenticidade e a veracidade das informações e documentos apresentados."
-                ];
-
-                declarationText.forEach(paragraph => {
-                    if (paragraph.trim() === "") {
-                        yPos += 6;
-                        return;
-                    }
-                    const lines = doc.splitTextToSize(paragraph, pageWidth - margin * 2);
-                    if (yPos + (lines.length * 6) > pageHeight - margin - 40) {
-                        yPos = addNewPdfPage();
-                        yPos += 20;
-                    }
-                    doc.text(lines, margin, yPos);
-                    yPos += lines.length * 6 + 2;
-                });
-
-                yPos += 30;
-                const sigX = (pageWidth - 100) / 2;
-                doc.line(sigX, yPos, sigX + 100, yPos);
-                yPos += 8;
-
-                doc.setFontSize(12);
-                doc.text(nomeDirigente, pageWidth / 2, yPos, { align: "center" });
-                yPos += 7;
-                doc.text(cargoDirigente, pageWidth / 2, yPos, { align: "center" });
-                yPos += 15;
-
-                doc.setFontSize(10);
-                doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
-            }
-
-            // =====================================
-            // ANEXOS / HISTÓRICO
-            // =====================================
-            if (annexOrder.length === 0) {
+        // =============================================
+        // ANEXOS / HISTÓRICO (Termo de Fomento) - Extendida com dados completos
+        // =============================================
+        if (tipo === 'termoFomento') {
+            for (const i of annexOrder) {
                 yPos = addNewPdfPage(true);
                 yPos += 30;
                 doc.setFontSize(18);
                 doc.setTextColor(0, 0, 255);
-                doc.text('ANEXO', pageWidth / 2, yPos, { align: 'center' });
+                doc.text('ANEXO ' + i, pageWidth / 2, yPos, { align: 'center' });
                 doc.setTextColor(0, 0, 0);
                 yPos += 15;
                 doc.setFontSize(14);
-                doc.text('HISTÓRICO', margin, yPos);
+                doc.text('HISTÓRICO DO PROJETO/AÇÃO', margin, yPos);
                 yPos += 10;
                 doc.setFontSize(12);
-                doc.text('Nenhum anexo/histórico informado.', margin, yPos);
-            } else {
-                for (const i of annexOrder) {
-                    yPos = addNewPdfPage(true);
-                    yPos += 30;
-                    doc.setFontSize(18);
-                    doc.setTextColor(0, 0, 255);
-                    doc.text('ANEXO ' + i, pageWidth / 2, yPos, { align: 'center' });
-                    doc.setTextColor(0, 0, 0);
-                    yPos += 15;
-                    doc.setFontSize(14);
-                    doc.text('HISTÓRICO DO PROJETO/AÇÃO', margin, yPos);
+
+                const nomeProjeto = document.getElementById(`nomeProjeto-${i}`)?.value || 'Não informado';
+                const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`)?.value || 'Não informado';
+                const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`)?.value || 'Não informado';
+                const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`)?.value || 'Não informado';
+                const dataInicio = formatDateToBrazilian(document.getElementById(`dataInicio-${i}`)?.value);
+                const dataTermino = formatDateToBrazilian(document.getElementById(`dataTermino-${i}`)?.value);
+
+                const addTextSection = (label, value) => {
+                    if (!value || value.trim() === '') return;
+                    const labelHeight = 6;
+                    const valueLines = doc.splitTextToSize(value, pageWidth - margin * 2 - 5);
+                    const valueHeight = valueLines.length * 5;
+
+                    if (yPos + labelHeight + valueHeight > pageHeight - margin) {
+                        yPos = addNewPdfPage(true);
+                        yPos += 30;
+                        doc.setFontSize(14);
+                        doc.text('HISTÓRICO (continuação)', margin, yPos);
+                        yPos += 10;
+                        doc.setFontSize(12);
+                    }
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(label, margin, yPos);
+                    yPos += labelHeight;
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(valueLines, margin + 5, yPos);
+                    yPos += valueHeight + 5;
+                };
+
+                addTextSection('Nome do Projeto/Ação:', nomeProjeto);
+                addTextSection('Entidades Parceiras:', entidadesParceiras);
+                addTextSection('Número de Beneficiados:', numeroBeneficiados);
+                addTextSection('Data de Início:', dataInicio);
+                addTextSection('Data de Término:', dataTermino);
+                addTextSection('Ações/Atividades Desenvolvidas:', atividadesDesenvolvidas);
+
+                if (tipo === 'termoFomento') {
+                    const tipoParceriaAnteriorSelect = document.getElementById(`tipoParceriaAnterior-${i}`);
+                    const tipoParceriaAnteriorText = tipoParceriaAnteriorSelect ? tipoParceriaAnteriorSelect.options[tipoParceriaAnteriorSelect.selectedIndex].text : 'Não informado';
+
+                    addTextSection('Tipo de Parceria Anterior:', tipoParceriaAnteriorText);
+
+                    addTextSection('Nº / Ano (Anterior):', document.getElementById(`nrAnoAnterior-${i}`)?.value || 'Não informado');
+                    addTextSection('Órgão/Entidade Parceira Anterior:', document.getElementById(`orgaoAnterior-${i}`)?.value || 'Não informado');
+
+                    const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
+                    const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
+
+                    addTextSection('Estruturas Físicas:', estruturasFisicas);
+                    addTextSection('Qualificação Profissional:', qualificacaoPessoal);
+                }
+
+                // Arquivos comprobatórios - Extendida com dados completos
+                yPos = addNewPdfPage(true);
+                yPos += 30;
+                doc.setFontSize(12);
+                doc.text('Documentos Comprobatórios do Anexo ' + i + ':', margin, yPos);
+                yPos += 10;
+
+                let filesToRenderInPDF = [];
+                const evidenceTypes = ['fotos', 'materiais', 'midia', 'instrumentos'];
+                for (const type of evidenceTypes) {
+                    const inputs = document.querySelectorAll(`input[id^="${type}-${i}-"]`);
+                    inputs.forEach(input => {
+                        if (input.files && input.files.length > 0) {
+                            Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file, type }));
+                        }
+                    });
+                }
+
+                if (filesToRenderInPDF.length === 0) {
+                    doc.text('Nenhum arquivo anexado neste bloco.', margin + 5, yPos);
                     yPos += 10;
-                    doc.setFontSize(12);
+                } else {
+                    for (const { file } of filesToRenderInPDF) {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            const imgData = await new Promise((resolve) => {
+                                reader.onload = () => resolve(reader.result);
+                                reader.readAsDataURL(file);
+                            });
+                            const img = new Image();
+                            img.src = imgData;
+                            await new Promise((resolve) => { img.onload = resolve; });
 
-                    const nomeProjeto = document.getElementById(`nomeProjeto-${i}`)?.value || 'Não informado';
-                    const entidadesParceiras = document.getElementById(`entidadesParceiras-${i}`)?.value || 'Não informado';
-                    const numeroBeneficiados = document.getElementById(`numeroBeneficiados-${i}`)?.value || 'Não informado';
-                    const atividadesDesenvolvidas = document.getElementById(`atividadesDesenvolvidas-${i}`)?.value || 'Não informado';
-                    const dataInicio = formatDateToBrazilian(document.getElementById(`dataInicio-${i}`)?.value);
-                    const dataTermino = formatDateToBrazilian(document.getElementById(`dataTermino-${i}`)?.value);
+                            const maxWidth = pageWidth - 2 * margin;
+                            const maxHeight = pageHeight - (margin * 2) - 40;
+                            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                            const finalHeight = img.height * ratio;
+                            const finalWidth = img.width * ratio;
+                            const captionHeight = 15;
 
-                    const addTextSection = (label, value) => {
-                        if (!value || value.trim() === '') return;
-                        const labelHeight = 6;
-                        const valueLines = doc.splitTextToSize(value, pageWidth - margin * 2 - 5);
-                        const valueHeight = valueLines.length * 5;
+                            if (yPos + finalHeight + captionHeight > pageHeight - margin) {
+                                yPos = addNewPdfPage(true);
+                                yPos += 30;
+                                doc.setFontSize(12);
+                                doc.text('Documentos Comprobatórios (continuação):', margin, yPos);
+                                yPos += 10;
+                            }
 
-                        if (yPos + labelHeight + valueHeight > pageHeight - margin) {
-                            yPos = addNewPdfPage(true);
-                            yPos += 30;
-                            doc.setFontSize(14);
-                            doc.text('HISTÓRICO (continuação)', margin, yPos);
+                            doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
+                            yPos += finalHeight + 5;
+                            doc.setFontSize(9);
+                            doc.setTextColor(100, 100, 100);
+                            doc.text(`Arquivo: ${file.name} (${file.type})`, pageWidth / 2, yPos, { align: 'center' });
+                            doc.setTextColor(0, 0, 0);
                             yPos += 10;
                             doc.setFontSize(12);
-                        }
 
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(label, margin, yPos);
-                        yPos += labelHeight;
+                        } else if (file.type === 'application/pdf') {
+                            const pdfBytes = await file.arrayBuffer();
+                            const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
 
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(valueLines, margin + 5, yPos);
-                        yPos += valueHeight + 5;
-                    };
+                            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                                yPos = addNewPdfPage(true);
+                                yPos += 25;
 
-                    addTextSection('Nome do Projeto/Ação:', nomeProjeto);
-                    addTextSection('Entidades Parceiras:', entidadesParceiras);
-                    addTextSection('Número de Beneficiados:', numeroBeneficiados);
-                    addTextSection('Data de Início:', dataInicio);
-                    addTextSection('Data de Término:', dataTermino);
-                    addTextSection('Ações/Atividades Desenvolvidas:', atividadesDesenvolvidas);
-
-                    if (tipoAtestadoValue === 'termoFomento') {
-                        const tipoParceriaAnteriorSelect = document.getElementById(`tipoParceriaAnterior-${i}`);
-                        const tipoParceriaAnteriorText = tipoParceriaAnteriorSelect ? tipoParceriaAnteriorSelect.options[tipoParceriaAnteriorSelect.selectedIndex].text : 'Não informado';
-
-                        addTextSection('Tipo de Parceria Anterior:', tipoParceriaAnteriorText);
-
-                        addTextSection('Nº / Ano (Anterior):', document.getElementById(`nrAnoAnterior-${i}`)?.value || 'Não informado');
-                        addTextSection('Órgão/Entidade Parceira Anterior:', document.getElementById(`orgaoAnterior-${i}`)?.value || 'Não informado');
-
-                        const estruturasFisicas = document.getElementById(`estruturasFisicas-${i}`)?.value || 'Não informado';
-                        const qualificacaoPessoal = document.getElementById(`qualificacaoPessoal-${i}`)?.value || 'Não informado';
-
-                        addTextSection('Estruturas Físicas:', estruturasFisicas);
-                        addTextSection('Qualificação Profissional:', qualificacaoPessoal);
-                    }
-
-                    // Arquivos comprobatórios
-                    yPos = addNewPdfPage(true);
-                    yPos += 30;
-                    doc.setFontSize(12);
-                    doc.text('Documentos Comprobatórios do Anexo ' + i + ':', margin, yPos);
-                    yPos += 10;
-
-                    let filesToRenderInPDF = [];
-                    const evidenceTypes = ['fotos', 'materiais', 'midia', 'instrumentos'];
-                    for (const type of evidenceTypes) {
-                        const inputs = document.querySelectorAll(`input[id^="${type}-${i}-"]`);
-                        inputs.forEach(input => {
-                            if (input.files && input.files.length > 0) {
-                                Array.from(input.files).forEach(file => filesToRenderInPDF.push({ file, type }));
-                            }
-                        });
-                    }
-
-                    if (filesToRenderInPDF.length === 0) {
-                        doc.text('Nenhum arquivo anexado neste bloco.', margin + 5, yPos);
-                        yPos += 10;
-                    } else {
-                        for (const { file } of filesToRenderInPDF) {
-                            if (file.type.startsWith('image/')) {
-                                const reader = new FileReader();
-                                const imgData = await new Promise((resolve) => {
-                                    reader.onload = () => resolve(reader.result);
-                                    reader.readAsDataURL(file);
-                                });
-                                const img = new Image();
-                                img.src = imgData;
-                                await new Promise((resolve) => { img.onload = resolve; });
-
-                                const maxWidth = pageWidth - 2 * margin;
-                                const maxHeight = pageHeight - (margin * 2) - 40;
-                                const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-                                const finalHeight = img.height * ratio;
-                                const finalWidth = img.width * ratio;
-                                const captionHeight = 15;
-
-                                if (yPos + finalHeight + captionHeight > pageHeight - margin) {
-                                    yPos = addNewPdfPage(true);
-                                    yPos += 30;
-                                    doc.setFontSize(12);
-                                    doc.text('Documentos Comprobatórios (continuação):', margin, yPos);
-                                    yPos += 10;
-                                }
-
-                                doc.addImage(imgData, file.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth) / 2, yPos, finalWidth, finalHeight);
-                                yPos += finalHeight + 5;
-                                doc.setFontSize(9);
+                                doc.setFontSize(10);
                                 doc.setTextColor(100, 100, 100);
-                                doc.text(`Arquivo: ${file.name} (${file.type})`, pageWidth / 2, yPos, { align: 'center' });
-                                doc.setTextColor(0, 0, 0);
-                                yPos += 10;
-                                doc.setFontSize(12);
+                                doc.text(`Documento Anexo: ${file.name} (Página ${pageNum}/${pdf.numPages})`, margin, yPos);
+                                yPos += 5;
 
-                            } else if (file.type === 'application/pdf') {
-                                const pdfBytes = await file.arrayBuffer();
-                                const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+                                const page = await pdf.getPage(pageNum);
+                                const highResScale = 2.0;
+                                const viewport = page.getViewport({ scale: highResScale });
 
-                                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                                    yPos = addNewPdfPage(true);
-                                    yPos += 25;
+                                const canvas = document.createElement('canvas');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                const context = canvas.getContext('2d');
 
-                                    doc.setFontSize(10);
-                                    doc.setTextColor(100, 100, 100);
-                                    doc.text(`Documento Anexo: ${file.name} (Página ${pageNum}/${pdf.numPages})`, margin, yPos);
-                                    yPos += 5;
+                                await page.render({ canvasContext: context, viewport }).promise;
 
-                                    const page = await pdf.getPage(pageNum);
-                                    const highResScale = 2.0;
-                                    const viewport = page.getViewport({ scale: highResScale });
+                                const imgData = canvas.toDataURL('image/jpeg', 0.9);
 
-                                    const canvas = document.createElement('canvas');
-                                    canvas.height = viewport.height;
-                                    canvas.width = viewport.width;
-                                    const context = canvas.getContext('2d');
+                                const maxWidth = pageWidth - (2 * margin);
+                                const maxHeight = pageHeight - yPos - margin;
+                                const scaleRatio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
 
-                                    await page.render({ canvasContext: context, viewport }).promise;
+                                const finalWidth = viewport.width * scaleRatio;
+                                const finalHeight = viewport.height * scaleRatio;
+                                const xCentered = (pageWidth - finalWidth) / 2;
 
-                                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                                doc.addImage(imgData, 'JPEG', xCentered, yPos, finalWidth, finalHeight, undefined, 'FAST');
 
-                                    const maxWidth = pageWidth - (2 * margin);
-                                    const maxHeight = pageHeight - yPos - margin;
-                                    const scaleRatio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
-
-                                    const finalWidth = viewport.width * scaleRatio;
-                                    const finalHeight = viewport.height * scaleRatio;
-                                    const xCentered = (pageWidth - finalWidth) / 2;
-
-                                    doc.addImage(imgData, 'JPEG', xCentered, yPos, finalWidth, finalHeight, undefined, 'FAST');
-
-                                    canvas.width = 0;
-                                    canvas.height = 0;
-                                    yPos += finalHeight + 10;
-                                }
+                                canvas.width = 0;
+                                canvas.height = 0;
+                                yPos += finalHeight + 10;
                             }
                         }
                     }
                 }
             }
-
-            // Nome do arquivo PDF
-            const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s+/g, '_')}_${tipoAtestadoValue}_${new Date().toISOString().slice(0,10)}.pdf`;
-            doc.save(pdfName);
-            alert('PDF gerado com sucesso!');
-
-        } catch (error) {
-            console.error("Erro na geração do PDF:", error);
-            alert('Erro ao gerar o PDF. Verifique o console para detalhes.');
-        } finally {
-            document.getElementById('loadingOverlay').style.display = 'none';
         }
+
+        // =============================================
+        // OBSERVAÇÕES + ADENDO (Convênio)
+        // =============================================
+        if (tipo === 'convenio') {
+            const obs = document.getElementById('observacoesConvenio').value.trim() || "Nenhuma observação informada.";
+            const adendoFile = document.getElementById('adendoConvenio').files[0];
+
+            yPos = addNewPdfPage(true);
+            yPos += 30;
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 255);
+            doc.text('OBSERVAÇÕES / ADENDO', pageWidth / 2, yPos, { align: 'center' });
+            doc.setTextColor(0, 0, 0);
+            yPos += 15;
+
+            doc.setFontSize(12);
+            const obsLines = doc.splitTextToSize(obs, pageWidth - margin * 2);
+            doc.text(obsLines, margin, yPos);
+            yPos += obsLines.length * 7 + 15;
+
+            // Se houver arquivo adendo
+            if (adendoFile) {
+                doc.setFontSize(14);
+                doc.text("ADENDO / DOCUMENTO COMPROBATÓRIO ADICIONAL", pageWidth / 2, yPos, { align: "center" });
+                yPos += 15;
+
+                if (adendoFile.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    const imgData = await new Promise(resolve => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(adendoFile);
+                    });
+                    const img = new Image();
+                    img.src = imgData;
+                    await new Promise(resolve => { img.onload = resolve; });
+
+                    const maxWidth = pageWidth - 2 * margin;
+                    const maxHeight = pageHeight - yPos - margin;
+                    const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                    const finalWidth = img.width * ratio;
+                    const finalHeight = img.height * ratio;
+
+                    doc.addImage(imgData, adendoFile.type.split('/')[1].toUpperCase(), (pageWidth - finalWidth)/2, yPos, finalWidth, finalHeight);
+                    yPos += finalHeight + 10;
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(100);
+                    doc.text(`Arquivo: ${adendoFile.name} (${adendoFile.type})`, pageWidth / 2, yPos, { align: 'center' });
+                    doc.setTextColor(0);
+                } 
+                else if (adendoFile.type === 'application/pdf') {
+                    const pdfBytes = await adendoFile.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        if (yPos > pageHeight - 60) {
+                            yPos = addNewPdfPage(true);
+                            yPos += 20;
+                        }
+
+                        doc.setFontSize(10);
+                        doc.setTextColor(100);
+                        doc.text(`Adendo: ${adendoFile.name} - Página ${pageNum}/${pdf.numPages}`, margin, yPos);
+                        yPos += 8;
+
+                        const page = await pdf.getPage(pageNum);
+                        const scale = 2.0;
+                        const viewport = page.getViewport({ scale });
+
+                        const canvas = document.createElement('canvas');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        const context = canvas.getContext('2d');
+
+                        await page.render({ canvasContext: context, viewport }).promise;
+
+                        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+                        const maxW = pageWidth - 2 * margin;
+                        const maxH = pageHeight - yPos - margin;
+                        const ratio = Math.min(maxW / viewport.width, maxH / viewport.height);
+                        const w = viewport.width * ratio;
+                        const h = viewport.height * ratio;
+
+                        doc.addImage(imgData, 'JPEG', (pageWidth - w)/2, yPos, w, h);
+
+                        yPos += h + 15;
+
+                        canvas.width = canvas.height = 0; // libera memória
+                    }
+                }
+            }
+        }
+
+        // Nome do arquivo PDF
+        const pdfName = `Atestado_Capacidade_Tecnica_${nomeEntidade.replace(/\s+/g, '_')}_${tipo}_${new Date().toISOString().slice(0,10)}.pdf`;
+        doc.save(pdfName);
+        alert('PDF gerado com sucesso!');
+
+    } catch (error) {
+        console.error("Erro na geração do PDF:", error);
+        alert('Erro ao gerar o PDF. Verifique o console para detalhes.');
+    } finally {
+        document.getElementById('loadingOverlay').style.display = 'none';
     }
+}
 </script>
 </body>
 </html>
