@@ -1347,40 +1347,43 @@ async function generatePDF() {
         }
     }
 
-    if (tipo === 'termoFomento') {
-        if (!document.getElementById('cargoDirigente').value.trim()) {
-            alert('Preencha o Cargo do Dirigente.');
-            return;
+        if (tipo === 'termoFomento') {
+            if (!document.getElementById('cargoDirigente').value.trim()) {
+                alert('Preencha o Cargo do Dirigente.');
+                return;
+            }
+            if (annexOrder.length === 0) {
+                alert('No Termo de Fomento é obrigatório adicionar pelo menos um bloco de anexo/histórico.');
+                return;
+            }
+            if (!document.getElementById('capacidadeNaoConfunde').checked) {
+                alert('Marque a declaração: "capacidade técnica já instalada não se confunde".');
+                return;
+            }
+            if (!document.getElementById('declaracaoEspecificacoes').checked) {
+                alert('Marque a declaração de cumprimento das 3 especificações.');
+                return;
+            }
+            if (!document.querySelector('input[name="acoesNoEstado"]:checked')) {
+                alert('Informe se a OSC já realizou ações no estado.');
+                return;
+            }
+            if (!document.querySelector('input[name="abrangenciaNacional"]:checked')) {
+                alert('Informe se a entidade possui abrangência nacional no estatuto.');
+                return;
+            }
+
+            // Correção aqui ↓↓↓
+            if (document.querySelectorAll('input[name="elementosComplementares"]:checked').length === 0) {
+                alert('Marque pelo menos um item em "Elementos Complementares".');
+                return;
+            }
+
+            if (document.querySelectorAll('input[name="comprovacaoTipo"]:checked').length === 0) {
+                alert('Marque pelo menos um item em "Comprovação Institucional, Técnica, Operacional e Material".');
+                return;
+            }
         }
-        if (annexOrder.length === 0) {
-            alert('No Termo de Fomento é obrigatório adicionar pelo menos um bloco de anexo/histórico.');
-            return;
-        }
-        if (!document.getElementById('capacidadeNaoConfunde').checked) {
-            alert('Marque a declaração: "capacidade técnica já instalada não se confunde".');
-            return;
-        }
-        if (!document.getElementById('declaracaoEspecificacoes').checked) {
-            alert('Marque a declaração de cumprimento das 3 especificações.');
-            return;
-        }
-        if (!document.querySelector('input[name="acoesNoEstado"]:checked')) {
-            alert('Informe se a OSC já realizou ações no estado.');
-            return;
-        }
-        if (!document.querySelector('input[name="abrangenciaNacional"]:checked')) {
-            alert('Informe se a entidade possui abrangência nacional no estatuto.');
-            return;
-        }
-        if (document.querySelectorAll('input[name="elementosComplementares"]'.checked).length === 0) {
-            alert('Marque pelo menos um item em "Elementos Complementares".');
-            return;
-        }
-        if (document.querySelectorAll('input[name="comprovacaoTipo"]'.checked).length === 0) {
-            alert('Marque pelo menos um item em "Comprovação Institucional, Técnica, Operacional e Material".');
-            return;
-        }
-    }
 
     // =============================================
     // Início da geração do PDF
