@@ -707,6 +707,15 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleFormFields();
 
     configurarLogicaCheckboxes();
+
+    restaurarEstadoAcoesEstado();
+
+    document.querySelectorAll('input[name="acoesNoEstado"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('detalhesAcoesEstado').style.display =
+                radio.value === 'sim' ? 'block' : 'none';
+        });
+    });
 });
 
 // ------------------------------------------------
@@ -1192,6 +1201,19 @@ function configurarLogicaCheckboxes() {
             }
         });
     });
+}
+function restaurarEstadoAcoesEstado() {
+    const radioSim = document.querySelector('input[name="acoesNoEstado"][value="sim"]');
+    const detalhesDiv = document.getElementById('detalhesAcoesEstado');
+
+    if (!radioSim || !detalhesDiv) return;
+
+    // Se o rádio "Sim" estiver marcado (pode acontecer se o formulário foi preenchido antes do refresh)
+    if (radioSim.checked) {
+        detalhesDiv.style.display = 'block';
+    } else {
+        detalhesDiv.style.display = 'none';
+    }
 }
 
 // ================================================
