@@ -505,6 +505,13 @@
                 </label>
             </div>
 
+            <div class="input-container full-width checkbox-container required-check">
+                <label>
+                    <input type="checkbox" id="declaracaoParentesco" name="declaracaoParentesco" required>
+                    Declaro, sob as penas da lei, que esta entidade não possui em seus quadros diretivos ou administrativos, nem contrata ou subcontrata, cônjuge, companheiro ou parente (em linha reta, colateral ou por afinidade, até o terceiro grau) do parlamentar autor da emenda ou de seus assessores, em estrita observância à decisão do STF na <strong>ADPF 854</strong>, à <strong>Súmula Vinculante nº 13</strong>.
+                </label>
+            </div>
+
             <div class="specifications-list">
                 <p>1. Em atendimento à <strong>ADPF nº 854/2024 do STF</strong>, a OSC comprova que desenvolve efetivamente atividades nas suas instalações físicas (sede social e, conforme o caso, os estabelecimentos em que exerça suas ações), isto é, não se trata meramente de um endereço fiscal ou de um local onde funciona apenas o setor administrativo.</p>
                 <p>2. A OSC possui corpo técnico mínimo, com experiência, seja ele voluntário ou contratado, com comprovada atuação em ações compatíveis com o objeto da parceria.</p>
@@ -1488,6 +1495,8 @@ async function generatePDF() {
     const isTermoFomento = tipo === 'termoFomento';
     const isConvenio     = tipo === 'convenio';
 
+    
+
     // ────────────────────────────────────────────────
     // 1. VALIDAÇÃO ESPECIAL: Termo de Fomento NÃO pode ser usado por ente público
     // ────────────────────────────────────────────────
@@ -1581,6 +1590,10 @@ async function generatePDF() {
         }
         if (!document.getElementById('declaracaoEspecificacoes')?.checked) {
             alert('É necessário declarar o cumprimento das 3 especificações obrigatórias.');
+            return;
+        }
+        if (!document.getElementById('declaracaoParentesco')?.checked) {
+            alert('É necessário marcar a declaração de não parentesco (ADPF 854 e Súmula 13).');
             return;
         }
 
@@ -1837,6 +1850,17 @@ async function generatePDF() {
                 doc.text(linhas, margin + 6, yPos);
                 yPos += linhas.length * lineHeight + 3;
             });
+
+            yPos += 4; // pequeno espaço
+
+            // Novo texto de parentesco para o PDF
+            const textoParentesco = "Declaro, sob as penas da lei, que esta entidade não possui em seus quadros diretivos ou administrativos, nem contrata ou subcontrata, cônjuge, companheiro ou parente (até o terceiro grau) do parlamentar autor da emenda ou de seus assessores (ADPF 854 e Súmula Vinculante nº 13).";
+
+            doc.setFont("helvetica", "bold");
+            const linhasParentesco = doc.splitTextToSize(textoParentesco, maxWidth);
+            doc.text(linhasParentesco, margin + 6, yPos);
+            yPos += linhasParentesco.length * lineHeight + 5;
+            doc.setFont("helvetica", "normal");
 
             yPos += 6;
 
