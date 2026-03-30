@@ -19,6 +19,7 @@ const declarations = [
     'CUSTOS',
     'ADIMPLÊNCIA',
     'CIÊNCIA DOS DEVERES E RESPONSABILIDADES IMPOSTOS PELA LEGISLAÇÃO ELEITORAL',
+    'INEXISTÊNCIA DE NEPOTISMO E VEDAÇÕES À DESTINAÇÃO E EXECUÇÃO DE EMENDAS PARLAMENTARES',
 ];
 
 // -----------------------------------------------------------------------------
@@ -101,6 +102,16 @@ function getDeclarationBody(title, f) {
         ],
         'CIÊNCIA DOS DEVERES E RESPONSABILIDADES IMPOSTOS PELA LEGISLAÇÃO ELEITORAL': [
             `Eu, ${dirigente}, na condição de ${cargoDirigente} da ${entidade}, inscrita no CNPJ sob nº ${cnpj}, Declaro, sob as penas da lei e passível de devolução dos recursos do Termo de Fomento nº ${proposta}:\n\n1. Estar ciente das condutas vedadas aos agentes públicos durante o período do defeso eleitoral, de acordo com disposto no caput do art. 73 da Lei nº 9.504 de 1997;\n2. Estar ciente de que as condutas vedadas dispensam comprovação de dolo ou culpa, sendo cláusulas de responsabilidade objetiva;\n3. Que a presente Entidade não possui dentro do quadro de dirigentes candidatos ao pleito eleitoral;\n4. Que não será permitido no âmbito do Termo de Fomento nº ${proposta} a distribuição de brindes ou outros bens que possam proporcionar vantagem ao eleitor durante o período de campanha eleitoral;\n5. Que não será permitido o uso promocional em favor de candidatos, partidos políticos ou coligações, na distribuição de bens e serviços de caráter social custeados pelo Termo de Fomento nº ${proposta};\n6. Que não será permitida qualquer promoção pessoal ou condutas que afetem a igualdade de oportunidades entre candidatos nos pleitos eleitorais;\n7. Que não será realizada publicidade institucional de atos, programas, obras, serviços e campanhas dos órgãos públicos federais;\n8. Estar ciente do inteiro teor da Cartilha de Condutas Vedadas aos Agentes Públicos Federais em Eleições, disponível no site do governo.\n\nPor ser expressão da verdade, firmo a presente declaração.`,
+        ],
+        'INEXISTÊNCIA DE NEPOTISMO E VEDAÇÕES À DESTINAÇÃO E EXECUÇÃO DE EMENDAS PARLAMENTARES': [
+            `${entidade}, inscrita no CNPJ sob o nº ${cnpj}, com sede em ${endereco}, por intermédio de seu representante legal abaixo assinado, o(a) Sr.(a) ${dirigente}, na condição de ${cargoDirigente}, para fins de celebração de Termo de Fomento no âmbito do Ministério do Esporte - MESP, DECLARA, sob as penas da lei:\n\n`,
+            `1. Que a entidade não possui, em seus quadros diretivos e administrativos, pessoas que sejam cônjuges, companheiros ou parentes, em linha reta, colateral ou por afinidade, até o terceiro grau, inclusive:\n`,
+            `   • Do parlamentar responsável pela indicação da emenda que originou o recurso;\n`,
+            `   • De assessores parlamentares vinculados ao referido parlamentar.\n\n`,
+            `2. Que a entidade está ciente de que a indicação por parlamentar a familiares configura violação à Súmula Vinculante nº 13 do Supremo Tribunal Federal, bem como ao art. 11, XI, da Lei nº 8.429/1992, caracterizando-se em nepotismo e ato de improbidade administrativa, respectivamente.\n\n`,
+            `3. Que a entidade se compromete a não realizar contratações, subcontratações ou intermediações de pessoas físicas ou jurídicas que possuam, em seu quadro de sócios, dirigentes, prestadores de serviço ou fornecedores de bens, as pessoas mencionadas no item "1", visando garantir que nenhum destes seja o beneficiário final do recurso público.\n\n`,
+            `4. Que a entidade possui plena autonomia administrativa e financeira e que os recursos recebidos serão executados estritamente para o objeto pactuado, observando-se os princípios da impessoalidade e moralidade.\n\n`,
+            `A presente declaração é a expressão da verdade e a entidade assume total responsabilidade pela veracidade destas informações, ciente de que a falsidade poderá acarretar a rescisão imediata da parceria e a aplicação de sanções administrativas e penais cabíveis.`
         ],
     };
 
