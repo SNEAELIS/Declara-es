@@ -1335,51 +1335,75 @@ async function fetchEntityData() {
     const cepInput = document.getElementById('cep');
     const tipoAtestado = document.getElementById('tipoAtestado');
     const avisoEntePublico = document.getElementById('avisoEntePublico');
+    const opcaoFomento = document.querySelector('option[value="termoFomento"]');
+    
     let cnpj = cnpjInput.value.replace(/\D/g, '');
+    
+    // 1. Validação básica de tamanho
     if (cnpj.length !== 14) {
         avisoEntePublico.style.display = 'none';
         return;
     }
-    nomeEntidade.value = 'Buscando dados...';
+
+    nomeEntidade.value = 'Buscando dados na Receita...';
+
     try {
         const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-        if (!response.ok) throw new Error('Erro na consulta');
+        if (!response.ok) throw new Error('CNPJ não encontrado ou erro na API.');
+        
         const data = await response.json();
+        
+        // 2. Preenchimento de dados básicos
         nomeEntidade.value = data.razao_social || 'Não encontrado';
         cepInput.value = data.cep || '';
+
+        // 3. Lógica para identificar Ente Público (Prefeituras/Governos)
         const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
         const razaoUpper = removeAccents(data.razao_social || '');
-        const isEntePublico =
-            ['2011','2038','2046','2062','2089','2100','2119','2135'].includes(data.natureza_juridica) ||
-            razaoUpper.includes('PREFEITURA') ||
-            razaoUpper.includes('MUNICIPIO') ||
-            razaoUpper.includes('MUNICIPIO DE') ||
-            razaoUpper.includes('ESTADO DE') ||
-            razaoUpper.includes('GOVERNO DO DISTRITO FEDERAL') ||
-            razaoUpper.includes('GOVERNO DO ESTADO') ||
-            razaoUpper.includes('DISTRITO FEDERAL');
-        if (isEntePublico && tipoAtestado.value === 'termoFomento') {
-            alert('Atenção: Termo de Fomento é exclusivo para OSCs (entidades privadas sem fins lucrativos).\n\n' +
-                  'CNPJs de Municípios, Estados ou Distrito Federal NÃO podem usar Termo de Fomento.\n' +
-                  'Alterando automaticamente para Convênio.');
-            tipoAtestado.value = 'convenio';
-            toggleFormFields();
+        
+        // Naturezas jurídicas de órgãos públicos (201-1, 203-8, etc)
+        const naturezasPublicas = ['2011', '2038', '2046', '2062', '2089', '2100', '2119', '2135'];
+        
+        const isEntePublico = naturezasPublicas.includes(data.natureza_juridica) || 
+                             razaoUpper.includes('PREFEITURA') || 
+                             razaoUpper.includes('MUNICIPIO') ||
+                             razaoUpper.includes('GOVERNO');
+
+        // 4. Tratamento da Interface baseado no tipo de entidade
+        if (isEntePublico) {
+            // Se for Prefeitura/Estado: Força Convênio
+            avisoEntePublico.style.display = 'block';
+            avisoEntePublico.innerHTML = '⚠️ Atenção: Órgãos Públicos devem utilizar <b>Convênio</b>.';
+            opcaoFomento.disabled = true;
+            
+            if (tipoAtestado.value === 'termoFomento') {
+                tipoAtestado.value = 'convenio';
+                alert('Entidade pública detectada. Alterando para Convênio.');
+                toggleFormFields();
+            }
+        } else {
+            // Se for Associação/Federação (Caso da FTMDF): Permite Fomento e Convênio
+            // Mas avisa que para Entidade Privada, o ideal é Termo de Fomento (MROSC)
+            avisoEntePublico.style.display = 'none';
+            opcaoFomento.disabled = false;
+            
+            // Dica: Se quiser que o sistema sugira Termo de Fomento para sua Federação automaticamente:
+            if (tipoAtestado.value === '') {
+                tipoAtestado.value = 'termoFomento';
+                toggleFormFields();
+            }
         }
-        avisoEntePublico.style.display = isEntePublico ? 'block' : 'none';
-        if (data.cep) await fetchAddressData();
+
+        // 5. Busca automática do endereço se o CEP vier no CNPJ
+        if (data.cep) {
+            await fetchAddressData();
+        }
+
     } catch (err) {
-        alert(`Erro ao consultar CNPJ: ${err.message}`);
+        console.error(err);
+        alert(`Erro: ${err.message}`);
         nomeEntidade.value = '';
         avisoEntePublico.style.display = 'none';
-    }
-    if (isEntePublico) {
-        document.querySelector('option[value="termoFomento"]').disabled = true;
-        if (tipoAtestado.value === 'termoFomento') {
-            tipoAtestado.value = 'convenio';
-            toggleFormFields();
-        }
-    } else {
-        document.querySelector('option[value="termoFomento"]').disabled = false;
     }
 }
 
