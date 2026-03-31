@@ -20,6 +20,7 @@ const declarations = [
     'ADIMPLÊNCIA',
     'CIÊNCIA DOS DEVERES E RESPONSABILIDADES IMPOSTOS PELA LEGISLAÇÃO ELEITORAL',
     'INEXISTÊNCIA DE NEPOTISMO E VEDAÇÕES À DESTINAÇÃO E EXECUÇÃO DE EMENDAS PARLAMENTARES',
+    'CIÊNCIA DAS VEDAÇÕES APLICÁVEIS EM ANO ELEITORAL',
 ];
 
 // -----------------------------------------------------------------------------
@@ -112,6 +113,27 @@ function getDeclarationBody(title, f) {
             `3. Que a entidade se compromete a não realizar contratações, subcontratações ou intermediações de pessoas físicas ou jurídicas que possuam, em seu quadro de sócios, dirigentes, prestadores de serviço ou fornecedores de bens, as pessoas mencionadas no item "1", visando garantir que nenhum destes seja o beneficiário final do recurso público.\n\n`,
             `4. Que a entidade possui plena autonomia administrativa e financeira e que os recursos recebidos serão executados estritamente para o objeto pactuado, observando-se os princípios da impessoalidade e moralidade.\n\n`,
             `A presente declaração é a expressão da verdade e a entidade assume total responsabilidade pela veracidade destas informações, ciente de que a falsidade poderá acarretar a rescisão imediata da parceria e a aplicação de sanções administrativas e penais cabíveis.`
+        ],
+        'CIÊNCIA DAS VEDAÇÕES APLICÁVEIS EM ANO ELEITORAL': [
+            `Eu, ${dirigente}, na qualidade de representante legal da ${entidade}, inscrita no CNPJ nº ${cnpj}, para fins de celebração e/ou execução de Termo de Fomento/Termo de Colaboração com o Ministério do Esporte, por intermédio da SNEAELIS DECLARO, sob as penas da lei:\n\n`,
+            `1. Que a Entidade não possui dentro do quadro de dirigentes candidatos ao pleito eleitoral, bem como não permitirá o uso promocional em favor de candidatos, partidos políticos ou coligações, no decorrer das suas atividades, publicações e demais atos administrativos;\n`,
+            `2. Que tenho ciência de que a execução de recursos públicos e a atuação da entidade em parceria com a Administração Pública devem observar, no geral, e especialmente em ano eleitoral, os princípios da legalidade, impessoalidade, moralidade, publicidade e eficiência, bem como as normas eleitorais, especialmente aquelas destinadas a resguardar a igualdade de oportunidades entre candidatas e candidatos;\n`,
+            `3. Que tenho ciência de que, embora a entidade privada não se equipare, em todos os aspectos, ao ente público destinatário das vedações específicas do art. 73 da Lei nº 9.504, de 30 de setembro de 1997, sua atuação no âmbito da parceria com o Poder Público deve abster-se de qualquer conduta que possa:\n`,
+            `   a. caracterizar uso indevido, desvio de finalidade ou aplicação promocional de bens, valores, materiais, serviços ou recursos públicos; \n`,
+            `   b. promover, favorecer ou prejudicar candidatura, partido político, federação ou coligação;\n`,
+            `   c. comprometer a neutralidade, a impessoalidade e a finalidade pública da ação apoiada com recursos da União;\n`,
+            `   d. ensejar apuração por abuso de poder político ou econômico, desvio de finalidade, improbidade administrativa ou infração eleitoral, na forma da legislação aplicável;\n`,
+            `4. Que tenho ciência de que é vedada a utilização da parceria, de seu objeto, de suas entregas, de eventos, de bens adquiridos, de serviços contratados, de material de divulgação, de redes sociais, de sítios eletrônicos, de marcas institucionais ou de qualquer outra estrutura vinculada ao ajuste para fins de promoção pessoal de agentes públicos, pré-candidatos, candidatos ou terceiros politicamente vinculados;\n`,
+            `5. Que me comprometo a não utilizar nem permitir que sejam utilizados recursos públicos federais transferidos à entidade para:\n`,
+            `   a. distribuição gratuita de bens, valores ou benefícios com finalidade eleitoral;\n`,
+            `   b. realização de propaganda eleitoral ou divulgação com conteúdo eleitoral;\n`,
+            `   c. promoção de autoridades públicas, parlamentares, candidatos ou partidos políticos;\n`,
+            `   d. associação da execução do objeto da parceria a candidaturas, slogans, cores, símbolos, nomes, imagens ou mensagens que possam caracterizar promoção eleitoral indevida;\n`,
+            `6. Que tenho ciência de que toda comunicação institucional, divulgação de resultados, publicidade de ações, eventos, publicações, peças visuais, manifestações em mídia, internet ou redes sociais relacionadas ao instrumento celebrado deverá possuir caráter estritamente informativo, educativo ou de orientação social, vedada a inserção de nomes, símbolos, imagens ou expressões que caracterizem promoção pessoal ou eleitoral, em observância ao § 1º do art. 37 da Constituição Federal e à legislação eleitoral pertinente;\n`,
+            `7. Que me comprometo a orientar dirigentes, empregados, colaboradores, prepostos, contratados e demais pessoas que atuem em nome da entidade quanto à necessidade de observância das vedações aplicáveis em ano eleitoral, prevenindo condutas que possam comprometer a regularidade da parceria e a lisura do processo eleitoral;\n`,
+            `8. Que tenho ciência de que eventual descumprimento das normas aplicáveis poderá ensejar, conforme o caso, suspensão de atos, glosa de despesas, devolução de recursos, rescisão da parceria, instauração de tomada de contas especial, responsabilização administrativa, civil e eleitoral dos envolvidos, sem prejuízo de outras medidas cabíveis; \n`,
+            `9. Que, durante a execução da parceria, a entidade observará integralmente a legislação de regência, inclusive as normas relativas às transferências voluntárias e parcerias com a Administração Pública, bem como todas orientações expedidas pelos órgãos competentes de controle, assessoramento jurídico e Justiça Eleitoral. \n\n`,
+            `Por ser expressão da verdade, firmo a presente declaração.`
         ],
     };
 
