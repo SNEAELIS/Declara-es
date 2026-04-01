@@ -40,7 +40,6 @@
             padding-bottom: 60px;
         }
 
-        /* ── HEADER ─────────────────────────────────────────── */
         header {
             background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul) 60%, var(--azul-claro) 100%);
             color: white;
@@ -57,11 +56,7 @@
             border-bottom: 2px solid var(--dourado);
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
 
         header img.logo-header {
             max-height: 44px;
@@ -81,7 +76,6 @@
             text-transform: uppercase;
         }
 
-        /* ── CONTAINER PRINCIPAL ─────────────────────────────── */
         .page-wrapper {
             max-width: 940px;
             margin: 84px auto 32px;
@@ -96,13 +90,10 @@
         }
 
         .page-title-bar .icon-title {
-            width: 48px;
-            height: 48px;
+            width: 48px; height: 48px;
             border-radius: 12px;
             background: linear-gradient(135deg, var(--azul), var(--azul-claro));
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.4rem;
             box-shadow: var(--sombra);
             flex-shrink: 0;
@@ -116,13 +107,8 @@
             line-height: 1.3;
         }
 
-        .page-title-bar p {
-            font-size: 0.82rem;
-            color: #7a8aaa;
-            margin-top: 2px;
-        }
+        .page-title-bar p { font-size: 0.82rem; color: #7a8aaa; margin-top: 2px; }
 
-        /* ── CARD ────────────────────────────────────────────── */
         .card {
             background: var(--branco);
             border-radius: var(--raio-grande);
@@ -139,33 +125,22 @@
             background: linear-gradient(90deg, var(--azul-suave) 0%, rgba(232,238,248,0.3) 100%);
             border-bottom: 2px solid rgba(0,48,135,0.08);
             padding: 14px 22px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
 
         .card-header .section-icon {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             border-radius: 8px;
             background: var(--azul);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 0.95rem;
             flex-shrink: 0;
         }
 
-        .card-header h3 {
-            font-size: 0.98rem;
-            font-weight: 700;
-            color: var(--azul-escuro);
-            letter-spacing: 0.01em;
-        }
+        .card-header h3 { font-size: 0.98rem; font-weight: 700; color: var(--azul-escuro); letter-spacing: 0.01em; }
 
         .card-body { padding: 22px; }
 
-        /* ── GRID DE CAMPOS ──────────────────────────────────── */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -177,7 +152,6 @@
         .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
         .col-span-2 { grid-column: span 2; }
 
-        /* ── CAMPO ───────────────────────────────────────────── */
         .field-group { display: flex; flex-direction: column; gap: 5px; }
 
         label {
@@ -185,20 +159,13 @@
             font-weight: 600;
             color: var(--azul-escuro);
             letter-spacing: 0.01em;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            display: flex; align-items: center; gap: 4px;
         }
 
         label .req { color: var(--vermelho); font-size: 0.85rem; }
         label .opt {
-            font-size: 0.7rem;
-            font-weight: 400;
-            color: #9aabbf;
-            background: #f0f4fa;
-            border-radius: 4px;
-            padding: 1px 6px;
-            margin-left: 4px;
+            font-size: 0.7rem; font-weight: 400; color: #9aabbf;
+            background: #f0f4fa; border-radius: 4px; padding: 1px 6px; margin-left: 4px;
         }
 
         input[type="text"],
@@ -236,72 +203,40 @@
             box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1) !important;
         }
 
-        input.campo-ok {
-            border-color: var(--verde-ok) !important;
-        }
+        input.campo-ok { border-color: var(--verde-ok) !important; }
 
-        .campo-msg {
-            font-size: 0.72rem;
-            min-height: 16px;
-            display: block;
-        }
+        .campo-msg { font-size: 0.72rem; min-height: 16px; display: block; }
         .campo-msg.erro { color: var(--vermelho); }
         .campo-msg.ok { color: var(--verde-ok); }
 
-        /* ── CHECKBOXES ──────────────────────────────────────── */
         .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: flex; flex-direction: column; gap: 10px;
             padding: 14px;
             background: var(--azul-suave);
             border-radius: var(--raio);
             border: 1px solid rgba(0,48,135,0.1);
         }
 
-        .checkbox-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            cursor: pointer;
-        }
+        .checkbox-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
 
         .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 18px; height: 18px;
             accent-color: var(--azul);
-            cursor: pointer;
-            margin-top: 1px;
-            flex-shrink: 0;
+            cursor: pointer; margin-top: 1px; flex-shrink: 0;
         }
 
-        .checkbox-item span {
-            font-size: 0.84rem;
-            line-height: 1.45;
-            color: var(--azul-escuro);
-        }
+        .checkbox-item span { font-size: 0.84rem; line-height: 1.45; color: var(--azul-escuro); }
 
-        /* ── NÚMERO DE DIRIGENTES ────────────────────────────── */
-        .dirigentes-ctrl {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-        }
-
+        .dirigentes-ctrl { display: flex; align-items: flex-end; gap: 12px; }
         .dirigentes-ctrl .field-group { flex: 0 0 160px; }
 
-        /* ── BOTÃO GERAR CAMPOS ──────────────────────────────── */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
+            display: inline-flex; align-items: center; gap: 7px;
             padding: 9px 20px;
             border-radius: var(--raio);
             font-family: 'Sora', sans-serif;
-            font-size: 0.86rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
+            font-size: 0.86rem; font-weight: 600;
+            cursor: pointer; border: none;
             transition: all 0.18s;
             text-decoration: none;
         }
@@ -319,21 +254,16 @@
         }
 
         .btn-outline {
-            background: transparent;
-            color: var(--azul);
-            border: 1.5px solid var(--azul);
+            background: transparent; color: var(--azul); border: 1.5px solid var(--azul);
         }
 
-        .btn-outline:hover {
-            background: var(--azul-suave);
-        }
+        .btn-outline:hover { background: var(--azul-suave); }
 
         .btn-gerar-pdf {
             background: linear-gradient(135deg, var(--dourado) 0%, #a07c10 100%);
             color: white;
             box-shadow: 0 3px 12px rgba(201,162,39,0.3);
-            padding: 11px 28px;
-            font-size: 0.92rem;
+            padding: 11px 28px; font-size: 0.92rem;
         }
 
         .btn-gerar-pdf:hover {
@@ -341,73 +271,37 @@
             transform: translateY(-2px);
         }
 
-        /* ── CARD DIRIGENTE ──────────────────────────────────── */
         .dirigente-card {
             background: linear-gradient(135deg, #fafbff 0%, #f4f7ff 100%);
             border: 1.5px solid rgba(0,48,135,0.1);
             border-radius: var(--raio-grande);
-            padding: 20px;
-            margin-bottom: 18px;
-            position: relative;
-            transition: border-color 0.2s;
+            padding: 20px; margin-bottom: 18px;
+            position: relative; transition: border-color 0.2s;
         }
 
         .dirigente-card:hover { border-color: rgba(0,48,135,0.22); }
 
         .dirigente-card-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 18px; padding-bottom: 12px;
             border-bottom: 1.5px solid rgba(0,48,135,0.1);
         }
 
         .dirigente-badge {
-            background: var(--azul);
-            color: white;
-            border-radius: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.82rem;
-            font-weight: 700;
-            flex-shrink: 0;
+            background: var(--azul); color: white;
+            border-radius: 8px; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
         }
 
-        .dirigente-card-title h4 {
-            font-size: 0.92rem;
-            font-weight: 700;
-            color: var(--azul-escuro);
-        }
+        .dirigente-card-title h4 { font-size: 0.92rem; font-weight: 700; color: var(--azul-escuro); }
 
         .address-group {
-            background: #eef2fb;
-            border-radius: var(--raio);
-            padding: 14px;
-            margin-top: 4px;
+            background: #eef2fb; border-radius: var(--raio); padding: 14px; margin-top: 4px;
         }
 
-        .address-group-label {
-            font-size: 0.74rem;
-            font-weight: 700;
-            color: var(--azul);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ── BARRA AÇÕES ─────────────────────────────────────── */
         .action-bar {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 12px;
+            display: flex; justify-content: flex-end; align-items: center; gap: 12px;
             padding: 20px 22px;
             background: var(--branco);
             border-radius: var(--raio-grande);
@@ -415,186 +309,121 @@
             border: 1px solid rgba(0,48,135,0.07);
         }
 
-        /* ── MODAL DE ERROS ──────────────────────────────────── */
+        /* ── MODAL ── */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(0,18,60,0.55);
             backdrop-filter: blur(4px);
             z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.22s;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; pointer-events: none; transition: opacity 0.22s;
         }
 
-        .modal-overlay.ativo {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .modal-overlay.ativo { opacity: 1; pointer-events: all; }
 
         .modal {
             background: var(--branco);
             border-radius: var(--raio-grande);
-            max-width: 520px;
-            width: 100%;
+            max-width: 520px; width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
-            transform: translateY(20px) scale(0.97);
-            transition: transform 0.22s;
+            transform: translateY(20px) scale(0.97); transition: transform 0.22s;
         }
 
         .modal-overlay.ativo .modal { transform: translateY(0) scale(1); }
 
         .modal-header {
             background: linear-gradient(135deg, var(--vermelho) 0%, #922b21 100%);
-            color: white;
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            color: white; padding: 18px 22px;
+            display: flex; align-items: center; gap: 12px;
         }
 
         .modal-header .modal-icon { font-size: 1.4rem; }
-
-        .modal-header h3 {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .modal-header p {
-            font-size: 0.78rem;
-            opacity: 0.85;
-            margin-top: 2px;
-        }
+        .modal-header h3 { font-size: 1rem; font-weight: 700; }
+        .modal-header p { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; }
 
         .modal-body { padding: 20px 22px; }
 
         .error-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 
         .error-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 0.85rem;
-            color: #2d2d2d;
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 0.85rem; color: #2d2d2d;
             background: var(--vermelho-suave);
             border: 1px solid rgba(192,57,43,0.15);
-            border-radius: 8px;
-            padding: 10px 12px;
-            line-height: 1.4;
+            border-radius: 8px; padding: 10px 12px; line-height: 1.4;
         }
 
         .error-list li .err-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
 
         .modal-footer {
-            padding: 14px 22px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
+            padding: 14px 22px; border-top: 1px solid #eee;
+            display: flex; justify-content: flex-end;
         }
 
-        /* ── TOAST DE SUCESSO ────────────────────────────────── */
+        /* ── TOAST ── */
         .toast {
-            position: fixed;
-            bottom: 80px;
-            right: 24px;
-            background: var(--verde-ok);
-            color: white;
-            border-radius: var(--raio);
-            padding: 12px 20px;
-            font-size: 0.88rem;
-            font-weight: 600;
+            position: fixed; bottom: 80px; right: 24px;
+            background: var(--verde-ok); color: white;
+            border-radius: var(--raio); padding: 12px 20px;
+            font-size: 0.88rem; font-weight: 600;
             box-shadow: 0 6px 24px rgba(0,0,0,0.2);
             z-index: 3000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transform: translateX(120px);
-            opacity: 0;
-            transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px;
+            transform: translateX(120px); opacity: 0; transition: all 0.3s;
         }
 
-        .toast.ativo {
-            transform: translateX(0);
-            opacity: 1;
-        }
+        .toast.ativo { transform: translateX(0); opacity: 1; }
 
-        /* ── LOADING ─────────────────────────────────────────── */
-        .btn-loading {
-            position: relative;
-            pointer-events: none;
-            opacity: 0.75;
-        }
+        /* ── LOADING ── */
+        .btn-loading { position: relative; pointer-events: none; opacity: 0.75; }
 
         .btn-loading::after {
-            content: '';
-            position: absolute;
-            right: 14px;
-            top: 50%;
+            content: ''; position: absolute; right: 14px; top: 50%;
             transform: translateY(-50%);
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+            border-radius: 50%; animation: spin 0.7s linear infinite;
         }
 
         @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-        /* ── FOOTER ──────────────────────────────────────────── */
         footer {
-            text-align: center;
-            padding: 12px;
+            text-align: center; padding: 12px;
             background: linear-gradient(90deg, var(--azul-escuro), var(--azul));
-            color: rgba(255,255,255,0.75);
-            font-size: 0.75rem;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
-            border-top: 1px solid var(--dourado);
-            letter-spacing: 0.02em;
+            color: rgba(255,255,255,0.75); font-size: 0.75rem;
+            position: fixed; bottom: 0; width: 100%; z-index: 1000;
+            border-top: 1px solid var(--dourado); letter-spacing: 0.02em;
         }
 
-        /* ── DIVISOR SEÇÃO ENDEREÇO ──────────────────────────── */
         .section-sub-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--azul);
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
+            font-size: 0.72rem; font-weight: 700; color: var(--azul);
+            text-transform: uppercase; letter-spacing: 0.07em;
             margin: 14px 0 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            display: flex; align-items: center; gap: 6px;
         }
 
         .section-sub-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(0,48,135,0.15);
+            content: ''; flex: 1; height: 1px; background: rgba(0,48,135,0.15);
         }
 
-        /* ── TOOLTIP OPCIONAL ────────────────────────────────── */
         .tip {
             display: inline-block;
-            background: #e8f4ff;
-            border: 1px solid #b3d4f0;
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 0.76rem;
-            color: #1a5080;
-            margin-top: 4px;
-            line-height: 1.4;
+            background: #e8f4ff; border: 1px solid #b3d4f0;
+            border-radius: 6px; padding: 6px 10px;
+            font-size: 0.76rem; color: #1a5080; margin-top: 4px; line-height: 1.4;
         }
 
-        /* ── RESPONSIVO ──────────────────────────────────────── */
+        /* ── Banner de aviso de campos obrigatórios ── */
+        .aviso-campos {
+            background: #fff8e1; border: 1.5px solid #f0c040;
+            border-radius: var(--raio); padding: 10px 14px;
+            font-size: 0.82rem; color: #7a5c00;
+            margin-bottom: 14px; display: none;
+        }
+
+        .aviso-campos.visivel { display: block; }
+
         @media (max-width: 700px) {
             .form-grid { grid-template-columns: 1fr; }
             .form-grid.cols-3 { grid-template-columns: 1fr; }
@@ -606,7 +435,6 @@
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════════════ -->
 <header>
     <div class="header-left">
         <img src="https://homologacao.sneaelis.app.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png"
@@ -616,7 +444,7 @@
     </div>
 </header>
 
-<!-- ══ MODAL ERROS ═════════════════════════════════════════════ -->
+<!-- MODAL ERROS -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
         <div class="modal-header">
@@ -635,10 +463,9 @@
     </div>
 </div>
 
-<!-- ══ TOAST ═══════════════════════════════════════════════════ -->
+<!-- TOAST -->
 <div class="toast" id="toast">✅ PDF gerado com sucesso!</div>
 
-<!-- ══ CONTEÚDO ════════════════════════════════════════════════ -->
 <div class="page-wrapper">
 
     <div class="page-title-bar">
@@ -649,14 +476,13 @@
         </div>
     </div>
 
-    <!-- ── CARD 1: DADOS DA ENTIDADE ─────────────────────────── -->
+    <!-- CARD 1: ENTIDADE -->
     <div class="card">
         <div class="card-header">
             <div class="section-icon">🏢</div>
             <h3>Identificação da Entidade</h3>
         </div>
         <div class="card-body">
-
             <div class="form-grid cols-1">
                 <div class="field-group">
                     <label for="cnpj">CNPJ <span class="req">*</span></label>
@@ -664,21 +490,18 @@
                     <span class="campo-msg" id="cnpjMsg"></span>
                 </div>
             </div>
-
             <div class="form-grid cols-1">
                 <div class="field-group">
                     <label for="nomeEntidade">Nome da Entidade <span class="req">*</span></label>
-                    <input type="text" id="nomeEntidade" readonly placeholder="Preenchido automaticamente via CNPJ">
+                    <input type="text" id="nomeEntidade" placeholder="Preenchido automaticamente via CNPJ ou manualmente">
                 </div>
             </div>
-
             <div class="form-grid cols-1">
                 <div class="field-group">
                     <label for="enderecoEntidade">Endereço <span class="req">*</span></label>
-                    <input type="text" id="enderecoEntidade" readonly placeholder="Preenchido automaticamente via CNPJ">
+                    <input type="text" id="enderecoEntidade" placeholder="Preenchido automaticamente via CNPJ ou manualmente">
                 </div>
             </div>
-
             <div class="form-grid">
                 <div class="field-group">
                     <label for="nomeRepresentante">Nome do Representante <span class="req">*</span></label>
@@ -691,26 +514,24 @@
                     <span class="campo-msg" id="cargoRepMsg"></span>
                 </div>
             </div>
-
             <div class="form-grid">
                 <div class="field-group">
                     <label for="ufEntidade">UF <span class="req">*</span></label>
-                    <select id="ufEntidade" disabled>
+                    <select id="ufEntidade">
                         <option value="">Selecione a UF</option>
                     </select>
                 </div>
                 <div class="field-group">
                     <label for="municipioEntidade">Município <span class="req">*</span></label>
-                    <select id="municipioEntidade" disabled>
+                    <select id="municipioEntidade">
                         <option value="">Selecione o município</option>
                     </select>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- ── CARD 2: HISTÓRICO ──────────────────────────────────── -->
+    <!-- CARD 2: HISTÓRICO -->
     <div class="card">
         <div class="card-header">
             <div class="section-icon">⚖️</div>
@@ -734,14 +555,13 @@
         </div>
     </div>
 
-    <!-- ── CARD 3: DIRIGENTES ─────────────────────────────────── -->
+    <!-- CARD 3: DIRIGENTES -->
     <div class="card">
         <div class="card-header">
             <div class="section-icon">👥</div>
             <h3>Dados dos Dirigentes</h3>
         </div>
         <div class="card-body">
-
             <div class="dirigentes-ctrl" style="margin-bottom:20px;">
                 <div class="field-group">
                     <label for="numDirigentes">Número de dirigentes <span class="req">*</span></label>
@@ -751,14 +571,14 @@
                     ✦ Gerar campos
                 </button>
             </div>
-
-            <form id="dirigentesForm">
-                <div id="camposDirigentes"></div>
-            </form>
+            <div id="avisoCampos" class="aviso-campos">
+                ⚠️ Clique em <strong>"Gerar campos"</strong> para exibir os campos dos dirigentes antes de gerar o PDF.
+            </div>
+            <div id="camposDirigentes"></div>
         </div>
     </div>
 
-    <!-- ── AÇÕES ──────────────────────────────────────────────── -->
+    <!-- AÇÕES -->
     <div class="action-bar">
         <button type="button" class="btn btn-outline" onclick="limparFormulario()">↺ Limpar tudo</button>
         <button type="button" id="botaoGerarPDF" class="btn btn-gerar-pdf">
@@ -770,13 +590,12 @@
 
 <footer>© 2026 Ministério do Esporte — Sistema de Geração de Documentos</footer>
 
-<!-- ══ SCRIPTS ════════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script>
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    DADOS GLOBAIS
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 const orgaosExpedidores = [
     'SSP','PC','PM','IFP','IIRGD','IGP','ITEP','POLITEC','SJC','SJDH','SJDS','SJS',
     'SEJUSP','DGPC','DPTC','PF','DPF','MAER','AER','MEx','EX','MM','MAR','DETRAN','CNH',
@@ -786,10 +605,11 @@ const orgaosExpedidores = [
 ];
 
 let ufsData = [];
+let camposGerados = false; // FLAG: controla se gerarCampos() foi chamado
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    IBGE
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function fetchUFs() {
     try {
         const r = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
@@ -801,7 +621,7 @@ async function fetchUFs() {
 }
 
 async function populateUFsDropdown(ufSel = '') {
-    await fetchUFs();
+    if (!ufsData.length) await fetchUFs();
     const sel = document.getElementById('ufEntidade');
     sel.innerHTML = '<option value="">Selecione a UF</option>';
     ufsData.forEach(uf => {
@@ -810,12 +630,15 @@ async function populateUFsDropdown(ufSel = '') {
         if (uf.sigla === ufSel) o.selected = true;
         sel.appendChild(o);
     });
+    sel.disabled = false;
     if (ufSel) await populateMunicipiosDropdown(ufSel);
 }
 
-async function populateMunicipiosDropdown(ufSigla = document.getElementById('ufEntidade').value, munSel = '') {
+async function populateMunicipiosDropdown(ufSigla, munSel = '') {
+    ufSigla = ufSigla || document.getElementById('ufEntidade').value;
     const sel = document.getElementById('municipioEntidade');
     sel.innerHTML = '<option value="">Selecione o município</option>';
+    sel.disabled = !ufSigla;
     if (!ufSigla) return;
     try {
         const r = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSigla}/municipios?orderBy=nome`);
@@ -826,12 +649,13 @@ async function populateMunicipiosDropdown(ufSigla = document.getElementById('ufE
             if (m.nome === munSel) o.selected = true;
             sel.appendChild(o);
         });
+        sel.disabled = false;
     } catch(e) { console.error('Erro municípios', e); }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    FORMATAÇÕES
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function formatarCNPJ(input) {
     let v = input.value.replace(/\D/g,'');
     v = v.replace(/^(\d{2})(\d)/,'$1.$2');
@@ -867,9 +691,9 @@ function formatarCEP(input) {
     input.value = v.slice(0,9);
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    CEP / ENDEREÇO
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function buscarCEP(index) {
     const cep = document.getElementById(`dirigenteCEP${index}`).value.replace(/\D/g,'');
     if (cep.length !== 8) { clearAddressFields(index); return; }
@@ -877,36 +701,45 @@ async function buscarCEP(index) {
         const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const d = await r.json();
         if (!d.erro) {
-            document.getElementById(`dirigenteRua${index}`).value = d.logradouro || '';
-            document.getElementById(`dirigenteBairro${index}`).value = d.bairro || '';
+            document.getElementById(`dirigenteRua${index}`).value    = d.logradouro || '';
+            document.getElementById(`dirigenteBairro${index}`).value = d.bairro     || '';
             document.getElementById(`dirigenteCidade${index}`).value = d.localidade || '';
-            document.getElementById(`dirigenteEstado${index}`).value = d.uf || '';
+            document.getElementById(`dirigenteEstado${index}`).value = d.uf         || '';
             updateFullAddress(index);
         } else {
-            showFieldError(`dirigenteCEP${index}`, 'CEP não encontrado');
+            document.getElementById(`dirigenteCEP${index}`).classList.add('campo-erro');
             clearAddressFields(index);
         }
     } catch(e) {
-        showFieldError(`dirigenteCEP${index}`, 'Erro ao buscar CEP');
         clearAddressFields(index);
     }
 }
 
+/**
+ * Monta o endereço completo sem vírgulas duplicadas quando complemento está vazio.
+ * Regra: complemento só entra se tiver conteúdo.
+ */
 function updateFullAddress(index) {
-    const get = id => document.getElementById(id)?.value || '';
-    const rua = get(`dirigenteRua${index}`);
-    const num = get(`dirigenteNumero${index}`);
-    const comp = get(`dirigenteComplemento${index}`);
+    const get = id => (document.getElementById(id)?.value || '').trim();
+
+    const rua    = get(`dirigenteRua${index}`);
+    const num    = get(`dirigenteNumero${index}`);
+    const comp   = get(`dirigenteComplemento${index}`);   // opcional
     const bairro = get(`dirigenteBairro${index}`);
     const cidade = get(`dirigenteCidade${index}`);
     const estado = get(`dirigenteEstado${index}`);
-    const cep = get(`dirigenteCEP${index}`);
+    const cep    = get(`dirigenteCEP${index}`);
 
+    // Monta as partes, pulando comp se vazio → sem vírgula dupla
     const parts = [rua];
-    if (num) parts.push(`nº ${num}`);
-    if (comp) parts.push(comp);          // complemento opcional → só adiciona se tiver
-    parts.push(bairro, `${cidade} - ${estado}`, `CEP: ${cep}`);
-    document.getElementById(`dirigenteEnderecoCompleto${index}`).value = parts.filter(Boolean).join(', ');
+    if (num)    parts.push(`nº ${num}`);
+    if (comp)   parts.push(comp);          // só adiciona se houver conteúdo
+    if (bairro) parts.push(bairro);
+    if (cidade || estado) parts.push(`${cidade}${cidade && estado ? ' - ' : ''}${estado}`);
+    if (cep)    parts.push(`CEP: ${cep}`);
+
+    document.getElementById(`dirigenteEnderecoCompleto${index}`).value =
+        parts.filter(Boolean).join(', ');
 }
 
 function clearAddressFields(index) {
@@ -916,54 +749,55 @@ function clearAddressFields(index) {
     });
 }
 
-/* ════════════════════════════════════════════════════════════════
-   EMAIL
-════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   EMAIL — validação sem confirm() bloqueante
+══════════════════════════════════════════════════════════ */
 function verificarEmail(input, index) {
     const email = input.value.trim();
-    const span = document.getElementById(`emailStatus${index}`);
-    if (!email) { span.textContent = ''; return; }
+    const span  = document.getElementById(`emailStatus${index}`);
+    if (!email) { span.textContent = ''; input.classList.remove('campo-erro','campo-ok'); return; }
 
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
         span.textContent = 'E-mail inválido'; span.className = 'campo-msg erro';
-        input.classList.add('campo-erro'); input.value = ''; return;
+        input.classList.add('campo-erro'); input.classList.remove('campo-ok');
+        return;
     }
 
+    // Verifica duplicata entre dirigentes
     const total = parseInt(document.getElementById('numDirigentes').value) || 0;
     for (let i = 1; i <= total; i++) {
         if (i === index) continue;
         const other = document.getElementById(`dirigenteEmail${i}`);
-        if (other && other.value.trim() === email) {
+        if (other && other.value.trim().toLowerCase() === email.toLowerCase()) {
             span.textContent = 'E-mail já usado por outro dirigente';
             span.className = 'campo-msg erro';
-            input.classList.add('campo-erro'); input.value = ''; return;
+            input.classList.add('campo-erro'); input.classList.remove('campo-ok');
+            return;
         }
     }
 
-    if (confirm(`O e-mail "${email}" está ativo?`)) {
-        span.textContent = '✓ E-mail válido'; span.className = 'campo-msg ok';
-        input.classList.remove('campo-erro'); input.classList.add('campo-ok');
-    } else {
-        span.textContent = 'E-mail rejeitado (não ativo)'; span.className = 'campo-msg erro';
-        input.classList.add('campo-erro'); input.value = '';
-    }
+    // E-mail válido e único
+    span.textContent = '✓ E-mail válido'; span.className = 'campo-msg ok';
+    input.classList.remove('campo-erro'); input.classList.add('campo-ok');
 }
 
-/* ════════════════════════════════════════════════════════════════
-   GERAR CAMPOS
-════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   GERAR CAMPOS DOS DIRIGENTES
+══════════════════════════════════════════════════════════ */
 function gerarCampos() {
     const num = parseInt(document.getElementById('numDirigentes').value);
-    const container = document.getElementById('camposDirigentes');
-    container.innerHTML = '';
 
     if (isNaN(num) || num < 1 || num > 25) {
         mostrarModal(['O número de dirigentes deve ser entre 1 e 25.']); return;
     }
 
+    const container = document.getElementById('camposDirigentes');
+    container.innerHTML = '';
+    document.getElementById('avisoCampos').classList.remove('visivel');
+
     const orgOpts = orgaosExpedidores.map(o => `<option value="${o}">${o}</option>`).join('');
-    const ufOpts = ufsData.map(u => `<option value="${u.sigla}">${u.sigla}</option>`).join('');
+    const ufOpts  = ufsData.map(u => `<option value="${u.sigla}">${u.sigla}</option>`).join('');
 
     for (let i = 1; i <= num; i++) {
         const div = document.createElement('div');
@@ -1046,7 +880,7 @@ function gerarCampos() {
                             Complemento <span class="opt">opcional</span>
                         </label>
                         <input type="text" id="dirigenteComplemento${i}" placeholder="Apto, sala, bloco…">
-                        <span class="tip">💡 Deixe em branco se não houver complemento</span>
+                        <span class="tip">💡 Deixe em branco se não houver complemento — não aparecerá no documento</span>
                     </div>
                 </div>
 
@@ -1075,14 +909,15 @@ function gerarCampos() {
                 <div class="form-grid cols-1" style="margin-top:8px;">
                     <div class="field-group">
                         <label for="dirigenteEnderecoCompleto${i}">Endereço completo</label>
-                        <input type="text" id="dirigenteEnderecoCompleto${i}" readonly placeholder="Gerado automaticamente">
+                        <input type="text" id="dirigenteEnderecoCompleto${i}" readonly
+                               placeholder="Gerado automaticamente após preencher CEP e número">
                     </div>
                 </div>
             </div>
         `;
         container.appendChild(div);
 
-        // event listeners
+        // eventos
         document.getElementById(`dirigenteCPF${i}`).addEventListener('input', e => formatarCPF(e.target));
         document.getElementById(`dirigenteRG${i}`).addEventListener('input', e => formatarRG(e.target));
         document.getElementById(`dirigenteTelefone${i}`).addEventListener('input', e => formatarTelefone(e.target));
@@ -1090,38 +925,15 @@ function gerarCampos() {
         document.getElementById(`dirigenteCEP${i}`).addEventListener('blur', () => buscarCEP(i));
         document.getElementById(`dirigenteNumero${i}`).addEventListener('input', () => updateFullAddress(i));
         document.getElementById(`dirigenteComplemento${i}`).addEventListener('input', () => updateFullAddress(i));
-        document.getElementById(`dirigenteEmail${i}`).addEventListener('blur', () =>
-            verificarEmail(document.getElementById(`dirigenteEmail${i}`), i));
+        document.getElementById(`dirigenteEmail${i}`).addEventListener('blur', e => verificarEmail(e.target, i));
     }
+
+    camposGerados = true;
 }
 
-/* ════════════════════════════════════════════════════════════════
-   FEEDBACK VISUAL DE CAMPO
-════════════════════════════════════════════════════════════════ */
-function showFieldError(fieldId, msg) {
-    const el = document.getElementById(fieldId);
-    if (!el) return;
-    el.classList.add('campo-erro');
-    const msgEl = document.getElementById(fieldId.replace(/^(\w+?)(\d+)$/, 'msg$1$2').replace('dirigente',''));
-    if (msgEl) { msgEl.textContent = msg; msgEl.className = 'campo-msg erro'; }
-}
-
-function clearFieldError(fieldId) {
-    const el = document.getElementById(fieldId);
-    if (!el) return;
-    el.classList.remove('campo-erro');
-}
-
-function marcarCampoVazio(id, label) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('campo-erro');
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    MODAL
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function mostrarModal(erros) {
     const lista = document.getElementById('listaErros');
     lista.innerHTML = erros.map(e => `<li><span class="err-icon">❌</span>${e}</li>`).join('');
@@ -1136,9 +948,9 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) fecharModal();
 });
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    TOAST
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function mostrarToast(msg = '✅ PDF gerado com sucesso!') {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -1146,49 +958,64 @@ function mostrarToast(msg = '✅ PDF gerado com sucesso!') {
     setTimeout(() => t.classList.remove('ativo'), 3500);
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    LIMPAR
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function limparFormulario() {
     if (!confirm('Deseja realmente limpar todos os dados?')) return;
-    document.querySelectorAll('input:not([readonly]), select').forEach(el => {
-        if (el.type === 'checkbox') el.checked = false;
-        else el.value = el.type === 'number' ? '1' : '';
+    document.querySelectorAll('input:not([type="checkbox"]), select').forEach(el => {
+        el.value = el.type === 'number' ? '1' : '';
         el.classList.remove('campo-erro','campo-ok');
     });
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
     document.getElementById('camposDirigentes').innerHTML = '';
     document.querySelectorAll('.campo-msg').forEach(el => { el.textContent = ''; el.className = 'campo-msg'; });
+    document.getElementById('avisoCampos').classList.remove('visivel');
+    camposGerados = false;
+
+    // Reseta selects de UF/Município
+    document.getElementById('municipioEntidade').innerHTML = '<option value="">Selecione o município</option>';
+    document.getElementById('municipioEntidade').disabled = true;
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    VALIDAÇÃO
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function validarCamposObrigatorios() {
     const erros = [];
-
-    // limpa estados anteriores
     document.querySelectorAll('.campo-erro').forEach(el => el.classList.remove('campo-erro'));
 
+    // ── BLOCO 1: verifica se campos foram gerados ──────────
+    if (!camposGerados || !document.getElementById('dirigenteNome1')) {
+        document.getElementById('avisoCampos').classList.add('visivel');
+        document.getElementById('avisoCampos').scrollIntoView({ behavior:'smooth', block:'center' });
+        mostrarModal(['Clique em "Gerar campos" antes de gerar o PDF para que os campos dos dirigentes apareçam.']);
+        return false;
+    }
+
+    // ── BLOCO 2: dados da entidade ─────────────────────────
     function req(id, label) {
         const el = document.getElementById(id);
-        if (!el || !el.value.trim()) {
-            if (el) el.classList.add('campo-erro');
+        if (!el) return false;
+        const val = el.tagName === 'SELECT' ? el.value : el.value.trim();
+        if (!val) {
+            el.classList.add('campo-erro');
             erros.push(`"${label}" é obrigatório.`);
             return false;
         }
         return true;
     }
 
-    req('cnpj', 'CNPJ');
-    req('nomeEntidade', 'Nome da Entidade');
-    req('enderecoEntidade', 'Endereço');
+    req('cnpj',              'CNPJ');
+    req('nomeEntidade',      'Nome da Entidade');
+    req('enderecoEntidade',  'Endereço');
     req('nomeRepresentante', 'Nome do Representante');
-    req('cargoRepresentante', 'Cargo do Representante');
-    req('ufEntidade', 'UF');
+    req('cargoRepresentante','Cargo do Representante');
+    req('ufEntidade',        'UF');
     req('municipioEntidade', 'Município');
 
     const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
-    const nomeRep = document.getElementById('nomeRepresentante').value.trim();
+    const nomeRep  = document.getElementById('nomeRepresentante').value.trim();
     const cargoRep = document.getElementById('cargoRepresentante').value.trim();
     if (nomeRep && !nameRegex.test(nomeRep)) {
         document.getElementById('nomeRepresentante').classList.add('campo-erro');
@@ -1199,66 +1026,65 @@ function validarCamposObrigatorios() {
         erros.push('"Cargo do Representante" deve conter apenas letras e espaços.');
     }
 
+    // ── BLOCO 3: dados de cada dirigente ───────────────────
     const num = parseInt(document.getElementById('numDirigentes').value) || 0;
-    if (num < 1) erros.push('Informe ao menos 1 dirigente e clique em "Gerar campos".');
 
     for (let i = 1; i <= num; i++) {
-        const prefix = `Dirigente ${i}:`;
+        const p = `Dirigente ${i}:`;
+
         const nome = document.getElementById(`dirigenteNome${i}`)?.value?.trim();
-        if (!nome) { document.getElementById(`dirigenteNome${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "Nome" é obrigatório.`); }
+        if (!nome) { document.getElementById(`dirigenteNome${i}`)?.classList.add('campo-erro'); erros.push(`${p} "Nome" é obrigatório.`); }
 
         const cargo = document.getElementById(`dirigenteCargo${i}`)?.value?.trim();
-        if (!cargo) { document.getElementById(`dirigenteCargo${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "Cargo" é obrigatório.`); }
+        if (!cargo) { document.getElementById(`dirigenteCargo${i}`)?.classList.add('campo-erro'); erros.push(`${p} "Cargo" é obrigatório.`); }
 
-        // CPF: remove máscara e valida
         const cpfRaw = (document.getElementById(`dirigenteCPF${i}`)?.value || '').replace(/\D/g,'');
         if (cpfRaw.length !== 11) {
             document.getElementById(`dirigenteCPF${i}`)?.classList.add('campo-erro');
-            erros.push(`${prefix} CPF inválido (informe 11 dígitos).`);
+            erros.push(`${p} CPF inválido (informe 11 dígitos).`);
         }
 
-        // RG: só dígitos
         const rgRaw = (document.getElementById(`dirigenteRG${i}`)?.value || '').replace(/\D/g,'');
         if (rgRaw.length < 5) {
             document.getElementById(`dirigenteRG${i}`)?.classList.add('campo-erro');
-            erros.push(`${prefix} RG inválido (mínimo 5 dígitos).`);
+            erros.push(`${p} RG inválido (mínimo 5 dígitos).`);
         }
 
         const orgao = document.getElementById(`dirigenteOrgao${i}`)?.value;
-        if (!orgao) { document.getElementById(`dirigenteOrgao${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "Órgão Expedidor" é obrigatório.`); }
+        if (!orgao) { document.getElementById(`dirigenteOrgao${i}`)?.classList.add('campo-erro'); erros.push(`${p} "Órgão Expedidor" é obrigatório.`); }
 
         const uf = document.getElementById(`dirigenteUF${i}`)?.value;
-        if (!uf) { document.getElementById(`dirigenteUF${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "UF do Órgão" é obrigatória.`); }
+        if (!uf) { document.getElementById(`dirigenteUF${i}`)?.classList.add('campo-erro'); erros.push(`${p} "UF do Órgão" é obrigatória.`); }
 
-        // CEP
         const cepRaw = (document.getElementById(`dirigenteCEP${i}`)?.value || '').replace(/\D/g,'');
         if (cepRaw.length !== 8) {
             document.getElementById(`dirigenteCEP${i}`)?.classList.add('campo-erro');
-            erros.push(`${prefix} CEP inválido.`);
+            erros.push(`${p} CEP inválido.`);
         }
 
         const numero = document.getElementById(`dirigenteNumero${i}`)?.value?.trim();
-        if (!numero) { document.getElementById(`dirigenteNumero${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "Número" do endereço é obrigatório.`); }
+        if (!numero) { document.getElementById(`dirigenteNumero${i}`)?.classList.add('campo-erro'); erros.push(`${p} "Número" do endereço é obrigatório.`); }
 
-        // Telefone: remove máscara
         const telRaw = (document.getElementById(`dirigenteTelefone${i}`)?.value || '').replace(/\D/g,'');
         if (telRaw.length < 10) {
             document.getElementById(`dirigenteTelefone${i}`)?.classList.add('campo-erro');
-            erros.push(`${prefix} Telefone inválido.`);
+            erros.push(`${p} Telefone inválido.`);
         }
 
         const email = document.getElementById(`dirigenteEmail${i}`)?.value?.trim();
-        if (!email) { document.getElementById(`dirigenteEmail${i}`)?.classList.add('campo-erro'); erros.push(`${prefix} "E-mail" é obrigatório.`); }
-
-        const emailStatus = document.getElementById(`emailStatus${i}`)?.textContent || '';
-        if (emailStatus.includes('inválido') || emailStatus.includes('já usado') || emailStatus.includes('rejeitado')) {
-            erros.push(`${prefix} Corrija o e-mail (${emailStatus}).`);
+        if (!email) {
+            document.getElementById(`dirigenteEmail${i}`)?.classList.add('campo-erro');
+            erros.push(`${p} "E-mail" é obrigatório.`);
+        } else {
+            const emailStatus = document.getElementById(`emailStatus${i}`)?.textContent || '';
+            if (emailStatus.includes('inválido') || emailStatus.includes('já usado')) {
+                erros.push(`${p} Corrija o e-mail (${emailStatus}).`);
+            }
         }
     }
 
     if (erros.length > 0) {
         mostrarModal(erros);
-        // scroll ao primeiro campo com erro
         const primeiro = document.querySelector('.campo-erro');
         if (primeiro) primeiro.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return false;
@@ -1267,11 +1093,11 @@ function validarCamposObrigatorios() {
     return true;
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    IMAGEM BASE64
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function getBase64Image(src) {
-    return new Promise((resolve) => {   // resolve sempre (nunca rejeita)
+    return new Promise((resolve) => {
         const img = new Image();
         img.crossOrigin = 'Anonymous';
         img.onload = () => {
@@ -1282,54 +1108,61 @@ function getBase64Image(src) {
                 resolve(canvas.toDataURL('image/jpeg'));
             } catch(e) { resolve(null); }
         };
-        img.onerror = () => resolve(null);   // falhou → sem marca d'água, mas gera
+        img.onerror = () => resolve(null);
         img.src = src;
     });
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    DATA
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function getDataAtual() {
     const hoje = new Date();
-    const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                   'agosto','setembro','outubro','novembro','dezembro'];
     return `${String(hoje.getDate()).padStart(2,'0')} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    GERAR PDF
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function gerarPDF() {
     const btn = document.getElementById('botaoGerarPDF');
     btn.classList.add('btn-loading');
     btn.textContent = '⏳ Gerando…';
 
     try {
-        // marca d'água (falha silenciosamente)
         const watermark = await getBase64Image('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
 
-        // coleta dados
-        const cnpj = document.getElementById('cnpj').value;
-        const nomeEntidade = document.getElementById('nomeEntidade').value;
-        const enderecoEntidade = document.getElementById('enderecoEntidade').value;
-        const contasRej = document.getElementById('contasRejeitadas').checked;
-        const improbidade = document.getElementById('improbidadeAdministrativa').checked;
-        const sancoes = document.getElementById('sancoesLei13019').checked;
-        const num = parseInt(document.getElementById('numDirigentes').value) || 0;
-        const uf = document.getElementById('ufEntidade').value;
-        const municipio = document.getElementById('municipioEntidade').value;
-        const nomeRep = document.getElementById('nomeRepresentante').value;
-        const cargoRep = document.getElementById('cargoRepresentante').value;
+        const cnpj            = document.getElementById('cnpj').value;
+        const nomeEntidade    = document.getElementById('nomeEntidade').value.trim();
+        const enderecoEntidade = document.getElementById('enderecoEntidade').value.trim();
+        const contasRej       = document.getElementById('contasRejeitadas').checked;
+        const improbidade     = document.getElementById('improbidadeAdministrativa').checked;
+        const sancoes         = document.getElementById('sancoesLei13019').checked;
+        const num             = parseInt(document.getElementById('numDirigentes').value) || 0;
+        const uf              = document.getElementById('ufEntidade').value;
+        const municipio       = document.getElementById('municipioEntidade').value;
+        const nomeRep         = document.getElementById('nomeRepresentante').value.trim();
+        const cargoRep        = document.getElementById('cargoRepresentante').value.trim();
 
+        // Monta linhas da tabela de dirigentes
         const dirigentes = [];
         for (let i = 1; i <= num; i++) {
-            // limpa masks antes de compor o PDF
-            const cpfClean = document.getElementById(`dirigenteCPF${i}`).value; // mantém formatado para leitura
-            const rgClean  = document.getElementById(`dirigenteRG${i}`).value;
+            const cpf  = document.getElementById(`dirigenteCPF${i}`).value;
+            const rg   = document.getElementById(`dirigenteRG${i}`).value;
+            const orgao = document.getElementById(`dirigenteOrgao${i}`).value;
+            const ufOrg = document.getElementById(`dirigenteUF${i}`).value;
+            const nome  = document.getElementById(`dirigenteNome${i}`).value;
+            const cargo = document.getElementById(`dirigenteCargo${i}`).value;
+            const end   = document.getElementById(`dirigenteEnderecoCompleto${i}`).value;
+            const tel   = document.getElementById(`dirigenteTelefone${i}`).value;
+            const email = document.getElementById(`dirigenteEmail${i}`).value;
+
             dirigentes.push([
-                `${document.getElementById(`dirigenteNome${i}`).value} — ${document.getElementById(`dirigenteCargo${i}`).value}`,
-                `RG: ${rgClean} — ${document.getElementById(`dirigenteOrgao${i}`).value}/${document.getElementById(`dirigenteUF${i}`).value}\nCPF: ${cpfClean}`,
-                `${document.getElementById(`dirigenteEnderecoCompleto${i}`).value}\nTel: ${document.getElementById(`dirigenteTelefone${i}`).value}\nEmail: ${document.getElementById(`dirigenteEmail${i}`).value}`
+                { text: `${nome}\n${cargo}`, fontSize:10 },
+                { text: `RG: ${rg} — ${orgao}/${ufOrg}\nCPF: ${cpf}`, fontSize:10 },
+                { text: `${end}\nTel: ${tel}\nEmail: ${email}`, fontSize:10 }
             ]);
         }
 
@@ -1341,7 +1174,7 @@ async function gerarPDF() {
                 { text: 'V.2 – a decisão de rejeição das contas foi reconsiderada ou revista;', margin:[15,5], alignment:'justify' },
                 { text: 'V.3 – a decisão sobre a apreciação das contas está pendente de decisão sobre recurso com efeito suspensivo;', margin:[15,5], alignment:'justify' }
               ]
-            : { text: 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.', margin:[0,10], alignment:'justify' };
+            : [{ text: 'V – não tiveram as contas rejeitadas pela Administração Pública nos últimos cinco anos.', margin:[0,10], alignment:'justify' }];
 
         const txSancoes = sancoes
             ? { text: 'VI – foram punidos, mas o período que durou a penalidade já se exauriu.', margin:[0,10], alignment:'justify' }
@@ -1353,35 +1186,43 @@ async function gerarPDF() {
 
         const docDef = {
             pageSize: 'A4',
-            pageMargins: [40, 85, 40, 45],
-            background: watermark ? (page) => [{
-                image: watermark, width: 595, height: 842, opacity: 0.45,
-                absolutePosition: { x:0, y:0 }
-            }] : undefined,
+            pageMargins: [40, 90, 40, 45],
+            background: watermark
+                ? () => [{ image: watermark, width: 595, height: 842, opacity: 0.45, absolutePosition: { x:0, y:0 } }]
+                : undefined,
             header: (page) => ({
                 stack: [
-                    { text: nomeEntidade.toUpperCase(), fontSize:15, bold:true, alignment:'center', color:'#003087' },
-                    { text: enderecoEntidade, fontSize:10, alignment:'center', italics:true, color:'#555', margin:[0,2,0,0] }
+                    { text: nomeEntidade.toUpperCase(), fontSize:14, bold:true, alignment:'center', color:'#003087' },
+                    { text: enderecoEntidade, fontSize:9.5, alignment:'center', italics:true, color:'#555', margin:[0,2,0,0] }
                 ],
-                margin: [40, page === 1 ? 12 : 40, 40, 10]
+                margin: [40, page === 1 ? 14 : 40, 40, 10]
             }),
             footer: (page, count) => ({
                 text: `Página ${page} de ${count}`,
-                alignment:'right', margin:[0,0,40,10], fontSize:9, color:'#777'
+                alignment:'right', margin:[0,0,40,12], fontSize:9, color:'#777'
             }),
             content: [
-                { text: 'DECLARAÇÃO DOS ARTIGOS 26 E 27 DO DECRETO Nº 8.726/2016 E ARTIGO 39 DA LEI Nº 13.019/2014', style:'titulo', alignment:'center', margin:[0,18,0,14] },
-                { text: `Declaro, em nome da ${nomeEntidade} (CNPJ: ${cnpj}), nos termos dos artigos 26, caput, inciso VII, e 27 do Decreto nº 8.726, de 27 de abril de 2016, e artigo 39, incisos III ao VII, da Lei nº 13.019, de 31 de julho de 2014, que os seus dirigentes abaixo relacionados, a saber:`, alignment:'justify', lineHeight:1.3, margin:[0,0,0,12] },
-                { text: 'RELAÇÃO NOMINAL ATUALIZADA DOS DIRIGENTES DA ENTIDADE', style:'subtitulo', alignment:'center', decoration:'underline', margin:[0,10,0,12] },
+                {
+                    text: 'DECLARAÇÃO DOS ARTIGOS 26 E 27 DO DECRETO Nº 8.726/2016\nE ARTIGO 39 DA LEI Nº 13.019/2014',
+                    style:'titulo', alignment:'center', margin:[0,16,0,14]
+                },
+                {
+                    text: `Declaro, em nome da ${nomeEntidade} (CNPJ: ${cnpj}), nos termos dos artigos 26, caput, inciso VII, e 27 do Decreto nº 8.726, de 27 de abril de 2016, e artigo 39, incisos III ao VII, da Lei nº 13.019, de 31 de julho de 2014, que os seus dirigentes abaixo relacionados, a saber:`,
+                    alignment:'justify', lineHeight:1.3, margin:[0,0,0,12]
+                },
+                {
+                    text: 'RELAÇÃO NOMINAL ATUALIZADA DOS DIRIGENTES DA ENTIDADE',
+                    style:'subtitulo', alignment:'center', decoration:'underline', margin:[0,8,0,12]
+                },
                 {
                     table: {
                         headerRows: 1,
                         widths: ['30%','35%','35%'],
                         body: [
                             [
-                                { text:'Nome e Cargo', bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:11 },
-                                { text:'Identidade, Órgão, UF e CPF', bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:11 },
-                                { text:'Endereço, Telefone e E-mail', bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:11 }
+                                { text:'Nome e Cargo',                         bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:10 },
+                                { text:'Identidade, Órgão, UF e CPF',          bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:10 },
+                                { text:'Endereço, Telefone e E-mail',           bold:true, fillColor:'#dce6f4', alignment:'center', fontSize:10 }
                             ],
                             ...dirigentes
                         ]
@@ -1391,7 +1232,7 @@ async function gerarPDF() {
                         vLineWidth: (i,n) => (i===0||i===n.table.widths.length)?2:1,
                         hLineColor: () => '#6680aa',
                         vLineColor: () => '#6680aa',
-                        paddingLeft: () => 8, paddingRight: () => 8,
+                        paddingLeft: () => 6, paddingRight: () => 6,
                         paddingTop: () => 5, paddingBottom: () => 5
                     },
                     margin:[0,0,0,14]
@@ -1403,25 +1244,27 @@ async function gerarPDF() {
                 { text:'a) membros de Poder, do Ministério Público ou dirigentes de órgão ou entidade da administração pública federal;', margin:[15,5], alignment:'justify', lineHeight:1.3 },
                 { text:'b) servidores ou empregados públicos, incluindo cônjuges, companheiros ou parentes em linha reta, colateral ou por afinidade até o segundo grau, salvo hipóteses previstas em lei específica ou na lei de diretrizes orçamentárias;', margin:[15,5], alignment:'justify', lineHeight:1.3 },
                 { text:'c) pessoas naturais condenadas por crimes contra a administração pública, patrimônio público, crimes eleitorais com pena privativa de liberdade ou lavagem de bens, direitos e valores;', margin:[15,5], alignment:'justify', lineHeight:1.3 },
-                ...(Array.isArray(txContasRej) ? txContasRej : [txContasRej]),
+                ...txContasRej,
                 txSancoes,
                 { text:'VII – não foram, nos últimos 8 (oito) anos:', margin:[0,8], alignment:'justify', lineHeight:1.3 },
                 { text:'a) julgados com contas relativas a parcerias irregulares ou rejeitadas por Tribunal ou Conselho de Contas, em decisão irrecorrível;', margin:[15,5], alignment:'justify', lineHeight:1.3 },
                 { text:'b) inabilitados por falta grave para exercer cargo em comissão ou função de confiança, enquanto durar a inabilitação;', margin:[15,5], alignment:'justify', lineHeight:1.3 },
                 txImprobidade,
-                { text:`\n${municipio}/${uf}, na data da assinatura eletrônica.`, alignment:'center', margin:[0,24,0,0], lineHeight:1.3 },
-                { text:'_________________________________', alignment:'center', margin:[0,14] },
-                { text: nomeRep, alignment:'center', bold:true, margin:[0,4] },
+                { text:`\n${municipio}/${uf}, na data da assinatura eletrônica.`, alignment:'center', margin:[0,28,0,0], lineHeight:1.3 },
+                { text:'_________________________________', alignment:'center', margin:[0,16] },
+                { text: nomeRep,  alignment:'center', bold:true, margin:[0,4] },
                 { text: cargoRep, alignment:'center', fontSize:11, color:'#555' }
             ],
             styles: {
-                titulo: { fontSize:15, bold:true, color:'#002147' },
-                subtitulo: { fontSize:13, bold:true, color:'#002147' }
+                titulo:    { fontSize:14, bold:true, color:'#002147' },
+                subtitulo: { fontSize:12, bold:true, color:'#002147' }
             },
             defaultStyle: { font:'Roboto', fontSize:11, lineHeight:1.25 }
         };
 
-        pdfMake.createPdf(docDef).download(`declaracao-dirigentes_${nomeEntidade.replace(/\s+/g,'_')}.pdf`);
+        pdfMake.createPdf(docDef).download(
+            `declaracao-art2627_${nomeEntidade.replace(/\s+/g,'_')}.pdf`
+        );
         mostrarToast('✅ PDF gerado com sucesso!');
 
     } catch(err) {
@@ -1433,9 +1276,9 @@ async function gerarPDF() {
     }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    CNPJ FETCH
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function fetchCNPJ(cnpj) {
     const clean = cnpj.replace(/\D/g,'');
     if (clean.length !== 14) return;
@@ -1459,20 +1302,26 @@ async function fetchCNPJ(cnpj) {
         } else {
             msgEl.textContent = 'CNPJ não encontrado'; msgEl.className = 'campo-msg erro';
             document.getElementById('cnpj').classList.add('campo-erro');
-            document.getElementById('nomeEntidade').value = '';
-            document.getElementById('enderecoEntidade').value = '';
         }
     } catch(e) {
-        msgEl.textContent = 'Erro ao consultar CNPJ'; msgEl.className = 'campo-msg erro';
+        msgEl.textContent = 'Erro ao consultar CNPJ (preenchimento manual disponível)';
+        msgEl.className = 'campo-msg erro';
     }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    INIT
-════════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
+    await fetchUFs();
     await populateUFsDropdown();
 
+    // UF → carrega municípios
+    document.getElementById('ufEntidade').addEventListener('change', e => {
+        populateMunicipiosDropdown(e.target.value);
+    });
+
+    // Filtro de letras
     document.getElementById('nomeRepresentante').addEventListener('input', function() {
         this.value = this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g,'');
     });
@@ -1491,6 +1340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.target.value.replace(/\D/g,'').length === 14) fetchCNPJ(e.target.value);
     });
 
+    // Gera 1 dirigente por padrão
     gerarCampos();
 });
 </script>
