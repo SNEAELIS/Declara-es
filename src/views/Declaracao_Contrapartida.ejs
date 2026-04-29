@@ -17,6 +17,7 @@
             --header-footer-bg: #003087;
             --header-footer-text: #fff;
             --error-color: #d32f2f;
+            --success-color: #2e7d32;
             --shadow-color: rgba(0, 0, 0, 0.1);
             --toggle-bg: #ccc;
             --toggle-ball: white;
@@ -37,11 +38,7 @@
             --toggle-bg: #5d8aff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Arial', sans-serif;
@@ -50,7 +47,6 @@
             line-height: 1.6;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             padding: 20px 0;
             transition: background-color 0.3s, color 0.3s;
@@ -71,56 +67,21 @@
             align-items: center;
         }
 
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
+        header h1 { font-size: 1.5rem; font-weight: 700; }
 
-        .theme-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        .theme-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--toggle-bg);
-            transition: .4s;
-            border-radius: 28px;
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--toggle-bg); transition: .4s; border-radius: 28px;
         }
         .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: var(--toggle-ball);
-            transition: .4s;
-            border-radius: 50%;
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 4px; bottom: 4px; background-color: var(--toggle-ball);
+            transition: .4s; border-radius: 50%;
         }
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-        .dark-mode input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--primary-color);
-        }
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         .container {
             background: var(--container-bg);
@@ -136,120 +97,84 @@
         }
 
         .container h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
+            font-size: 1.8rem; font-weight: 800; color: var(--primary-color);
+            margin-bottom: 25px; text-transform: uppercase;
+            border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;
             text-align: center;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px 25px;
-        }
-
-        .grid-full-width {
-            grid-column: 1 / -1;
-        }
-
-        .input-container {
-            display: flex;
-            flex-direction: column;
-        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 25px; }
+        .grid-full-width { grid-column: 1 / -1; }
+        .input-container { display: flex; flex-direction: column; }
 
         label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-            color: var(--text-color);
-            font-size: 1rem;
+            font-weight: 600; margin-bottom: 8px; display: block;
+            color: var(--text-color); font-size: 1rem;
         }
 
-        input[type="text"],
-        input[type="number"],
-        input[type="date"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid var(--input-border);
-            border-radius: 6px;
-            font-size: 1rem;
-            background-color: var(--container-bg);
-            color: var(--text-color);
-            transition: border-color 0.3s, background-color 0.3s;
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%; padding: 10px 12px;
+            border: 2px solid var(--input-border); border-radius: 6px;
+            font-size: 1rem; background-color: var(--container-bg);
+            color: var(--text-color); transition: border-color 0.3s, background-color 0.3s;
         }
 
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
+        input[type="number"] { -moz-appearance: textfield; }
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         input:focus {
-            border-color: var(--input-focus-border);
-            outline: none;
+            border-color: var(--input-focus-border); outline: none;
             box-shadow: 0 0 5px rgba(0, 48, 135, 0.2);
         }
 
-        input[readonly] {
-            background-color: rgba(128, 128, 128, 0.1);
-            cursor: not-allowed;
-        }
+        input[readonly] { background-color: rgba(128, 128, 128, 0.1); cursor: not-allowed; }
 
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.9rem;
-            margin-top: 5px;
+        /* Status do CNPJ */
+        .cnpj-status {
+            font-size: 0.85rem;
+            margin-top: 6px;
+            padding: 5px 10px;
+            border-radius: 4px;
             display: none;
+        }
+        .cnpj-status.loading {
+            display: block;
+            background: rgba(0, 48, 135, 0.08);
+            color: var(--primary-color);
+        }
+        .cnpj-status.error {
+            display: block;
+            background: rgba(211, 47, 47, 0.08);
+            color: var(--error-color);
+        }
+        .cnpj-status.success {
+            display: block;
+            background: rgba(46, 125, 50, 0.08);
+            color: var(--success-color);
         }
 
         button[type="submit"] {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
+            background-color: var(--primary-color); color: #fff; border: none;
+            padding: 12px 25px; border-radius: 6px; cursor: pointer;
+            font-size: 1.1rem; font-weight: 600;
             transition: background-color 0.3s, transform 0.2s;
-            width: 100%;
-            text-transform: uppercase;
-            margin-top: 20px;
+            width: 100%; text-transform: uppercase; margin-top: 20px;
         }
-
-        button[type="submit"]:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
+        button[type="submit"]:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         footer {
-            text-align: center;
-            padding: 15px;
-            background-color: var(--header-footer-bg);
-            color: var(--header-footer-text);
-            font-size: 0.9rem;
-            width: 100%;
-            position: fixed;
-            bottom: 0;
+            text-align: center; padding: 15px;
+            background-color: var(--header-footer-bg); color: var(--header-footer-text);
+            font-size: 0.9rem; width: 100%; position: fixed; bottom: 0;
             box-shadow: 0 -2px 8px var(--shadow-color);
         }
 
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -265,81 +190,100 @@
         <h2>Gerador de Declaração de Contrapartida</h2>
         <form id="declaracaoForm" onsubmit="event.preventDefault(); processarGeracaoPDFs();">
             <div class="form-grid">
+
                 <div class="input-container">
-                    <label for="nome">Nome do Representante <span style="color: #d32f2f;">*</span></label>
+                    <label for="nome">Nome do Representante <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="nome" placeholder="Ex.: Allison Adib Pinheiro" required>
                 </div>
                 <div class="input-container">
-                    <label for="cargo">Cargo <span style="color: #d32f2f;">*</span></label>
+                    <label for="cargo">Cargo <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="cargo" placeholder="Ex.: Prefeito" required>
                 </div>
+
                 <div class="input-container">
-                    <label for="matricula">Matrícula funcional <span style="color: #d32f2f;">*</span></label>
+                    <label for="matricula">Matrícula funcional <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="matricula" placeholder="Ex.: 1241231" required>
                 </div>
                 <div class="input-container">
-                    <label for="cnpj">CNPJ da Entidade <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="cnpj" placeholder="Ex.: 07.733.255/0001-57" maxlength="18" required oninput="formatCNPJ(this)">
-                    <div id="cnpjError" class="error-message">Erro ao buscar. Verifique o CNPJ ou tente novamente.</div>
+                    <label for="cnpj">CNPJ da Entidade <span style="color:#d32f2f">*</span></label>
+                    <input type="text" id="cnpj" placeholder="Ex.: 07.733.255/0001-57"
+                           maxlength="18" required oninput="formatCNPJ(this)">
+                    <div id="cnpjStatus" class="cnpj-status"></div>
                 </div>
+
                 <div class="input-container grid-full-width">
-                    <label for="entidade">Nome da Entidade <span style="color: #d32f2f;">*</span></label>
+                    <label for="entidade">Nome da Entidade <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="entidade" placeholder="Será preenchido automaticamente" readonly>
                     <input type="hidden" id="entidadeCidade">
                     <input type="hidden" id="entidadeUF">
                     <input type="hidden" id="entidadeEndereco">
                 </div>
+
                 <div class="input-container">
-                    <label for="valorContrapartida">Valor da Contrapartida (R$) <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="valorContrapartida" placeholder="Ex.: 5000.00" step="0.01" required oninput="updateValorExtenso()">
+                    <label for="valorContrapartida">Valor da Contrapartida (R$) <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="valorContrapartida" placeholder="Ex.: 5000.00"
+                           step="0.01" required oninput="updateValorExtenso()">
                 </div>
                 <div class="input-container">
-                    <label for="valorContrapartidaExtenso">Valor por Extenso <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="valorContrapartidaExtenso" placeholder="Será preenchido automaticamente" readonly>
+                    <label for="valorContrapartidaExtenso">Valor por Extenso <span style="color:#d32f2f">*</span></label>
+                    <input type="text" id="valorContrapartidaExtenso"
+                           placeholder="Será preenchido automaticamente" readonly>
+                </div>
+
+                <div class="input-container">
+                    <label for="numeroProposta">Número da Proposta <span style="color:#d32f2f">*</span></label>
+                    <input type="text" id="numeroProposta" placeholder="Ex.: 112212/2024"
+                           maxlength="11" required oninput="formatProposta(this)">
                 </div>
                 <div class="input-container">
-                    <label for="numeroProposta">Número da Proposta <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="numeroProposta" placeholder="Ex.: 112212/2024" maxlength="11" required oninput="formatProposta(this)">
-                </div>
-                <div class="input-container">
-                    <label for="leiOrcamentaria">Lei Orçamentária nº <span style="color: #d32f2f;">*</span></label>
+                    <label for="leiOrcamentaria">Lei Orçamentária nº <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="leiOrcamentaria" placeholder="Ex.: 114127/2024" required>
                 </div>
+
                 <div class="input-container">
-                    <label for="dataLei">Data da Lei <span style="color: #d32f2f;">*</span></label>
+                    <label for="dataLei">Data da Lei <span style="color:#d32f2f">*</span></label>
                     <input type="date" id="dataLei" required>
                 </div>
                 <div class="input-container">
-                    <label for="orgao">Órgão <span style="color: #d32f2f;">*</span></label>
+                    <label for="orgao">Órgão <span style="color:#d32f2f">*</span></label>
                     <input type="text" id="orgao" placeholder="Ex.: Despesa Financeira de Esporte" required>
                 </div>
+
                 <div class="input-container">
-                    <label for="unidade">Unidade <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="unidade" placeholder="Ex.: dawndawnda" required>
+                    <label for="unidade">Unidade <span style="color:#d32f2f">*</span></label>
+                    <input type="text" id="unidade" placeholder="Ex.: Secretaria Municipal" required>
                 </div>
                 <div class="input-container">
-                    <label for="funcao">Função <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="funcao" placeholder="Apenas números" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <label for="funcao">Função <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="funcao" placeholder="Apenas números" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <div class="input-container">
+                    <label for="subfuncao">Subfunção <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="subfuncao" placeholder="Apenas números" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div class="input-container">
-                    <label for="subfuncao">Subfunção <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="subfuncao" placeholder="Apenas números" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <label for="programa">Programa <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="programa" placeholder="Apenas números" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <div class="input-container">
+                    <label for="atividade">Atividade <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="atividade" placeholder="Apenas números" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div class="input-container">
-                    <label for="programa">Programa <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="programa" placeholder="Apenas números" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <label for="naturezaDespesa">Natureza da Despesa <span style="color:#d32f2f">*</span></label>
+                    <input type="number" id="naturezaDespesa" placeholder="Apenas números" required
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
-                <div class="input-container">
-                    <label for="atividade">Atividade <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="atividade" placeholder="Apenas números" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
-                <div class="input-container">
-                    <label for="naturezaDespesa">Natureza da Despesa <span style="color: #d32f2f;">*</span></label>
-                    <input type="number" id="naturezaDespesa" placeholder="Apenas números" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
+
             </div>
             <div class="grid-full-width">
-                <button type="submit">Gerar Declaração em PDF</button>
+                <button type="submit" id="btnGerar">Gerar Declaração em PDF</button>
             </div>
         </form>
     </div>
@@ -349,319 +293,351 @@
     </footer>
 
 <script>
-    /**
-     * @description Script completo para o Gerador de Declaração de Contrapartida.
-     * @version 4.0
-     * @author Gemini
-     * @date 19/08/2025
-     *
-     * Funcionalidades:
-     * - Gerencia tema claro/escuro.
-     * - Formata inputs de CNPJ e Proposta.
-     * - Busca dados da entidade via API da BrasilAPI.
-     * - Converte valores numéricos para extenso.
-     * - Valida campos obrigatórios.
-     * - Gera um PDF com layout profissional e ajustado conforme solicitação.
-     *
-     * IMPORTANTE: Para a busca de CNPJ funcionar, esta página deve ser servida
-     * por um servidor web local (ex: VS Code Live Server).
-     */
+'use strict';
 
-    'use strict';
+// ─────────────────────────────────────────────
+// INICIALIZAÇÃO E TEMA
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-    //-------------------------------------------------------------------
-    // INICIALIZAÇÃO E GERENCIAMENTO DE TEMA
-    //-------------------------------------------------------------------
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentYearEl = document.getElementById('currentYear');
-        if (currentYearEl) {
-            currentYearEl.textContent = new Date().getFullYear();
-        }
-
-        const themeToggle = document.getElementById('theme-toggle-checkbox');
-        const body = document.body;
-        const savedTheme = localStorage.getItem('theme') || 'light';
-
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
-            if (themeToggle) themeToggle.checked = true;
-        }
-
-        themeToggle?.addEventListener('change', (event) => {
-            const isChecked = event.target.checked;
-            body.classList.toggle('dark-mode', isChecked);
-            localStorage.setItem('theme', isChecked ? 'dark' : 'light');
-        });
+    const themeToggle = document.getElementById('theme-toggle-checkbox');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.checked = true;
+    }
+    themeToggle.addEventListener('change', e => {
+        document.body.classList.toggle('dark-mode', e.target.checked);
+        localStorage.setItem('theme', e.target.checked ? 'dark' : 'light');
     });
+});
 
-    //-------------------------------------------------------------------
-    // FORMATAÇÃO DE INPUTS
-    //-------------------------------------------------------------------
+// ─────────────────────────────────────────────
+// FORMATAÇÃO DE INPUTS
+// ─────────────────────────────────────────────
+function formatCNPJ(input) {
+    let v = input.value.replace(/\D/g, '').slice(0, 14);
+    if (v.length > 12) v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    else if (v.length > 8) v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{1,4})/, '$1.$2.$3/$4');
+    else if (v.length > 5) v = v.replace(/^(\d{2})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,3})/, '$1.$2');
+    input.value = v;
 
-    function formatCNPJ(input) {
-        let value = input.value.replace(/\D/g, '').slice(0, 14);
-
-        if (value.length > 12) value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-        else if (value.length > 8) value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{1,4})/, '$1.$2.$3/$4');
-        else if (value.length > 5) value = value.replace(/^(\d{2})(\d{3})(\d{1,3})/, '$1.$2.$3');
-        else if (value.length > 2) value = value.replace(/^(\d{2})(\d{1,3})/, '$1.$2');
-        input.value = value;
-
-        if (input.value.length === 18) {
-            fetchEntidade(input.value.replace(/\D/g, ''));
-        } else {
-            clearEntidadeFields();
-        }
+    const digits = v.replace(/\D/g, '');
+    if (digits.length === 14) {
+        fetchEntidade(digits);
+    } else {
+        clearEntidadeFields();
     }
+}
 
-    function formatProposta(input) {
-        let value = input.value.replace(/\D/g, '').slice(0, 10);
-        if (value.length > 6) {
-            value = value.replace(/^(\d{6})(\d{0,4})/, '$1/$2');
+function formatProposta(input) {
+    let v = input.value.replace(/\D/g, '').slice(0, 10);
+    if (v.length > 6) v = v.replace(/^(\d{6})(\d{0,4})/, '$1/$2');
+    input.value = v;
+}
+
+// ─────────────────────────────────────────────
+// BUSCA DE CNPJ — MÚLTIPLAS APIs EM CASCATA
+// ─────────────────────────────────────────────
+
+/**
+ * Estratégia de fallback:
+ *  1. ReceitaWS  — receitaws.com.br/rec/v1/cnpj/{cnpj}
+ *  2. CNPJá      — publica.cnpj.ws/cnpj/{cnpj}
+ *  3. BrasilAPI  — brasilapi.com.br/api/cnpj/v1/{cnpj}
+ *
+ * Cada adaptador normaliza a resposta para o formato interno:
+ *   { razao_social, municipio, uf, logradouro, numero, bairro, cep }
+ */
+
+const CNPJ_APIS = [
+    {
+        name: 'ReceitaWS',
+        url: cnpj => `https://receitaws.com.br/v1/cnpj/${cnpj}`,
+        normalize: data => {
+            if (data.status === 'ERROR') throw new Error(data.message || 'CNPJ inválido');
+            return {
+                razao_social: data.nome,
+                municipio:    data.municipio,
+                uf:           data.uf,
+                logradouro:   data.logradouro,
+                numero:       data.numero,
+                bairro:       data.bairro,
+                cep:          data.cep
+            };
         }
-        input.value = value;
+    },
+    {
+        name: 'CNPJá',
+        url: cnpj => `https://publica.cnpj.ws/cnpj/${cnpj}`,
+        normalize: data => ({
+            razao_social: data.razao_social,
+            municipio:    data.estabelecimento?.cidade?.nome,
+            uf:           data.estabelecimento?.estado?.sigla,
+            logradouro:   data.estabelecimento?.logradouro,
+            numero:       data.estabelecimento?.numero,
+            bairro:       data.estabelecimento?.bairro,
+            cep:          data.estabelecimento?.cep
+        })
+    },
+    {
+        name: 'BrasilAPI',
+        url: cnpj => `https://brasilapi.com.br/api/cnpj/v1/${cnpj}`,
+        normalize: data => ({
+            razao_social: data.razao_social,
+            municipio:    data.municipio,
+            uf:           data.uf,
+            logradouro:   data.logradouro,
+            numero:       data.numero,
+            bairro:       data.bairro,
+            cep:          data.cep
+        })
     }
+];
 
-    //-------------------------------------------------------------------
-    // COMUNICAÇÃO COM API (BRASILAPI)
-    //-------------------------------------------------------------------
+async function tryFetch(api, cnpj) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout por API
 
-    async function fetchEntidade(cnpj) {
-        const ui = {
-            entidade: document.getElementById('entidade'),
-            cidade: document.getElementById('entidadeCidade'),
-            uf: document.getElementById('entidadeUF'),
-            endereco: document.getElementById('entidadeEndereco'),
-            error: document.getElementById('cnpjError')
-        };
+    try {
+        const resp = await fetch(api.url(cnpj), { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        return api.normalize(json);
+    } catch (err) {
+        clearTimeout(timeout);
+        throw err;
+    }
+}
 
-        ui.entidade.value = 'Buscando dados...';
-        ui.error.style.display = 'none';
+function setStatus(type, msg) {
+    const el = document.getElementById('cnpjStatus');
+    el.className = `cnpj-status ${type}`;
+    el.textContent = msg;
+}
 
+async function fetchEntidade(cnpj) {
+    setStatus('loading', '🔄 Consultando CNPJ…');
+    document.getElementById('entidade').value = '';
+
+    let lastError = null;
+
+    for (const api of CNPJ_APIS) {
         try {
-            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `CNPJ não encontrado ou inválido.`);
-            }
-            const data = await response.json();
-            ui.entidade.value = data.razao_social || 'Não encontrado';
-            ui.cidade.value = data.municipio || '';
-            ui.uf.value = data.uf || '';
-            ui.endereco.value = [data.logradouro, data.numero, data.bairro, data.cep].filter(Boolean).join(', ');
-        } catch (error) {
-            console.error("Erro ao buscar CNPJ:", error);
-            ui.entidade.value = 'Erro na consulta';
-            ui.error.textContent = `Erro: ${error.message}`;
-            ui.error.style.display = 'block';
-        }
-    }
+            setStatus('loading', `🔄 Consultando via ${api.name}…`);
+            const data = await tryFetch(api, cnpj);
 
-    function clearEntidadeFields() {
-        document.getElementById('entidade').value = '';
-        document.getElementById('entidadeCidade').value = '';
-        document.getElementById('entidadeUF').value = '';
-        document.getElementById('entidadeEndereco').value = '';
-        document.getElementById('cnpjError').style.display = 'none';
-    }
+            // Sucesso!
+            document.getElementById('entidade').value    = data.razao_social || 'Não encontrado';
+            document.getElementById('entidadeCidade').value = data.municipio || '';
+            document.getElementById('entidadeUF').value  = data.uf || '';
+            document.getElementById('entidadeEndereco').value =
+                [data.logradouro, data.numero, data.bairro, data.cep]
+                    .filter(Boolean).join(', ');
 
-    //-------------------------------------------------------------------
-    // LÓGICA DE VALOR POR EXTENSO
-    //-------------------------------------------------------------------
-
-    function updateValorExtenso() {
-        const valorInput = document.getElementById('valorContrapartida');
-        const valorExtensoInput = document.getElementById('valorContrapartidaExtenso');
-        const valor = parseFloat(valorInput.value) || 0;
-
-        if (valor > 9999999.99) {
-            valorExtensoInput.value = 'Valor excede o limite suportado.';
-        } else {
-            valorExtensoInput.value = numeroPorExtenso(valor);
-        }
-    }
-
-    function numeroPorExtenso(numero) {
-        const [inteiro, centavos] = numero.toFixed(2).split('.').map(Number);
-        
-        const geraExtenso = (num) => {
-            if (num === 0) return '';
-            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
-            const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
-
-            if (num < 10) return unidades[num];
-            if (num < 20) return especiais[num - 10];
-            if (num < 100) return dezenas[Math.floor(num / 10)] + (num % 10 !== 0 ? ' e ' + unidades[num % 10] : '');
-            if (num === 100) return 'cem';
-            if (num < 1000) return centenas[Math.floor(num / 100)] + (num % 100 !== 0 ? ' e ' + geraExtenso(num % 100) : '');
-            const milhar = Math.floor(num / 1000);
-            return (milhar === 1 ? 'mil' : geraExtenso(milhar) + ' mil') + (num % 1000 !== 0 ? ' e ' + geraExtenso(num % 1000) : '');
-        };
-        
-        let extenso = inteiro > 0 ? geraExtenso(inteiro) : 'zero';
-        extenso += inteiro === 1 ? ' real' : ' reais';
-        
-        if (centavos > 0) {
-            extenso += ' e ' + geraExtenso(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
-        }
-        
-        return extenso.charAt(0).toUpperCase() + extenso.slice(1);
-    }
-
-    //-------------------------------------------------------------------
-    // GERAÇÃO DE PDF
-    //-------------------------------------------------------------------
-
-    async function getBase64ImageFromUrl(url) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Erro ${response.status} ao buscar imagem`);
-            const blob = await response.blob();
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
+            setStatus('success', `✅ Dados carregados via ${api.name}`);
+            return; // Para aqui — não tenta próxima API
         } catch (err) {
-            console.error("Não foi possível carregar a imagem de fundo.", err);
-            alert("Atenção: A imagem de fundo não pôde ser carregada. O PDF será gerado sem ela.");
-            return null;
+            console.warn(`[${api.name}] falhou:`, err.message);
+            lastError = err;
+            // Continua para próxima API
         }
     }
 
-    /**
-     * >>>>>>>> ATENÇÃO: ESTA É A FUNÇÃO QUE FOI ALTERADA <<<<<<<<<<
-     * Monta o conteúdo estruturado do documento PDF com o novo layout.
-    */
-    function createDeclarationContent(dados) {
-        const {
-            nome, cargo, matricula, entidade, endereco, cnpj, valorFormatado, valorExtenso,
-            numeroProposta, leiOrcamentaria, diaLei, mesLei, anoLei, orgao, unidade,
-            funcao, subfuncao, programa, atividade, naturezaDespesa, localAssinatura
-        } = dados;
+    // Todas as APIs falharam
+    document.getElementById('entidade').value = 'Não encontrado';
+    setStatus('error', `❌ Não foi possível consultar o CNPJ. Verifique o número ou preencha o nome manualmente.`);
+    // Permite edição manual em caso de falha total
+    document.getElementById('entidade').removeAttribute('readonly');
+}
 
-        return [{
-                text: entidade,
-                style: 'entityName'
-            },
-            {
-                text: endereco || 'Endereço não informado', // Garante que algo seja exibido
-                style: 'entityAddress'
-            },
-            {
-                text: 'DECLARAÇÃO DE DISPONIBILIDADE DE CONTRAPARTIDA',
-                style: 'header'
-            },
-            {
-                text: [
-                    'Eu, ', { text: nome, bold: true }, `, matrícula funcional nº ${matricula}, na condição de ${cargo} do(a) ${entidade}, CNPJ Nº ${cnpj}, DECLARO, em conformidade com a Lei de Diretrizes Orçamentárias vigente, que a presente Entidade dispõe e se compromete com o montante financeiro de `,
-                    { text: `R$ ${valorFormatado} (${valorExtenso})`, bold: true }, `, referente a contrapartida financeira destinada ao cumprimento do objeto constante da Proposta nº ${numeroProposta}, do Sistema Transferegov.`
-                ],
-                style: 'bodyText'
-            },
-            {
-                text: `Os recursos estão disponíveis na Lei Orçamentária Municipal/Estadual nº ${leiOrcamentaria}, de ${diaLei} de ${mesLei} de ${anoLei}, conforme rubrica orçamentária abaixo especificada, e cópia anexa:`,
-                style: 'bodyText'
-            },
-            {
-                // NOVO LAYOUT: Bloco único de texto para as informações orçamentárias
-                text: [
-                    { text: 'Órgão: ', bold: true }, `${orgao}\n`,
-                    { text: 'Unidade: ', bold: true }, `${unidade}\n`,
-                    { text: 'Função: ', bold: true }, `${funcao}\n`,
-                    { text: 'Subfunção: ', bold: true }, `${subfuncao}\n`,
-                    { text: 'Programa: ', bold: true }, `${programa}\n`,
-                    { text: 'Atividade: ', bold: true }, `${atividade}\n`,
-                    { text: 'Natureza da Despesa: ', bold: true }, `${naturezaDespesa}`
-                ],
-                style: 'details'
-            },
-            {
-                text: 'Por ser expressão da verdade, firmo a presente declaração.',
-                style: 'closing'
-            },
-            {
-                text: `${localAssinatura}, na data da assinatura eletrônica`,
-                style: 'date'
-            },
-            {
-                margin: [80, 0, 80, 0], canvas: [{ type: 'line', x1: 0, y1: 0, x2: 355, y2: 0, lineWidth: 1, lineColor: '#000000' }]
-            },
-            {
-                text: nome.toUpperCase(),
-                style: 'signatureName'
-            },
-            {
-                text: cargo,
-                style: 'signatureRole'
-            }
-        ];
+function clearEntidadeFields() {
+    document.getElementById('entidade').value = '';
+    document.getElementById('entidade').setAttribute('readonly', true);
+    document.getElementById('entidadeCidade').value = '';
+    document.getElementById('entidadeUF').value = '';
+    document.getElementById('entidadeEndereco').value = '';
+    document.getElementById('cnpjStatus').className = 'cnpj-status';
+    document.getElementById('cnpjStatus').textContent = '';
+}
+
+// ─────────────────────────────────────────────
+// VALOR POR EXTENSO
+// ─────────────────────────────────────────────
+function updateValorExtenso() {
+    const valor = parseFloat(document.getElementById('valorContrapartida').value) || 0;
+    document.getElementById('valorContrapartidaExtenso').value =
+        valor > 9999999.99 ? 'Valor excede o limite suportado.' : numeroPorExtenso(valor);
+}
+
+function numeroPorExtenso(numero) {
+    const [inteiro, centavos] = numero.toFixed(2).split('.').map(Number);
+
+    const geraExtenso = n => {
+        if (n === 0) return '';
+        const un  = ['','um','dois','três','quatro','cinco','seis','sete','oito','nove'];
+        const esp = ['dez','onze','doze','treze','catorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+        const dez = ['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+        const cen = ['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+        if (n < 10)   return un[n];
+        if (n < 20)   return esp[n - 10];
+        if (n < 100)  return dez[Math.floor(n/10)] + (n%10 ? ' e ' + un[n%10] : '');
+        if (n === 100) return 'cem';
+        if (n < 1000) return cen[Math.floor(n/100)] + (n%100 ? ' e ' + geraExtenso(n%100) : '');
+        const mil = Math.floor(n/1000);
+        return (mil === 1 ? 'mil' : geraExtenso(mil)+' mil') + (n%1000 ? ' e ' + geraExtenso(n%1000) : '');
+    };
+
+    let ext = (inteiro > 0 ? geraExtenso(inteiro) : 'zero') + (inteiro === 1 ? ' real' : ' reais');
+    if (centavos > 0) ext += ' e ' + geraExtenso(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
+    return ext.charAt(0).toUpperCase() + ext.slice(1);
+}
+
+// ─────────────────────────────────────────────
+// GERAÇÃO DE PDF
+// ─────────────────────────────────────────────
+async function getBase64ImageFromUrl(url) {
+    try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        return new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onloadend = () => res(r.result);
+            r.onerror = rej;
+            r.readAsDataURL(blob);
+        });
+    } catch (err) {
+        console.warn('Imagem de fundo não carregada:', err);
+        return null;
     }
+}
 
-    async function processarGeracaoPDFs() {
-        try {
-            const requiredFields = ['nome', 'cargo', 'matricula', 'entidade', 'cnpj', 'valorContrapartida', 'numeroProposta', 'leiOrcamentaria', 'dataLei'];
-            for (const id of requiredFields) {
-                const element = document.getElementById(id);
-                if (!element.value.trim()) {
-                    alert(`O campo "${element.previousElementSibling?.innerText || id}" é obrigatório.`);
-                    element.focus();
-                    return;
-                }
-            }
+function createDeclarationContent(d) {
+    return [
+        { text: d.entidade, style: 'entityName' },
+        { text: d.endereco || 'Endereço não informado', style: 'entityAddress' },
+        { text: 'DECLARAÇÃO DE DISPONIBILIDADE DE CONTRAPARTIDA', style: 'header' },
+        {
+            text: [
+                'Eu, ', { text: d.nome, bold: true },
+                `, matrícula funcional nº ${d.matricula}, na condição de ${d.cargo} do(a) ${d.entidade}, CNPJ Nº ${d.cnpj}, DECLARO, em conformidade com a Lei de Diretrizes Orçamentárias vigente, que a presente Entidade dispõe e se compromete com o montante financeiro de `,
+                { text: `R$ ${d.valorFormatado} (${d.valorExtenso})`, bold: true },
+                `, referente a contrapartida financeira destinada ao cumprimento do objeto constante da Proposta nº ${d.numeroProposta}, do Sistema Transferegov.`
+            ],
+            style: 'bodyText'
+        },
+        {
+            text: `Os recursos estão disponíveis na Lei Orçamentária Municipal/Estadual nº ${d.leiOrcamentaria}, de ${d.diaLei} de ${d.mesLei} de ${d.anoLei}, conforme rubrica orçamentária abaixo especificada, e cópia anexa:`,
+            style: 'bodyText'
+        },
+        {
+            text: [
+                { text: 'Órgão: ', bold: true }, `${d.orgao}\n`,
+                { text: 'Unidade: ', bold: true }, `${d.unidade}\n`,
+                { text: 'Função: ', bold: true }, `${d.funcao}\n`,
+                { text: 'Subfunção: ', bold: true }, `${d.subfuncao}\n`,
+                { text: 'Programa: ', bold: true }, `${d.programa}\n`,
+                { text: 'Atividade: ', bold: true }, `${d.atividade}\n`,
+                { text: 'Natureza da Despesa: ', bold: true }, `${d.naturezaDespesa}`
+            ],
+            style: 'details'
+        },
+        { text: 'Por ser expressão da verdade, firmo a presente declaração.', style: 'closing' },
+        { text: `${d.localAssinatura}, na data da assinatura eletrônica`, style: 'date' },
+        { margin: [80, 0, 80, 0], canvas: [{ type: 'line', x1: 0, y1: 0, x2: 355, y2: 0, lineWidth: 1, lineColor: '#000000' }] },
+        { text: d.nome.toUpperCase(), style: 'signatureName' },
+        { text: d.cargo, style: 'signatureRole' }
+    ];
+}
 
-            const formValues = Object.fromEntries(requiredFields.map(id => [id, document.getElementById(id).value.trim()]));
-            const dataLei = new Date(formValues.dataLei);
-            const dados = {
-                ...formValues,
-                endereco: document.getElementById('entidadeEndereco').value,
-                valorExtenso: document.getElementById('valorContrapartidaExtenso').value,
-                orgao: document.getElementById('orgao').value,
-                unidade: document.getElementById('unidade').value,
-                funcao: document.getElementById('funcao').value,
-                subfuncao: document.getElementById('subfuncao').value,
-                programa: document.getElementById('programa').value,
-                atividade: document.getElementById('atividade').value,
-                naturezaDespesa: document.getElementById('naturezaDespesa').value,
-                valorFormatado: parseFloat(formValues.valorContrapartida).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                diaLei: dataLei.getUTCDate(),
-                mesLei: dataLei.toLocaleString('pt-BR', { month: 'long', timeZone: 'UTC' }),
-                anoLei: dataLei.getUTCFullYear(),
-                localAssinatura: `${document.getElementById('entidadeCidade').value}/${document.getElementById('entidadeUF').value}` || 'Local não informado'
-            };
+async function processarGeracaoPDFs() {
+    const btn = document.getElementById('btnGerar');
 
-            const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
-            const docDefinition = {
-                pageSize: 'A4',
-                pageMargins: [40, 60, 40, 60],
-                background: () => watermarkImage ? { image: watermarkImage, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 } } : null,
-                content: createDeclarationContent(dados),
-                styles: {
-                    // AJUSTE DE LAYOUT: margem superior adicionada ao nome da entidade
-                    entityName: { fontSize: 16, bold: true, alignment: 'center', margin: [0, 20, 0, 2] },
-                    entityAddress: { fontSize: 10, italics: true, alignment: 'center', margin: [0, 0, 0, 40] },
-                    header: { fontSize: 14, bold: true, color: '#003087', alignment: 'center', margin: [0, 0, 0, 20] },
-                    bodyText: { fontSize: 11, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 15] },
-                    details: { fontSize: 10, lineHeight: 1.4, margin: [0, 0, 0, 25] },
-                    closing: { fontSize: 11, alignment: 'justify', lineHeight: 1.5, margin: [0, 50, 0, 20] },
-                    date: { fontSize: 11, alignment: 'center', margin: [0, 20, 0, 50] },
-                    signatureName: { fontSize: 11, bold: true, alignment: 'center', margin: [0, 5, 0, 2] },
-                    signatureRole: { fontSize: 10, alignment: 'center' }
-                }
-            };
+    const requiredFields = ['nome','cargo','matricula','entidade','cnpj',
+        'valorContrapartida','numeroProposta','leiOrcamentaria','dataLei'];
 
-            // SUBSTITUA PELA NOVA LINHA ABAIXO:
-pdfMake.createPdf(docDefinition).download(`Declaração_Contrapartida_${dados.numeroProposta.replace(/\//g, '')}_${dados.entidade.replace(/\s+/g, '_')}.pdf`);
-            alert('Declaração gerada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao gerar PDF:', error);
-            alert('Ocorreu um erro ao gerar o PDF. Verifique os dados e o console de erros.');
+    for (const id of requiredFields) {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) {
+            alert(`O campo "${el.previousElementSibling?.innerText?.replace(' *','').trim() || id}" é obrigatório.`);
+            el.focus();
+            return;
         }
     }
+
+    btn.disabled = true;
+    btn.textContent = 'Gerando PDF…';
+
+    try {
+        const dataLei = new Date(document.getElementById('dataLei').value);
+        const d = {
+            nome:            document.getElementById('nome').value.trim(),
+            cargo:           document.getElementById('cargo').value.trim(),
+            matricula:       document.getElementById('matricula').value.trim(),
+            entidade:        document.getElementById('entidade').value.trim(),
+            cnpj:            document.getElementById('cnpj').value.trim(),
+            valorContrapartida: document.getElementById('valorContrapartida').value.trim(),
+            numeroProposta:  document.getElementById('numeroProposta').value.trim(),
+            leiOrcamentaria: document.getElementById('leiOrcamentaria').value.trim(),
+            endereco:        document.getElementById('entidadeEndereco').value,
+            valorExtenso:    document.getElementById('valorContrapartidaExtenso').value,
+            orgao:           document.getElementById('orgao').value.trim(),
+            unidade:         document.getElementById('unidade').value.trim(),
+            funcao:          document.getElementById('funcao').value,
+            subfuncao:       document.getElementById('subfuncao').value,
+            programa:        document.getElementById('programa').value,
+            atividade:       document.getElementById('atividade').value,
+            naturezaDespesa: document.getElementById('naturezaDespesa').value,
+            valorFormatado:  parseFloat(document.getElementById('valorContrapartida').value)
+                                 .toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            diaLei:          dataLei.getUTCDate(),
+            mesLei:          dataLei.toLocaleString('pt-BR', { month: 'long', timeZone: 'UTC' }),
+            anoLei:          dataLei.getUTCFullYear(),
+            localAssinatura: (() => {
+                const cidade = document.getElementById('entidadeCidade').value;
+                const uf     = document.getElementById('entidadeUF').value;
+                return cidade && uf ? `${cidade}/${uf}` : 'Local não informado';
+            })()
+        };
+
+        const watermark = await getBase64ImageFromUrl('https://i.ibb.co/Lz10svWs/Declara-es-page-0001.jpg');
+
+        const docDef = {
+            pageSize: 'A4',
+            pageMargins: [40, 60, 40, 60],
+            background: () => watermark
+                ? { image: watermark, width: 595.28, height: 841.89, absolutePosition: { x: 0, y: 0 } }
+                : null,
+            content: createDeclarationContent(d),
+            styles: {
+                entityName:    { fontSize: 16, bold: true, alignment: 'center', margin: [0, 20, 0, 2] },
+                entityAddress: { fontSize: 10, italics: true, alignment: 'center', margin: [0, 0, 0, 40] },
+                header:        { fontSize: 14, bold: true, color: '#003087', alignment: 'center', margin: [0, 0, 0, 20] },
+                bodyText:      { fontSize: 11, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 15] },
+                details:       { fontSize: 10, lineHeight: 1.4, margin: [0, 0, 0, 25] },
+                closing:       { fontSize: 11, alignment: 'justify', lineHeight: 1.5, margin: [0, 50, 0, 20] },
+                date:          { fontSize: 11, alignment: 'center', margin: [0, 20, 0, 50] },
+                signatureName: { fontSize: 11, bold: true, alignment: 'center', margin: [0, 5, 0, 2] },
+                signatureRole: { fontSize: 10, alignment: 'center' }
+            }
+        };
+
+        const fileName = `Declaracao_Contrapartida_${d.numeroProposta.replace(/\//g,'')}_${d.entidade.replace(/\s+/g,'_')}.pdf`;
+        pdfMake.createPdf(docDef).download(fileName);
+        alert('Declaração gerada com sucesso!');
+
+    } catch (err) {
+        console.error('Erro ao gerar PDF:', err);
+        alert('Ocorreu um erro ao gerar o PDF. Verifique os dados e o console (F12).');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gerar Declaração em PDF';
+    }
+}
 </script>
 </body>
-
 </html>
