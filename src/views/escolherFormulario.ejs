@@ -1,322 +1,572 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Portal de Formulários - Ministério do Esporte</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fontes oficiais GOV.BR -->
+    <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900&display=swap">
+
+    <!-- Design System GOV.BR via jsDelivr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@govbr-ds/core@3.3.2/dist/core.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+
     <style>
-        :root {
-            /* Palette Profissional - Blue & Slate */
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --header-bg: #002766;
-            --primary: #0056b3;
-            --primary-hover: #004494;
-            --accent: #00d4ff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-            --logo-filter: none;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --header-bg: #111827;
-            --primary: #3b82f6;
-            --primary-hover: #60a5fa;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            --logo-filter: brightness(0) invert(1);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            transition: all 0.3s ease;
+            font-family: 'Rawline', 'Raleway', sans-serif;
+            background: #EDF2FF;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            font-size: 14px;
+            color: #333;
         }
 
-        /* HEADER REFINADO */
-        header {
-            height: 80px;
-            background: var(--header-bg);
+        .container-gov { max-width: 1280px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+        /* ── BARRA DO GOVERNO ── */
+        #gov-bar {
+            background: #071D41;
+            padding: 5px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 5%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .header-brand {
+        .gov-bar-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-
-        .logo-header {
-            height: 45px;
-            filter: var(--logo-filter);
-            transition: transform 0.3s;
-        }
-
-        .logo-header:hover { transform: scale(1.05); }
-
-        header h1 {
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fff;
+            gap: 8px;
+            font-size: 13px;
             font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
         }
 
-        /* SWITCHER ESTILIZADO */
-        .theme-control {
+        .gov-bar-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .gov-bar-links a {
+            font-size: 11px;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .gov-bar-links a:hover { color: #fff; text-decoration: underline; }
+
+        /* ── HEADER ── */
+        .ministry-header {
+            background: #fff;
+            border-bottom: 1px solid #D9D9D9;
+            padding: 0 24px;
+        }
+
+        .header-top-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 15px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
+            justify-content: space-between;
+            height: 64px;
+            gap: 16px;
         }
 
-        .theme-control svg { width: 18px; color: #fff; opacity: 0.8; }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
+        .header-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
 
-        .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #475569;
-            transition: .4s;
-            border-radius: 34px;
+        .govbr-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1351B4;
+            letter-spacing: 0.5px;
+            text-decoration: none;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px; width: 14px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
+        .divider-v {
+            width: 1px;
+            height: 32px;
+            background: #D9D9D9;
+        }
+
+        .ministry-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #071D41;
+            line-height: 1.2;
+        }
+
+        .ministry-name small {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #555;
+            margin-top: 1px;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-        }
-
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        /* MAIN CONTENT - CARD DESIGN */
-        .main-container {
-            flex: 1;
+            border: 1px solid #D9D9D9;
+            background: transparent;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: center;
+            cursor: pointer;
+            color: #333;
+            transition: background 0.15s;
+            font-size: 15px;
         }
 
-        .hero-card {
-            background: var(--card-bg);
-            max-width: 550px;
-            width: 100%;
-            padding: 50px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .icon-btn:hover { background: #f0f0f0; }
+
+        .header-bottom-row {
+            padding: 8px 0;
+            border-top: 1px solid #EFEFEF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+            font-weight: 500;
         }
 
-        /* Detalhe visual de cor no topo do card */
-        .hero-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+        /* ── BREADCRUMB ── */
+        .breadcrumb-bar {
+            background: #F8F8F8;
+            border-bottom: 1px solid #E5E5E5;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
         }
 
-        .hero-card h2 {
-            font-size: 1.75rem;
-            margin-bottom: 10px;
-            color: var(--text-main);
-        }
+        .breadcrumb-bar a { color: #1351B4; text-decoration: none; }
+        .breadcrumb-bar a:hover { text-decoration: underline; }
+        .breadcrumb-bar .sep { color: #999; }
+        .breadcrumb-bar .current { color: #333; font-weight: 600; }
 
-        .hero-card p {
-            color: var(--text-muted);
-            margin-bottom: 35px;
-            font-size: 0.95rem;
-        }
-
-        .form-selection {
+        /* ── MAIN ── */
+        #main-content {
+            flex: 1;
+            background: #EDF2FF;
+            padding: 40px 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            text-align: left;
+            align-items: center;
         }
 
-        label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: -15px;
-            margin-left: 5px;
-        }
-
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 18px;
+        /* ── PORTAL CARD ── */
+        .portal-card {
+            background: #fff;
+            border-radius: 8px;
+            border-top: 4px solid #1351B4;
+            padding: 40px 36px;
+            max-width: 520px;
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(19,81,180,0.09);
         }
 
-        select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+        .card-icon-circle {
+            width: 56px;
+            height: 56px;
+            background: #EDF2FF;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            margin: 0 auto 20px;
         }
 
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .card-icon-circle i {
+            font-size: 24px;
+            color: #1351B4;
         }
 
-        /* FOOTER */
-        footer {
-            padding: 25px;
+        .portal-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #071D41;
             text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border);
-            background: var(--card-bg);
+            margin-bottom: 8px;
+            font-family: 'Raleway', sans-serif;
         }
 
-        /* RESPONSIVIDADE */
+        .portal-card .subtitle {
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 7px;
+        }
+
+        .field-label i { color: #1351B4; }
+
+        .govbr-select {
+            width: 100%;
+            padding: 11px 40px 11px 13px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Rawline', 'Raleway', sans-serif;
+            color: #333;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231351B4'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .govbr-select:focus {
+            outline: none;
+            border-color: #1351B4;
+            box-shadow: 0 0 0 3px rgba(19,81,180,0.2);
+        }
+
+        .govbr-select.error { border-color: #C92300; }
+
+        .field-hint {
+            font-size: 11px;
+            color: #777;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .field-hint i { color: #1351B4; }
+
+        .error-msg {
+            display: none;
+            font-size: 12px;
+            color: #C92300;
+            margin-top: 6px;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .error-msg.visible { display: flex; }
+
+        .btn-acessar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 24px;
+            background: #1351B4;
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            font-size: 15px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 24px;
+        }
+
+        .btn-acessar:hover { background: #0C3584; }
+        .btn-acessar:active { transform: scale(0.98); }
+
+        /* ── INFO CARDS ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            max-width: 520px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 3px solid #168821;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+
+        .info-card i { color: #168821; font-size: 18px; margin-bottom: 7px; display: block; }
+        .info-card h4 { font-size: 13px; font-weight: 700; color: #071D41; margin-bottom: 4px; }
+        .info-card p { font-size: 11px; color: #666; line-height: 1.5; }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            background: #071D41;
+            padding: 28px 24px 0;
+        }
+
+        .footer-body {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 24px;
+        }
+
+        .footer-ministry-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .footer-desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.7;
+            max-width: 340px;
+        }
+
+        .footer-links-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 8px;
+        }
+
+        .footer-links-list { list-style: none; }
+        .footer-links-list li { margin-bottom: 4px; }
+        .footer-links-list a {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+        }
+        .footer-links-list a:hover { color: #fff; text-decoration: underline; }
+
+        .footer-copy {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 14px 0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .footer-ds-link { color: rgba(255,255,255,0.45); text-decoration: none; }
+        .footer-ds-link:hover { color: rgba(255,255,255,0.8); }
+
+        /* ── RESPONSIVO ── */
         @media (max-width: 600px) {
-            .hero-card { padding: 30px 20px; }
-            header h1 { display: none; }
+            .portal-card { padding: 28px 18px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .gov-bar-links { display: none; }
+            .header-top-row { height: auto; padding: 12px 0; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-brand">
-            <img src="https://homologacao.sneaelis.app.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" 
-                 class="logo-header" alt="Logo Ministério do Esporte">
-            <h1>Ministério do Esporte</h1>
+    <!-- BARRA DO GOVERNO FEDERAL -->
+    <div id="gov-bar">
+        <div class="gov-bar-brand">
+            <i class="fas fa-globe" style="color:#fff;"></i>
+            GOV.BR
         </div>
-        
-        <div class="theme-control">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle">
-                <span class="slider"></span>
-            </label>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+        <ul class="gov-bar-links">
+            <li><a href="https://www.gov.br/pt-br/orgaos-do-governo">Órgãos do Governo</a></li>
+            <li><a href="http://www.acessoainformacao.gov.br/">Acesso à Informação</a></li>
+            <li><a href="http://www4.planalto.gov.br/legislacao">Legislação</a></li>
+            <li><a href="https://www.gov.br/governodigital/pt-br/acessibilidade-digital">Acessibilidade</a></li>
+        </ul>
+    </div>
+
+    <!-- HEADER OFICIAL -->
+    <header class="ministry-header">
+        <div class="header-top-row">
+            <div class="header-logo-area">
+                <a href="https://www.gov.br" class="govbr-badge" title="Portal GOV.BR">
+                    <i class="fas fa-globe"></i>
+                    GOV.BR
+                </a>
+                <div class="divider-v"></div>
+                <div class="ministry-name">
+                    Ministério do Esporte
+                    <small>Portal de Formulários</small>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="icon-btn" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div class="header-bottom-row">
+            <i class="fas fa-home" style="color:#555; font-size:12px;"></i>
+            Portal de Formulários Administrativos — Ministério do Esporte
         </div>
     </header>
 
-    <main class="main-container">
-        <div class="hero-card">
-            <h2>Bem-vindo ao Portal</h2>
-            <p>Selecione abaixo o formulário desejado para iniciar o seu processo administrativo.</p>
-            
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb-bar" aria-label="Você está em:">
+        <a href="https://www.gov.br">gov.br</a>
+        <span class="sep">›</span>
+        <a href="https://www.gov.br/esporte">Ministério do Esporte</a>
+        <span class="sep">›</span>
+        <span class="current">Portal de Formulários</span>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="main-content">
+
+        <div class="portal-card">
+            <div class="card-icon-circle">
+                <i class="fas fa-file-alt"></i>
+            </div>
+
+            <h2>Bem-vindo ao Portal de Formulários</h2>
+            <p class="subtitle">
+                Selecione o tipo de entidade para acessar o formulário correspondente
+                ao seu processo administrativo.
+            </p>
+
             <form id="formularioSelecao" action="<%= basePath %>/selecionar-formulario" method="POST">
-                <div class="form-selection">
-                    <label for="tipoFormulario">TIPO DE ENTIDADE</label>
-                    <select name="tipoFormulario" id="tipoFormulario" required>
-                        <option value="" disabled selected>Escolha uma opção...</option>
+                <div>
+                    <label class="field-label" for="tipoFormulario">
+                        <i class="fas fa-tag"></i>
+                        Tipo de Entidade
+                    </label>
+
+                    <select
+                        name="tipoFormulario"
+                        id="tipoFormulario"
+                        class="govbr-select"
+                        required
+                        aria-required="true"
+                        aria-describedby="tipoFormulario-hint tipoFormulario-error">
+                        <option value="" disabled selected>Selecione uma opção...</option>
                         <option value="formulario-documentacoes">Termo de Fomento (OSC / Sociedade Civil)</option>
                         <option value="formulario-convenio">Convênio (Entidades Públicas)</option>
                     </select>
-                    
-                    <button type="submit" class="btn-primary">
-                        Acessar Formulário
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </button>
+
+                    <p class="field-hint" id="tipoFormulario-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Escolha de acordo com a natureza jurídica de sua entidade.
+                    </p>
+
+                    <p class="error-msg" id="tipoFormulario-error" role="alert">
+                        <i class="fas fa-times-circle"></i>
+                        Por favor, selecione o tipo de entidade.
+                    </p>
                 </div>
+
+                <button type="submit" class="btn-acessar">
+                    <i class="fas fa-arrow-right"></i>
+                    Acessar Formulário
+                </button>
             </form>
         </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Segurança LGPD</h4>
+                <p>Suas informações são protegidas e tratadas conforme a Lei Geral de Proteção de Dados.</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-headset"></i>
+                <h4>Suporte</h4>
+                <p>Dúvidas? Entre em contato pelo Fale Conosco do Ministério do Esporte.</p>
+            </div>
+        </div>
+
     </main>
 
-    <footer>
-        &copy; 2026 Ministério do Esporte. Governo Federal do Brasil.
+    <!-- FOOTER OFICIAL -->
+    <footer class="site-footer">
+        <div class="footer-body">
+            <div>
+                <p class="footer-ministry-name">Ministério do Esporte</p>
+                <p class="footer-desc">
+                    Portal oficial de formulários administrativos.<br>
+                    Esplanada dos Ministérios, Bloco A — Brasília/DF — CEP 70054-906
+                </p>
+            </div>
+            <div>
+                <p class="footer-links-title">Links Úteis</p>
+                <ul class="footer-links-list">
+                    <li><a href="https://www.gov.br/esporte">Portal do Ministério</a></li>
+                    <li><a href="http://www.acessoainformacao.gov.br/">Acesso à Informação</a></li>
+                    <li><a href="https://www.gov.br/governodigital/pt-br/acessibilidade-digital">Acessibilidade</a></li>
+                    <li><a href="https://www.gov.br/esporte/pt-br/fale-conosco">Fale Conosco</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copy">
+            <span>© 2026 Ministério do Esporte — Governo Federal do Brasil</span>
+            <a href="https://www.gov.br/ds" class="footer-ds-link">Padrão Digital de Governo ↗</a>
+        </div>
     </footer>
 
+    <!-- Design System GOV.BR JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@govbr-ds/core@3.3.2/dist/core.min.js"></script>
+
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('formularioSelecao');
+            const select = document.getElementById('tipoFormulario');
+            const errorMsg = document.getElementById('tipoFormulario-error');
 
-        const applyTheme = (theme) => {
-            htmlElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            themeToggle.checked = theme === 'dark';
-        };
+            form.addEventListener('submit', function (e) {
+                if (!select.value) {
+                    e.preventDefault();
+                    select.classList.add('error');
+                    errorMsg.classList.add('visible');
+                    select.focus();
+                }
+            });
 
-        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        applyTheme(savedTheme);
-
-        themeToggle.addEventListener('change', () => {
-            applyTheme(themeToggle.checked ? 'dark' : 'light');
+            select.addEventListener('change', function () {
+                select.classList.remove('error');
+                errorMsg.classList.remove('visible');
+            });
         });
     </script>
+
 </body>
 </html>

@@ -3,484 +3,1077 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Documentações</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gerador de Declarações - Termo de Fomento - Ministério do Esporte</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    
+    <!-- Fontes oficiais GOV.BR -->
+    <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900&display=swap">
+
+    <!-- Design System GOV.BR -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@govbr-ds/core@3.3.2/dist/core.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-    :root {
-        /* Paleta Executiva e Acessível */
-        --primary-blue: #002d72; /* Azul Marinho Profissional */
-        --accent-blue: #0056b3;
-        --light-blue: #f0f7ff;
-        --success-green: #10b981;
-        --danger-red: #ef4444;
-        --background-color: #f8fafc;
-        --card-background: #ffffff;
-        --text-primary: #0f172a; /* Slate 900 */
-        --text-secondary: #475569; /* Slate 600 */
-        --border-color: #e2e8f0;
-        
-        /* Tipografia */
-        --font-heading: 'Plus Jakarta Sans', 'Poppins', sans-serif;
-        --font-body: 'Inter', system-ui, sans-serif;
-        
-        /* Elevação e Sombras */
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-        --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Rawline', 'Raleway', sans-serif;
+            background: #EDF2FF;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px;
+        }
 
-    body { 
-        font-family: var(--font-body); 
-        background-color: var(--background-color); 
-        color: var(--text-primary); 
-        line-height: 1.5; 
-    }
+        /* ── BARRA DO GOVERNO ── */
+        #gov-bar {
+            background: #071D41;
+            padding: 5px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-    /* --- HEADER PREMIUM --- */
-    header { 
-        background-color: var(--primary-blue); 
-        width: 100%; 
-        padding: 0 2rem; 
-        height: 72px; 
-        display: flex; 
-        align-items: center; 
-        box-shadow: var(--shadow-md); 
-        position: fixed; 
-        top: 0; 
-        z-index: 1000;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+        .gov-bar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
 
-    .header-content { 
-        width: 100%; 
-        max-width: 1280px; 
-        margin: 0 auto; 
-        display: flex; 
-        align-items: center; 
-        gap: 1.5rem; 
-    }
+        .gov-bar-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
 
-    .logo-header { 
-        max-height: 48px; 
-        width: auto; 
-        filter: brightness(0) invert(1); 
-        transition: transform 0.3s ease;
-    }
+        .gov-bar-links a {
+            font-size: 11px;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            white-space: nowrap;
+        }
 
-    header h1 { 
-        font-family: var(--font-heading); 
-        font-size: 1.15rem; 
-        color: white; 
-        font-weight: 700; 
-        letter-spacing: -0.02em;
-    }
+        .gov-bar-links a:hover { color: #fff; text-decoration: underline; }
 
-    /* --- LAYOUT DA PÁGINA --- */
-    .container { 
-        max-width: 1000px; 
-        margin: 110px auto 60px; 
-        padding: 0 1.5rem; 
-    }
+        /* ── HEADER ── */
+        .ministry-header {
+            background: #fff;
+            border-bottom: 1px solid #D9D9D9;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
 
-    .container-header { 
-        margin-bottom: 2.5rem; 
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-    }
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            gap: 16px;
+        }
 
-    .container-header h2 { 
-        font-family: var(--font-heading); 
-        font-size: 1.85rem; 
-        color: var(--text-primary); 
-        font-weight: 800;
-        letter-spacing: -0.03em;
-    }
+        .header-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-    .container-header .status { 
-        font-size: 0.75rem; 
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-secondary); 
-        background-color: #f1f5f9; 
-        padding: 0.4rem 1rem; 
-        border-radius: 2rem; 
-        border: 1px solid var(--border-color);
-    }
+        .govbr-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1351B4;
+            text-decoration: none;
+        }
 
-    /* --- CARDS DE FORMULÁRIO --- */
-    .section { margin-bottom: 3rem; }
-    
-    .section h3 { 
-        font-family: var(--font-heading); 
-        font-size: 1rem; 
-        font-weight: 700; 
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--accent-blue); 
-        margin-bottom: 1.25rem; 
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+        .divider-v {
+            width: 1px;
+            height: 32px;
+            background: #D9D9D9;
+        }
 
-    .section h3::after {
-        content: "";
-        height: 1px;
-        background: var(--border-color);
-        flex-grow: 1;
-    }
+        .ministry-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #071D41;
+            line-height: 1.2;
+        }
 
-    .form-card { 
-        background-color: var(--card-background); 
-        border: 1px solid var(--border-color); 
-        border-radius: 12px; 
-        padding: 2rem; 
-        box-shadow: var(--shadow-sm);
-        transition: box-shadow 0.3s ease;
-    }
+        .ministry-name small {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #555;
+        }
 
-    .form-card:hover { box-shadow: var(--shadow-md); }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
 
-    .form-row { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-        gap: 2rem; 
-        margin-bottom: 1.5rem; 
-    }
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #D9D9D9;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #333;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
 
-    .form-group label { 
-        font-size: 0.8rem; 
-        font-weight: 700; 
-        color: var(--text-secondary); 
-        margin-bottom: 0.6rem; 
-        text-transform: uppercase;
-    }
+        .icon-btn:hover { background: #f0f0f0; }
 
-    input[type="text"], input[type="file"], input[type="number"] { 
-        width: 100%; 
-        padding: 0.85rem 1.15rem; 
-        border: 2px solid var(--border-color); 
-        border-radius: 8px; 
-        font-size: 0.95rem; 
-        font-family: var(--font-body); 
-        color: var(--text-primary);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+        .header-bottom-row {
+            padding: 7px 0;
+            border-top: 1px solid #EFEFEF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+            font-weight: 500;
+        }
 
-    input:focus { 
-        outline: none; 
-        border-color: var(--accent-blue); 
-        box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1); 
-    }
+        /* ── BREADCRUMB ── */
+        .breadcrumb-bar {
+            background: #F8F8F8;
+            border-bottom: 1px solid #E5E5E5;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
 
-    /* --- CHECKBOX CUSTOMIZADO --- */
-    .checkbox-wrapper { 
-        display: flex; 
-        align-items: center; 
-        background-color: var(--light-blue); 
-        padding: 1.25rem; 
-        border-radius: 10px; 
-        border: 1px solid rgba(0, 86, 179, 0.1);
-    }
+        .breadcrumb-bar a { color: #1351B4; text-decoration: none; }
+        .breadcrumb-bar a:hover { text-decoration: underline; }
+        .breadcrumb-bar .sep { color: #999; }
+        .breadcrumb-bar .current { color: #333; font-weight: 600; }
 
-    input[type="checkbox"] { 
-        width: 1.4rem; 
-        height: 1.4rem; 
-        border: 2px solid var(--accent-blue); 
-        border-radius: 6px; 
-    }
+        /* ── MAIN ── */
+        #main-content {
+            flex: 1;
+            padding: 32px 24px;
+            max-width: 960px;
+            width: 100%;
+            margin: 0 auto;
+        }
 
-    /* --- BOTÕES --- */
-    #botaoGerarPDF { 
-        font-family: var(--font-heading); 
-        font-weight: 700; 
-        font-size: 0.95rem; 
-        background-color: var(--primary-blue); 
-        color: white; 
-        border: none; 
-        padding: 1rem 2.5rem; 
-        border-radius: 8px; 
-        cursor: pointer; 
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-md);
-    }
+        /* ── PAGE HEADER ── */
+        .page-header {
+            background: #fff;
+            border-radius: 8px;
+            border-top: 4px solid #1351B4;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(19,81,180,0.07);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-    #botaoGerarPDF:hover { 
-        background-color: var(--accent-blue); 
-        transform: translateY(-2px); 
-        box-shadow: 0 8px 15px rgba(0, 45, 114, 0.2);
-    }
+        .page-header-left { display: flex; align-items: center; gap: 16px; }
 
-    /* --- MODAL E LISTAS --- */
-    .modal-content { 
-        background: #f8fafc; 
-        border-radius: 20px; 
-        padding: 0; 
-        overflow: hidden; 
-        border: none;
-    }
+        .page-header-icon {
+            width: 48px;
+            height: 48px;
+            background: #EDF2FF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1351B4;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
 
-    .layout-controls { 
-        padding: 2rem; 
-        background: white; 
-        border-right: 1px solid var(--border-color);
-    }
+        .page-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #071D41;
+            font-family: 'Raleway', sans-serif;
+        }
 
-    .declaration-item { 
-        padding: 1rem; 
-        margin-bottom: 0.5rem;
-        border: 1px solid var(--border-color);
-        border-radius: 8px; 
-        background: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
+        .page-header p {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
 
-    .declaration-item:hover {
-        border-color: var(--accent-blue);
-        background-color: var(--light-blue);
-        transform: translateX(5px);
-    }
-    /* Variáveis - Tema Escuro */
-    [data-theme="dark"] {
-        --background-color: #0f172a;
-        --text-primary: #f1f5f9;
-        --border-color: #334155;
-        --light-blue: #1e293b;
-        /* O rodapé permanece azul escuro conforme sua solicitação */
-    }
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1351B4;
+            background: #EDF2FF;
+            padding: 5px 14px;
+            border-radius: 100px;
+            border: 1px solid #C5D4FF;
+            white-space: nowrap;
+        }
 
-    /* --- FOOTER --- */
-    footer { 
-        display: flex; 
-        justify-content: center; /* Centraliza horizontalmente */
-        align-items: center;     /* Centraliza verticalmente */
-        
-        /* Seus estilos atuais */
-        flex-shrink: 0; 
-        padding: 2rem; 
-        background-color: rgb(0, 38, 102); 
-        color: var(--light-blue); 
-        border-top: 1px solid var(--border-color);
-        width: 100%;
-    }
+        /* ── SEÇÕES ── */
+        .form-section {
+            margin-bottom: 24px;
+        }
 
-    @media (max-width: 768px) {
-        .container-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-        .form-card { padding: 1.25rem; }
-    }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1351B4;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-</style>
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #D9D9D9;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 8px rgba(19,81,180,0.07);
+            border: 1px solid #E5E5E5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row:last-child { margin-bottom: 0; }
+
+        .form-row.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .field-label .required-mark {
+            color: #C92300;
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .govbr-input {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Rawline', 'Raleway', sans-serif;
+            color: #333;
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .govbr-input:focus {
+            outline: none;
+            border-color: #1351B4;
+            box-shadow: 0 0 0 3px rgba(19,81,180,0.18);
+        }
+
+        .govbr-input[readonly] {
+            background: #F5F5F5;
+            color: #777;
+            cursor: not-allowed;
+            border-color: #CCC;
+        }
+
+        .govbr-input.error {
+            border-color: #C92300;
+            box-shadow: 0 0 0 2px rgba(201,35,0,0.12);
+        }
+
+        .govbr-input.success {
+            border-color: #168821;
+            box-shadow: 0 0 0 2px rgba(22,136,33,0.1);
+        }
+
+        .error-message {
+            display: none;
+            font-size: 11px;
+            color: #C92300;
+            margin-top: 4px;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .error-message.visible,
+        .error-message[style*="block"] {
+            display: flex !important;
+        }
+
+        /* ── CNPJ SPINNER ── */
+        .input-wrapper {
+            position: relative;
+        }
+
+        .spinner-inline {
+            display: none;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #C5D4FF;
+            border-top-color: #1351B4;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+        /* ── BOTÃO GERAR ── */
+        .action-bar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px 28px;
+            box-shadow: 0 2px 8px rgba(19,81,180,0.07);
+            border: 1px solid #E5E5E5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .action-bar-info {
+            font-size: 13px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-bar-info i { color: #1351B4; }
+
+        .btn-gerar {
+            background: #1351B4;
+            color: #fff;
+            border: none;
+            padding: 13px 32px;
+            border-radius: 100px;
+            font-size: 15px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .btn-gerar:hover { background: #0C3584; }
+        .btn-gerar:active { transform: scale(0.98); }
+        .btn-gerar:disabled { background: #B0BEC5; cursor: not-allowed; transform: none; }
+
+        /* ── LOADING ── */
+        #loadingMessage {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #1351B4;
+            padding: 24px;
+            font-size: 14px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E5E5E5;
+            margin-bottom: 24px;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid #C5D4FF;
+            border-top-color: #1351B4;
+            border-radius: 50%;
+            animation: spinNormal 0.8s linear infinite;
+        }
+
+        @keyframes spinNormal { to { transform: rotate(360deg); } }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(7,29,65,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #F8F8F8;
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .layout-controls {
+            padding: 28px 24px;
+            background: #fff;
+            border-right: 1px solid #E5E5E5;
+            width: 320px;
+            min-width: 280px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .layout-controls h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #071D41;
+            margin-bottom: 6px;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .layout-controls > p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Rawline', 'Raleway', sans-serif;
+            color: #333;
+        }
+
+        .control-group input[type="number"]:focus {
+            outline: none;
+            border-color: #1351B4;
+            box-shadow: 0 0 0 3px rgba(19,81,180,0.18);
+        }
+
+        #declarationList {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .declaration-item {
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            cursor: grab;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .declaration-item::before {
+            content: '⠿';
+            color: #AAA;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .declaration-item:hover {
+            border-color: #1351B4;
+            background: #EDF2FF;
+        }
+
+        .declaration-item.dragging { opacity: 0.4; }
+        .declaration-item.drag-over { border-color: #1351B4; background: #C5D4FF; }
+
+        .modal-actions {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #1351B4;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-align: center;
+        }
+
+        .btn-primary:hover { background: #0C3584; }
+
+        .btn-secondary {
+            background: transparent;
+            color: #1351B4;
+            border: 1.5px solid #1351B4;
+            padding: 11px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-align: center;
+        }
+
+        .btn-secondary:hover { background: #EDF2FF; }
+
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #E5E5E5;
+        }
+
+        #previewIframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            background: #fff;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #fff;
+            border-top: 1px solid #E5E5E5;
+        }
+
+        .pagination-controls button {
+            background: transparent;
+            border: 1px solid #1351B4;
+            color: #1351B4;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .pagination-controls button:hover { background: #EDF2FF; }
+        .pagination-controls button:disabled { border-color: #CCC; color: #AAA; cursor: not-allowed; }
+
+        #pageIndicator {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            visibility: hidden;
+            min-width: 260px;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 14px 20px;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            bottom: 80px;
+            transform: translateX(-50%);
+            font-size: 13px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: toastIn 0.4s, toastOut 0.4s 2.6s;
+        }
+
+        @keyframes toastIn { from { bottom: 60px; opacity: 0; } to { bottom: 80px; opacity: 1; } }
+        @keyframes toastOut { from { bottom: 80px; opacity: 1; } to { bottom: 60px; opacity: 0; } }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            background: #071D41;
+            padding: 14px 24px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            z-index: 50;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: rgba(255,255,255,0.55);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            #main-content { padding: 16px 12px; }
+            .form-card { padding: 18px; }
+            .gov-bar-links { display: none; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .form-row.three-col { grid-template-columns: 1fr; }
+            .modal-content { flex-direction: column; max-height: 95vh; }
+            .layout-controls { width: 100%; border-right: none; border-bottom: 1px solid #E5E5E5; }
+            .action-bar { flex-direction: column; align-items: flex-start; }
+            .btn-gerar { width: 100%; justify-content: center; }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <img src="https://homologacao.sneaelis.app.br/forms/declaracoes/public/images/ASSINATURAS-ESPORTE-FUNDO-PRETO-2-HORIZONTAL.png" class="logo-header" alt="Logo Ministério do Esporte">
-            <h1>Gerador de Declarações</h1>
+
+    <!-- BARRA DO GOVERNO FEDERAL -->
+    <div id="gov-bar">
+        <div class="gov-bar-brand">
+            <i class="fas fa-globe" style="color:#fff;"></i>
+            GOV.BR
+        </div>
+        <ul class="gov-bar-links">
+            <li><a href="https://www.gov.br/pt-br/orgaos-do-governo">Órgãos do Governo</a></li>
+            <li><a href="http://www.acessoainformacao.gov.br/">Acesso à Informação</a></li>
+            <li><a href="http://www4.planalto.gov.br/legislacao">Legislação</a></li>
+            <li><a href="https://www.gov.br/governodigital/pt-br/acessibilidade-digital">Acessibilidade</a></li>
+        </ul>
+    </div>
+
+    <!-- HEADER -->
+    <header class="ministry-header">
+        <div class="header-top-row">
+            <div class="header-logo-area">
+                <a href="https://www.gov.br" class="govbr-badge" title="Portal GOV.BR">
+                    <i class="fas fa-globe"></i> GOV.BR
+                </a>
+                <div class="divider-v"></div>
+                <div class="ministry-name">
+                    Ministério do Esporte
+                    <small>Gerador de Declarações</small>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="icon-btn" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div class="header-bottom-row">
+            <i class="fas fa-home" style="font-size:11px;"></i>
+            Gerador de Declarações — Termo de Fomento (OSC / Sociedade Civil)
         </div>
     </header>
 
-    <main class="container">
-        <div class="container-header">
-            <h2>Termo de Fomento</h2>
-            <span class="status">Emissão de Documentos</span>
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb-bar" aria-label="Você está em:">
+        <a href="https://www.gov.br">gov.br</a>
+        <span class="sep">›</span>
+        <a href="https://www.gov.br/esporte">Ministério do Esporte</a>
+        <span class="sep">›</span>
+        <a href="#">Portal de Formulários</a>
+        <span class="sep">›</span>
+        <span class="current">Termo de Fomento</span>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="main-content">
+
+        <!-- Cabeçalho da página -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="page-header-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div>
+                    <h2>Termo de Fomento</h2>
+                    <p>Preencha os dados abaixo para gerar as declarações da OSC / Sociedade Civil</p>
+                </div>
+            </div>
+            <span class="status-badge">
+                <i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i>
+                Emissão de Documentos
+            </span>
         </div>
 
+        <!-- FORMULÁRIO -->
         <form id="declaracoesForm" onsubmit="return false;">
-            <section class="section">
-                <h3>Dados do Dirigente da Entidade</h3>
+
+            <!-- SEÇÃO 1: DADOS DO DIRIGENTE -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-user-edit" style="color:#1351B4;"></i>
+                    Dados do Dirigente da Entidade
+                </div>
                 <div class="form-card">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="dirigente">Nome Completo</label>
-                            <input type="text" id="dirigente" name="Nome do Dirigente" placeholder="Ex: João da Silva" required>
-                            <div class="error-message"></div>
+                            <label class="field-label" for="dirigente">
+                                Nome Completo
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input type="text" id="dirigente" name="Nome do Dirigente"
+                                   class="govbr-input"
+                                   placeholder="Ex: João da Silva" required>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="cargoDirigente">Cargo</label>
-                            <input type="text" id="cargoDirigente" name="Cargo do Dirigente" placeholder="Ex: Presidente" required>
-                            <div class="error-message"></div>
+                            <label class="field-label" for="cargoDirigente">
+                                Cargo
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input type="text" id="cargoDirigente" name="Cargo do Dirigente"
+                                   class="govbr-input"
+                                   placeholder="Ex: Presidente" required>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
-            
-            <section class="section">
-                <h3>Dados da Entidade</h3>
+            </div>
+
+            <!-- SEÇÃO 2: DADOS DA ENTIDADE -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-id-card" style="color:#1351B4;"></i>
+                    Dados da Entidade
+                </div>
                 <div class="form-card">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cnpj">CNPJ</label>
-                            <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required>
-                            <div class="spinner-inline" id="cnpj-spinner"></div>
-                            <div class="error-message"></div>
+                            <label class="field-label" for="cnpj">
+                                CNPJ
+                                <span class="required-mark">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="cnpj"
+                                       class="govbr-input"
+                                       placeholder="00.000.000/0000-00" required>
+                                <div class="spinner-inline" id="cnpj-spinner"></div>
+                            </div>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="entidade">Nome da Entidade (preenchido automaticamente)</label>
-                            <input type="text" id="entidade" readonly>
+                            <label class="field-label" for="entidade">
+                                Nome da Entidade
+                                <span style="font-size:10px; color:#999; font-weight:400; text-transform:none;">(preenchido automaticamente)</span>
+                            </label>
+                            <input type="text" id="entidade"
+                                   class="govbr-input" readonly
+                                   placeholder="Preenchido pelo CNPJ">
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label for="endereco">Endereço Completo</label>
-                            <input type="text" id="endereco" readonly>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="field-label" for="endereco">Endereço Completo</label>
+                            <input type="text" id="endereco"
+                                   class="govbr-input" readonly
+                                   placeholder="Preenchido automaticamente">
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
+
+                    <div class="form-row three-col">
                         <div class="form-group">
-                            <label for="municipio">Município</label>
-                            <input type="text" id="municipio" readonly>
+                            <label class="field-label" for="municipio">Município</label>
+                            <input type="text" id="municipio"
+                                   class="govbr-input" readonly
+                                   placeholder="--">
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="uf">UF</label>
-                            <input type="text" id="uf" readonly>
+                            <label class="field-label" for="uf">UF</label>
+                            <input type="text" id="uf"
+                                   class="govbr-input" readonly
+                                   placeholder="--">
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
+                        <div></div>
                     </div>
                 </div>
-            </section>
-            <section class="section">
-                <h3>Dados da Proposta</h3>
+            </div>
+
+            <!-- SEÇÃO 3: DADOS DA PROPOSTA -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-file-signature" style="color:#1351B4;"></i>
+                    Dados da Proposta
+                </div>
                 <div class="form-card">
-                    <div class="form-row">
+                    <div class="form-row" style="max-width: 360px;">
                         <div class="form-group">
-                            <label for="proposta">Nº da Proposta</label>
-                            <input type="text" id="proposta" placeholder="000000/2025" required>
-                            <div class="error-message"></div>
+                            <label class="field-label" for="proposta">
+                                Nº da Proposta
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input type="text" id="proposta"
+                                   class="govbr-input"
+                                   placeholder="000000/2025" required>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
-            
-            <!--<section class="section">
-                <h3>Opções de Layout</h3>
-                <div class="form-card">
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" id="useLetterhead">
-                        <label for="useLetterhead">Usar Papel Timbrado personalizado</label>
-                    </div>
-                    <div id="letterheadUploadContainer" class="upload-container" style="display: none;">
-                        <label for="letterheadFile">Carregar Papel Timbrado (PDF, JPEG, PNG)</label>
-                        <input type="file" id="letterheadFile" name="letterheadFile" accept=".pdf,.jpeg,.jpg,.png">
-                    </div>
-                </div>
-            </section>-->
+            </div>
+
         </form>
 
-        <div class="button-container">
-            <button id="botaoGerarPDF">Gerar Declarações</button>
+        <!-- BARRA DE AÇÃO -->
+        <div class="action-bar">
+            <div class="action-bar-info">
+                <i class="fas fa-shield-alt"></i>
+                Os dados são processados localmente e não são armazenados em servidores externos.
+            </div>
+            <button id="botaoGerarPDF" class="btn-gerar">
+                <i class="fas fa-file-pdf"></i>
+                Gerar Declarações
+            </button>
         </div>
-        
+
+        <!-- LOADING -->
         <div id="loadingMessage" class="loading-message">
             <div class="spinner"></div>
-           
+            Processando declarações, aguarde...
         </div>
+
     </main>
 
+    <!-- MODAL DE LAYOUT -->
     <div id="layoutEditorModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="layout-controls">
-                <div class="control-panel">
-                    <h4>Pré-visualização e Ajuste Fino</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Ajuste as margens para o seu papel timbrado. As alterações serão aplicadas em todas as páginas e refletidas na visualização ao lado. Limite: Margem Superior até 7 cm, Margem Inferior do Rodapé até 6,5 cm.</p>
-                    
-                    <div class="control-group">
-                        <label for="marginTopCm">Margem Superior (cm)</label>
-                        <input type="number" id="marginTopCm" value="4.5" step="0.1" min="0" max="7">
-                    </div>
+                <h4>Pré-visualização e Ajuste Fino</h4>
+                <p>Ajuste as margens para o seu papel timbrado. As alterações serão aplicadas em todas as páginas. Limite: Margem Superior até 7 cm, Margem Inferior do Rodapé até 6,5 cm.</p>
 
-                    <div class="control-group">
-                        <label for="footerMarginBottomCm">Margem Inferior do Rodapé (cm)</label>
-                        <input type="number" id="footerMarginBottomCm" value="5.5" step="0.1" min="0" max="6.5">
-                    </div>
+                <div class="control-group">
+                    <label for="marginTopCm">Margem Superior (cm)</label>
+                    <input type="number" id="marginTopCm" value="4.5" step="0.1" min="0" max="7">
+                </div>
 
-                    <div class="control-group" style="margin-top: 2rem;">
-                        <label>Ordem das Declarações</label>
-                        <ul id="declarationList"></ul>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Arraste e solte para reordenar.</p>
-                    </div>
+                <div class="control-group">
+                    <label for="footerMarginBottomCm">Margem Inferior do Rodapé (cm)</label>
+                    <input type="number" id="footerMarginBottomCm" value="5.5" step="0.1" min="0" max="6.5">
+                </div>
+
+                <div class="control-group" style="margin-top: 16px;">
+                    <label>Ordem das Declarações</label>
+                    <p style="font-size:11px; color:#888; margin-bottom:8px;">Arraste e solte para reordenar.</p>
+                    <ul id="declarationList"></ul>
                 </div>
 
                 <div class="modal-actions">
-                    <button id="confirmAndGenerate" class="btn-primary">Salvar e Gerar PDF</button>
-                    <button id="cancelLayout" class="btn-secondary">Cancelar</button>
+                    <button id="confirmAndGenerate" class="btn-primary">
+                        <i class="fas fa-file-pdf"></i> Salvar e Gerar PDF
+                    </button>
+                    <button id="cancelLayout" class="btn-secondary">
+                        Cancelar
+                    </button>
                 </div>
             </div>
+
             <div class="preview-area">
                 <iframe id="previewIframe" title="Pré-visualização do PDF"></iframe>
                 <div class="pagination-controls">
-                    <button id="prevPageBtn">Anterior</button>
+                    <button id="prevPageBtn">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
                     <span id="pageIndicator">Página 1 / 12</span>
-                    <button id="nextPageBtn">Próxima ></button>
+                    <button id="nextPageBtn">
+                        Próxima <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>© 2026 Ministério do Esporte. Todos os direitos reservados.</p>
+    <div id="toast" class="toast"></div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-brand">
+            <i class="fas fa-globe"></i>
+            GOV.BR — Ministério do Esporte
+        </div>
+        <span class="footer-copy">© 2026 Ministério do Esporte — Governo Federal do Brasil</span>
     </footer>
 
+    <!-- Scripts PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    
+
+    <!-- Script externo (preservado) -->
     <script src="/forms/declaracoes/public/js/Script/script.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.pdfjsLib) {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+                pdfjsLib.GlobalWorkerOptions.workerSrc =
+                    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
             }
 
-            const dirigenteInput = document.getElementById('dirigente');
-            const cargoInput = document.getElementById('cargoDirigente');
-            const cnpjInput = document.getElementById('cnpj');
-            const entidadeInput = document.getElementById('entidade');
-            const enderecoInput = document.getElementById('endereco');
-            const ufInput = document.getElementById('uf');
-            const municipioInput = document.getElementById('municipio');
-            const propostaInput = document.getElementById('proposta');
-            const botaoGerarPDF = document.getElementById('botaoGerarPDF');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const declarationForm = document.getElementById('declaracoesForm');
+            // ── REFERÊNCIAS DOS ELEMENTOS ──
+            const dirigenteInput      = document.getElementById('dirigente');
+            const cargoInput          = document.getElementById('cargoDirigente');
+            const cnpjInput           = document.getElementById('cnpj');
+            const entidadeInput       = document.getElementById('entidade');
+            const enderecoInput       = document.getElementById('endereco');
+            const ufInput             = document.getElementById('uf');
+            const municipioInput      = document.getElementById('municipio');
+            const propostaInput       = document.getElementById('proposta');
+            const botaoGerarPDF       = document.getElementById('botaoGerarPDF');
+            const loadingMessage      = document.getElementById('loadingMessage');
+            const declarationForm     = document.getElementById('declaracoesForm');
 
-            const modal = document.getElementById('layoutEditorModal');
-            const iframe = document.getElementById('previewIframe');
-            const declarationListEl = document.getElementById('declarationList');
+            const modal               = document.getElementById('layoutEditorModal');
+            const iframe              = document.getElementById('previewIframe');
+            const declarationListEl   = document.getElementById('declarationList');
             const confirmAndGenerateBtn = document.getElementById('confirmAndGenerate');
-            const cancelLayoutBtn = document.getElementById('cancelLayout');
-            const prevPageBtn = document.getElementById('prevPageBtn');
-            const nextPageBtn = document.getElementById('nextPageBtn');
-            const pageIndicator = document.getElementById('pageIndicator');
-            const marginTopCm = document.getElementById('marginTopCm');
+            const cancelLayoutBtn     = document.getElementById('cancelLayout');
+            const prevPageBtn         = document.getElementById('prevPageBtn');
+            const nextPageBtn         = document.getElementById('nextPageBtn');
+            const pageIndicator       = document.getElementById('pageIndicator');
+            const marginTopCm         = document.getElementById('marginTopCm');
             const footerMarginBottomCm = document.getElementById('footerMarginBottomCm');
 
-            let currentPreviewPage = 1;
+            let currentPreviewPage    = 1;
             let reorderedDeclarations = [];
             let debounceTimer;
             let cnpjDebounceTimer;
-            let fullPdfBlobUrl = null;
+            let fullPdfBlobUrl        = null;
 
+            // ── HELPERS DE ERRO ──
             function toggleErro(input, showError, message = '') {
-                const errorDiv = input.parentElement.querySelector('.error-message');
+                const wrapper = input.closest('.form-group') || input.parentElement;
+                const errorDiv = wrapper.querySelector('.error-message');
+                const msgSpan  = errorDiv ? errorDiv.querySelector('span') : null;
+
                 input.classList.remove('error', 'success');
+
                 if (showError) {
                     input.classList.add('error');
                     if (errorDiv) {
-                        errorDiv.textContent = message || `Campo obrigatório`;
-                        errorDiv.style.display = 'block';
+                        if (msgSpan) msgSpan.textContent = message || 'Campo obrigatório';
+                        errorDiv.style.display = 'flex';
                     }
                 } else {
                     input.classList.add('success');
@@ -515,10 +1108,11 @@
 
             function formatarEBuscarCNPJ(input) {
                 let value = input.value.replace(/\D/g, '').slice(0, 14);
-                value = value.replace(/(\d{2})(\d)/, '$1.$2')
-                            .replace(/(\d{3})(\d)/, '$1.$2')
-                            .replace(/(\d{3})(\d)/, '$1/$2')
-                            .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+                value = value
+                    .replace(/(\d{2})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1/$2')
+                    .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
                 input.value = value;
 
                 clearTimeout(cnpjDebounceTimer);
@@ -541,7 +1135,7 @@
                 cnpjInput.classList.remove('success', 'error');
                 entidadeInput.value = 'Buscando...';
                 enderecoInput.value = 'Buscando...';
-                ufInput.value = 'Buscando...';
+                ufInput.value       = 'Buscando...';
                 municipioInput.value = 'Buscando...';
 
                 try {
@@ -551,25 +1145,25 @@
                         throw new Error(errorData.message || 'CNPJ não encontrado ou inválido.');
                     }
                     const data = await response.json();
-                    
                     if (!data.company?.name) throw new Error('Dados da empresa incompletos.');
 
                     entidadeInput.value = data.company.name || '';
-                    const logradouro = data.address?.street || '';
-                    const numero = data.address?.number || '';
-                    const bairro = data.address?.district || '';
-                    const complemento = data.address?.details ? `, ${data.address.details}` : '';
-                    enderecoInput.value = `${logradouro}, ${numero} - ${bairro}${complemento}`.trim().replace(/\s*,\s*$/g, '').replace(/,\s*,/g, ',');
-                    ufInput.value = data.address?.state || '';
-                    municipioInput.value = data.address?.city || '';
-                    
+                    const logradouro   = data.address?.street || '';
+                    const numero       = data.address?.number || '';
+                    const bairro       = data.address?.district || '';
+                    const complemento  = data.address?.details ? `, ${data.address.details}` : '';
+                    enderecoInput.value = `${logradouro}, ${numero} - ${bairro}${complemento}`
+                        .trim().replace(/\s*,\s*$/g, '').replace(/,\s*,/g, ',');
+                    ufInput.value        = data.address?.state || '';
+                    municipioInput.value = data.address?.city  || '';
+
                     toggleErro(cnpjInput, false);
                     cnpjInput.classList.add('success');
                 } catch (error) {
                     console.error('Erro ao buscar dados da empresa:', error);
-                    entidadeInput.value = '';
-                    enderecoInput.value = '';
-                    ufInput.value = '';
+                    entidadeInput.value  = '';
+                    enderecoInput.value  = '';
+                    ufInput.value        = '';
                     municipioInput.value = '';
                     toggleErro(cnpjInput, true, error.message);
                 } finally {
@@ -577,18 +1171,19 @@
                 }
             }
 
+            // ── CONSTANTES DE LAYOUT ──
             const cmToPoints = (cm) => cm * 28.3465;
-            const PAGE_HEIGHT_POINTS = 841.89; // A4 page height in points
+            const PAGE_HEIGHT_POINTS = 841.89;
 
+            // ── MODAL ──
             const openModal = async () => {
                 if (reorderedDeclarations.length === 0 && typeof declarations !== 'undefined') {
                     reorderedDeclarations = [...declarations];
                 } else if (typeof declarations === 'undefined') {
-                    console.error("Erro: A variável 'declarations' não foi encontrada. Verifique se o script.js foi carregado corretamente.");
+                    console.error("Erro: 'declarations' não encontrada. Verifique se o script.js foi carregado.");
                     alert("Erro interno: Declarações não carregadas.");
                     return;
                 }
-
                 populateDeclarationList(reorderedDeclarations);
                 modal.style.display = 'flex';
                 currentPreviewPage = 1;
@@ -619,7 +1214,6 @@
 
             const addDragDropListeners = () => {
                 let dragStartIndex;
-
                 declarationListEl.querySelectorAll('.declaration-item').forEach(item => {
                     item.addEventListener('dragstart', (e) => {
                         dragStartIndex = parseInt(item.dataset.index);
@@ -627,32 +1221,17 @@
                         e.dataTransfer.setData('text/plain', dragStartIndex);
                         setTimeout(() => item.classList.add('dragging'), 0);
                     });
-
-                    item.addEventListener('dragenter', (e) => {
-                        e.preventDefault();
-                        item.classList.add('drag-over');
-                    });
-
-                    item.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        item.classList.add('drag-over');
-                    });
-
-                    item.addEventListener('dragleave', () => {
-                        item.classList.remove('drag-over');
-                    });
-
+                    item.addEventListener('dragenter', (e) => { e.preventDefault(); item.classList.add('drag-over'); });
+                    item.addEventListener('dragover',  (e) => { e.preventDefault(); item.classList.add('drag-over'); });
+                    item.addEventListener('dragleave', ()  => { item.classList.remove('drag-over'); });
                     item.addEventListener('drop', (e) => {
                         e.preventDefault();
                         item.classList.remove('drag-over');
-
                         const dragEndIndex = Array.from(declarationListEl.children).indexOf(item);
                         if (dragStartIndex !== dragEndIndex) {
                             const [draggedItem] = reorderedDeclarations.splice(dragStartIndex, 1);
                             reorderedDeclarations.splice(dragEndIndex, 0, draggedItem);
-                            
                             populateDeclarationList(reorderedDeclarations);
-                            
                             if (currentPreviewPage === dragStartIndex + 1) {
                                 currentPreviewPage = dragEndIndex + 1;
                             } else if (dragStartIndex < currentPreviewPage - 1 && dragEndIndex >= currentPreviewPage - 1) {
@@ -661,58 +1240,45 @@
                                 currentPreviewPage++;
                             }
                             currentPreviewPage = Math.max(1, Math.min(reorderedDeclarations.length + 1, currentPreviewPage));
-
                             updatePreview();
                         }
                     });
-
                     item.addEventListener('dragend', () => {
                         item.classList.remove('dragging');
-                        declarationListEl.querySelectorAll('.declaration-item').forEach(li => {
-                            li.classList.remove('drag-over');
-                        });
+                        declarationListEl.querySelectorAll('.declaration-item').forEach(li => li.classList.remove('drag-over'));
                     });
                 });
             };
 
             const updatePreview = async () => {
                 if (!modal || modal.style.display === 'none' || reorderedDeclarations.length === 0) return;
-
                 const formData = {
-                    dirigente: dirigenteInput.value,
+                    dirigente:     dirigenteInput.value,
                     cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value
+                    entidade:      entidadeInput.value,
+                    cnpj:          cnpjInput.value,
+                    endereco:      enderecoInput.value,
+                    uf:            ufInput.value,
+                    municipio:     municipioInput.value,
+                    proposta:      propostaInput.value
                 };
-
                 const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
                 const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue);
-
                 const layoutOptions = {
                     topMargin: cmToPoints(parseFloat(marginTopCm.value)),
                     footerPosition: footerPosition
                 };
-
                 if (typeof generatePdfDocDefinition !== 'function') {
-                    iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro: A função `generatePdfDocDefinition` não foi encontrada. Verifique se seu script externo foi carregado corretamente.</p>";
+                    iframe.srcdoc = "<p style='padding:20px;font-family:sans-serif;color:red;'>Erro: função `generatePdfDocDefinition` não encontrada.</p>";
                     return;
                 }
-
                 const docDefinition = await generatePdfDocDefinition(reorderedDeclarations, null, layoutOptions, formData);
-
                 const printer = pdfMake.createPdf(docDefinition);
                 printer.getBlob((blob) => {
-                    if (fullPdfBlobUrl) {
-                        URL.revokeObjectURL(fullPdfBlobUrl);
-                    }
+                    if (fullPdfBlobUrl) URL.revokeObjectURL(fullPdfBlobUrl);
                     fullPdfBlobUrl = URL.createObjectURL(blob);
                     renderPdfPageToIframe(fullPdfBlobUrl, currentPreviewPage);
                 });
-
                 const totalPages = reorderedDeclarations.length + 1;
                 pageIndicator.textContent = `Página ${currentPreviewPage} / ${totalPages}`;
                 prevPageBtn.disabled = currentPreviewPage === 1;
@@ -723,45 +1289,38 @@
                 try {
                     const loadingTask = pdfjsLib.getDocument(pdfUrl);
                     const pdf = await loadingTask.promise;
-
                     if (pageNum > pdf.numPages || pageNum < 1) {
-                        console.error("Página fora dos limites para pré-visualização:", pageNum, "de", pdf.numPages);
-                        iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: orange;'>Página não encontrada na visualização. Tente ajustar as margens ou a ordem das declarações.</p>";
+                        iframe.srcdoc = "<p style='padding:20px;font-family:sans-serif;color:orange;'>Página não encontrada na visualização.</p>";
                         return;
                     }
-
                     const page = await pdf.getPage(pageNum);
                     const scale = 1.5;
-                    const viewport = page.getViewport({ scale: scale });
-
+                    const viewport = page.getViewport({ scale });
                     const canvas = document.createElement('canvas');
                     const context = canvas.getContext('2d');
                     canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    const renderContext = {
-                        canvasContext: context,
-                        viewport: viewport,
-                    };
-                    
-                    await page.render(renderContext).promise;
+                    canvas.width  = viewport.width;
+                    await page.render({ canvasContext: context, viewport }).promise;
                     iframe.src = canvas.toDataURL('image/png');
                 } catch (error) {
-                    console.error("Erro ao renderizar página do PDF no iframe:", error);
-                    iframe.srcdoc = "<p style='padding: 20px; font-family: sans-serif; color: red;'>Erro ao carregar a página para visualização. Verifique o console.</p>";
+                    console.error("Erro ao renderizar página do PDF:", error);
+                    iframe.srcdoc = "<p style='padding:20px;font-family:sans-serif;color:red;'>Erro ao carregar a visualização.</p>";
                 }
             }
 
-            dirigenteInput.addEventListener('input', () => validarCampo(dirigenteInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
-            cargoInput.addEventListener('input', () => validarCampo(cargoInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
+            // ── EVENT LISTENERS (preservados integralmente) ──
+            dirigenteInput.addEventListener('input', () =>
+                validarCampo(dirigenteInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
+            cargoInput.addEventListener('input', () =>
+                validarCampo(cargoInput, /[^A-Za-zÀ-ÿ\s]/g, 'Apenas letras e espaços são permitidos.'));
             cnpjInput.addEventListener('input', () => formatarEBuscarCNPJ(cnpjInput));
             propostaInput.addEventListener('input', () => formatarProposta(propostaInput));
 
             botaoGerarPDF.addEventListener('click', async (event) => {
                 event.preventDefault();
-
                 let formIsValid = true;
                 const requiredInputs = declarationForm.querySelectorAll('[required]');
+
                 requiredInputs.forEach(input => {
                     if (input.value.trim() === '') {
                         toggleErro(input, true, 'Campo obrigatório.');
@@ -777,69 +1336,48 @@
                             toggleErro(input, false);
                         }
                     }
-                }); 
+                });
+
                 if (cnpjInput.classList.contains('success')) {
-                    if (entidadeInput.value.trim() === '') {
-                        toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (enderecoInput.value.trim() === '') {
-                        toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (municipioInput.value.trim() === '') {
-                        toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
-                    if (ufInput.value.trim() === '') {
-                        toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ ou preencha manualmente.');
-                        formIsValid = false;
-                    }
+                    if (entidadeInput.value.trim() === '') { toggleErro(entidadeInput, true, 'Nome da Entidade não preenchido. Verifique o CNPJ.'); formIsValid = false; }
+                    if (enderecoInput.value.trim() === '')  { toggleErro(enderecoInput, true, 'Endereço não preenchido. Verifique o CNPJ.'); formIsValid = false; }
+                    if (municipioInput.value.trim() === '') { toggleErro(municipioInput, true, 'Município não preenchido. Verifique o CNPJ.'); formIsValid = false; }
+                    if (ufInput.value.trim() === '')        { toggleErro(ufInput, true, 'UF não preenchida. Verifique o CNPJ.'); formIsValid = false; }
                 } else if (cnpjInput.value.trim() !== '' && cnpjInput.value.replace(/\D/g, '').length === 14) {
                     if (!entidadeInput.classList.contains('success') || entidadeInput.value.trim() === '' || entidadeInput.value.includes('Buscando')) {
                         toggleErro(entidadeInput, true, 'Dados da entidade não obtidos. Verifique o CNPJ ou conexão.');
                         formIsValid = false;
                     }
                 }
+
                 if (!formIsValid) {
-                alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
-                return;
-            }
+                    alert('Por favor, corrija os erros no formulário antes de gerar o PDF.');
+                    return;
+                }
 
                 const formDataForPdf = {
-                    dirigente: dirigenteInput.value,
+                    dirigente:     dirigenteInput.value,
                     cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value
+                    entidade:      entidadeInput.value,
+                    cnpj:          cnpjInput.value,
+                    endereco:      enderecoInput.value,
+                    uf:            ufInput.value,
+                    municipio:     municipioInput.value,
+                    proposta:      propostaInput.value
                 };
-                
-                // --- INÍCIO DA MODIFICAÇÃO PRINCIPAL ---
+
                 if (typeof generateAllDeclarationsPDF === 'function' && typeof declarations !== 'undefined') {
                     loadingMessage.style.display = 'flex';
-
-                    // Define as opções de layout padrão que antes eram do modal
-                    const PAGE_HEIGHT_POINTS = 841.89;
-                    const cmToPoints = (cm) => cm * 28.3465;
                     const layoutOptions = {
-                        topMargin: cmToPoints(4.5), // Valor padrão para margem superior
-                        footerPosition: PAGE_HEIGHT_POINTS - cmToPoints(5.5) // Valor padrão para margem inferior do rodapé
-                };
-                    
-                    // Usa a ordem original das declarações
+                        topMargin: cmToPoints(4.5),
+                        footerPosition: PAGE_HEIGHT_POINTS - cmToPoints(5.5)
+                    };
                     const declarationsToGenerate = [...declarations];
-
-                    // Chama a função final de geração de PDF diretamente
                     await generateAllDeclarationsPDF(declarationsToGenerate, layoutOptions, formDataForPdf);
-        
                     loadingMessage.style.display = 'none';
                 } else {
                     alert("Erro: Função 'generateAllDeclarationsPDF' ou 'declarations' não encontrada. Verifique o arquivo script.js");
                 }
-                // --- FIM DA MODIFICAÇÃO PRINCIPAL ---
             });
 
             confirmAndGenerateBtn.addEventListener('click', async () => {
@@ -847,26 +1385,22 @@
                     alert("Erro: Elementos de margem não encontrados. Recarregue a página.");
                     return;
                 }
-
                 const footerMarginBottomCmValue = parseFloat(footerMarginBottomCm.value);
                 const footerPosition = PAGE_HEIGHT_POINTS - cmToPoints(footerMarginBottomCmValue);
-
                 const layoutOptions = {
                     topMargin: cmToPoints(parseFloat(marginTopCm.value)),
                     footerPosition: footerPosition
                 };
-
                 const formDataForPdf = {
-                    dirigente: dirigenteInput.value,
+                    dirigente:     dirigenteInput.value,
                     cargoDirigente: cargoInput.value,
-                    entidade: entidadeInput.value,
-                    cnpj: cnpjInput.value,
-                    endereco: enderecoInput.value,
-                    uf: ufInput.value,
-                    municipio: municipioInput.value,
-                    proposta: propostaInput.value
+                    entidade:      entidadeInput.value,
+                    cnpj:          cnpjInput.value,
+                    endereco:      enderecoInput.value,
+                    uf:            ufInput.value,
+                    municipio:     municipioInput.value,
+                    proposta:      propostaInput.value
                 };
-
                 if (typeof generateAllDeclarationsPDF === 'function') {
                     closeModal();
                     loadingMessage.style.display = 'flex';
@@ -899,18 +1433,14 @@
 
             nextPageBtn.addEventListener('click', () => {
                 const totalPages = reorderedDeclarations.length + 1;
-                if (currentPreviewPage < totalPages) {
-                    currentPreviewPage++;
-                    updatePreview();
-                }
+                if (currentPreviewPage < totalPages) { currentPreviewPage++; updatePreview(); }
             });
 
             prevPageBtn.addEventListener('click', () => {
-                if (currentPreviewPage > 1) {
-                    currentPreviewPage--;
-                    updatePreview();
-                }
+                if (currentPreviewPage > 1) { currentPreviewPage--; updatePreview(); }
             });
         });
     </script>
+
+</body>
 </html>
