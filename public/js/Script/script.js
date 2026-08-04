@@ -41,7 +41,7 @@ const cmToPoints = (cm) => cm * 28.3465;
 // -----------------------------------------------------------------------------
 // Imagem de fundo (papel timbrado)
 // -----------------------------------------------------------------------------
-const LETTERHEAD_URL = 'https://i.ibb.co/qzrbGMP/Declaracao-PB.jpg';
+const LETTERHEAD_URL = 'https://i.ibb.co/Q7tqVPBb/Folha-Limpa.jpg';
 
 async function getBase64Image(url) {
     try {

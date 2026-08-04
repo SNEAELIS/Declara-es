@@ -1160,7 +1160,7 @@ const processarGeracaoPDFs = async () => {
         });
 
         toggleLoading(true, 'Gerando documento(s)...');
-        const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/qzrbGMP/Declaracao-PB.jpg');
+        const watermarkImage = await getBase64ImageFromUrl('https://i.ibb.co/Q7tqVPBb/Folha-Limpa.jpg');
         let pdfsGerados = 0;
 
         if (declaracoesParaArquivoPrincipal.length > 0) {
