@@ -991,7 +991,7 @@ function toggleFormFields() {
 
     // Ajusta rótulo do dirigente/prefeito
     document.getElementById('labelNomeDirigente').textContent =
-        isConvenio ? "Nome do Prefeito *" : "Nome do Dirigente *";
+        isConvenio ? "Nome do Responsavel *" : "Nome do Responsável *";
 
     // Mostra/esconde cargo e matrícula
     document.getElementById('cargoContainer').style.display = isConvenio ? 'none' : 'block';
@@ -1713,7 +1713,7 @@ async function generatePDF() {
 
         // Coleta todos os dados básicos do formulário
         const nomeDirigente = document.getElementById('nomeDirigente')?.value.trim() || "________________________________";
-        const cargoDirigente = isTermoFomento ? (document.getElementById('cargoDirigente')?.value.trim() || "________________________________") : "Prefeito";
+        const cargoDirigente = isTermoFomento ? (document.getElementById('cargoDirigente')?.value.trim() || "________________________________") : "";
         const matricula = isConvenio ? (document.getElementById('matriculaFuncional')?.value.trim() || "Não informada") : "";
         const nomeEntidade = document.getElementById('nomeEntidade')?.value.trim() || "_______________________________________________";
         const cnpj = document.getElementById('cnpj')?.value.trim() || "__.___.___/____-__";
@@ -1762,7 +1762,7 @@ async function generatePDF() {
             yPos += 15;
 
             doc.setFontSize(10);
-            doc.text("Assinatura pelo gov.br do Dirigente responsável", pageWidth / 2, yPos, { align: "center" });
+            doc.text("Assinatura pelo gov.br do responsável", pageWidth / 2, yPos, { align: "center" });
         }
 
         // ────────────────────────────────────────────────
